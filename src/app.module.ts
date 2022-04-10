@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { MailModule } from './mail-service/mail.module';
+import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
 import { RefereesController } from './tutors/referees/referees.controller';
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module';
     }),
     TutorsModule,
     MailModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [],
