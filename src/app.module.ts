@@ -1,6 +1,9 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { QualificationsController } from './tutors/qualifications/qualifications.controller';
+import { RefereesController } from './tutors/referees/referees.controller';
+import { TutoringDetailsController } from './tutors/tutoring-details/tutoring-details.controller';
 import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
@@ -26,6 +29,12 @@ export class AppModule {
         { path: 'user/create', method: RequestMethod.POST },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
       )
-      .forRoutes(UsersController, TutorsController);
+      .forRoutes(
+        UsersController,
+        TutorsController,
+        RefereesController,
+        QualificationsController,
+        TutoringDetailsController,
+      );
   }
 }

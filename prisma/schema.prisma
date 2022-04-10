@@ -32,22 +32,74 @@ model User {
 }
 
 model Tutor {
-  id                       Int       @id @default(autoincrement())
+  id                       Int             @id @default(autoincrement())
   profile_url              String
   crb_check                Boolean
   skype_id                 String
   search_visibility        Boolean
   promotion_vital_educator Boolean
   promotion_third_parties  Boolean
-  deActivate               Boolean   @default(false)
-  createdAt                DateTime? @default(now())
-  updatedAt                DateTime? @updatedAt
-  user                     User      @relation(fields: [userId], references: [id])
-  userId                   Int       @unique
+  deActivate               Boolean         @default(false)
+  createdAt                DateTime?       @default(now())
+  updatedAt                DateTime?       @updatedAt
+  user                     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                   Int             @unique
+  referees                 Referees[]
+  qualification            Qualification[]
+  tutoringDetail           TutoringDetail?
+}
+
+model Referees {
+  id         Int          @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String       @unique
+  phone      String
+  relation   RelationType @default(OTHER)
+  tutor      Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId    Int
+}
+
+model Qualification {
+  id                 Int    @id @default(autoincrement())
+  degree_title       String
+  level              String
+  institute          String
+  year_of_completion Int
+  document           String
+  tutor              Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId            Int
+}
+
+model TutoringDetail {
+  id                  Int          @id @default(autoincrement())
+  about               String
+  year_of_experience  Int
+  teaching_experience String
+  approach            String
+  availability        Availability @default(WEEKENDS)
+  tutor               Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId             Int          @unique
 }
 
 enum Role {
   STUDENT
   TUTOR
   ADMIN
+}
+
+enum RelationType {
+  FRIEND
+  TEACHER
+  COLLEAGE
+  CLIENT
+  EMPLOYER
+  OTHER
+}
+
+enum Availability {
+  WEEKENDS
+  WEEKDAYS
+  EVENING
+  MORNINIG
 }
