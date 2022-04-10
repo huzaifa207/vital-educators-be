@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CurrentTutorMiddleware } from './middleware/current-tutor.middleware';
 import { QualificationsController } from './qualifications/qualifications.controller';
@@ -24,6 +24,7 @@ export class TutorsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CurrentTutorMiddleware)
+      .exclude({ path: 'tutoring-detail/:id', method: RequestMethod.GET })
       .forRoutes(
         RefereesController,
         QualificationsController,

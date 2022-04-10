@@ -1,34 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { Request } from 'express';
 import { TutoringDetailsService } from './tutoring-details.service';
-import { CreateTutoringDetailDto } from './dto/create-tutoring-detail.dto';
-import { UpdateTutoringDetailDto } from './dto/update-tutoring-detail.dto';
 
-@Controller('tutoring-details')
+@Controller('tutoring-detail')
 export class TutoringDetailsController {
-  constructor(private readonly tutoringDetailsService: TutoringDetailsService) {}
+  constructor(
+    private readonly tutoringDetailsService: TutoringDetailsService,
+  ) {}
 
-  @Post()
-  create(@Body() createTutoringDetailDto: CreateTutoringDetailDto) {
-    return this.tutoringDetailsService.create(createTutoringDetailDto);
+  @Post('/create')
+  create(
+    @Body() createTutoringDetailDto: Prisma.TutoringDetailCreateInput,
+    @Req() request: Request,
+  ) {
+    const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
+    return this.tutoringDetailsService.create(createTutoringDetailDto, +id);
   }
 
-  @Get()
-  findAll() {
-    return this.tutoringDetailsService.findAll();
+  @Get('/all')
+  findAll(@Req() request: Request) {
+    const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
+    return this.tutoringDetailsService.findAll(+id);
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.tutoringDetailsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTutoringDetailDto: UpdateTutoringDetailDto) {
+  @Patch('/update')
+  update(
+    @Req() request: Request,
+    @Body() updateTutoringDetailDto: Prisma.TutoringDetailUpdateInput,
+  ) {
+    const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
     return this.tutoringDetailsService.update(+id, updateTutoringDetailDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tutoringDetailsService.remove(+id);
+  @Delete('/delete')
+  async remove(@Req() request: Request) {
+    const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
+    return await this.tutoringDetailsService.remove(+id);
   }
 }

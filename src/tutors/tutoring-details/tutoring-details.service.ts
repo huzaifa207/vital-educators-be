@@ -1,26 +1,72 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTutoringDetailDto } from './dto/create-tutoring-detail.dto';
-import { UpdateTutoringDetailDto } from './dto/update-tutoring-detail.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class TutoringDetailsService {
-  create(createTutoringDetailDto: CreateTutoringDetailDto) {
-    return 'This action adds a new tutoringDetail';
+  constructor(private prisma: PrismaService) {}
+  async create(
+    createTutoringDetailDto: Prisma.TutoringDetailCreateInput,
+    tutorId: number,
+  ) {
+    try {
+      return await this.prisma.tutoringDetail.create({
+        data: {
+          ...createTutoringDetailDto,
+          tutor: { connect: { id: tutorId } },
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        throw new BadRequestException('Please send a valid data');
+      }
+      throw new BadRequestException('Tutor not found');
+    }
   }
 
-  findAll() {
-    return `This action returns all tutoringDetails`;
+  async findAll(tutorId: number) {
+    try {
+      return await this.prisma.tutoringDetail.findMany({
+        where: { tutor: { id: tutorId } },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Tutor not found');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tutoringDetail`;
+  async findOne(id: number) {
+    const tutoringDetail = await this.prisma.tutoringDetail.findUnique({
+      where: { id },
+    });
+    if (!tutoringDetail) {
+      throw new BadRequestException('TutoringDetail not found');
+    }
+    return tutoringDetail;
   }
 
-  update(id: number, updateTutoringDetailDto: UpdateTutoringDetailDto) {
-    return `This action updates a #${id} tutoringDetail`;
+  update(
+    tutorId: number,
+    updateTutoringDetailDto: Prisma.TutoringDetailUpdateInput,
+  ) {
+    try {
+      return this.prisma.tutoringDetail.update({
+        where: { tutorId },
+        data: updateTutoringDetailDto,
+      });
+    } catch (error) {
+      throw new BadRequestException('Tutor not found');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tutoringDetail`;
+  async remove(tutorId: number) {
+    try {
+      await this.prisma.tutoringDetail.delete({
+        where: { tutorId },
+      });
+      return { message: 'TutoringDetail deleted' };
+    } catch (error) {
+      throw new BadRequestException('Tutor not found');
+    }
   }
 }

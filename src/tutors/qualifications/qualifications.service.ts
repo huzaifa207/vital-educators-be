@@ -18,6 +18,9 @@ export class QualificationsService {
         },
       });
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        throw new BadRequestException('Please send a valid data');
+      }
       throw new BadRequestException('Tutor not found');
     }
   }
@@ -28,8 +31,6 @@ export class QualificationsService {
         where: { tutor: { id: tutorId } },
       });
     } catch (error) {
-      console.log(error);
-
       throw new BadRequestException('Tutor not found');
     }
   }
@@ -46,12 +47,17 @@ export class QualificationsService {
     id: number,
     updateQualificationDto: Prisma.QualificationUpdateInput,
   ) {
-    return (
-      (await this.prisma.qualification.update({
+    try {
+      return await this.prisma.qualification.update({
         where: { id },
         data: updateQualificationDto,
-      })) || { message: 'Qualification not found' }
-    );
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        throw new BadRequestException('Please send a valid data');
+      }
+      throw new BadRequestException('Tutor not found');
+    }
   }
 
   async remove(id: number) {
