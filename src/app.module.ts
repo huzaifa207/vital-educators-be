@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { MailModule } from './mail-service/mail.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
 import { RefereesController } from './tutors/referees/referees.controller';
@@ -16,6 +17,7 @@ import { UsersModule } from './users/users.module';
       secret: process.env.JWT_SECRET,
     }),
     TutorsModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

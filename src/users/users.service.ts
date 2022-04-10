@@ -1,7 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
 import { nanoid } from 'nanoid';
+import { MailService } from 'src/mail-service/mail.service';
 import { promisify } from 'util';
 import { PrismaService } from './../prisma.service';
 
@@ -9,7 +14,10 @@ const scrypt = promisify(_script);
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
     const userAlreadyExists = await this.prisma.user.findUnique({
@@ -17,7 +25,7 @@ export class UsersService {
     });
 
     if (userAlreadyExists) {
-      throw new Error('User already exists');
+      throw new NotAcceptableException('User already exists');
     }
     //   -- Generate a HashPassowrd
 
@@ -34,7 +42,7 @@ export class UsersService {
       }),
     });
 
-    // this.sendConfirmationEmail(user.email, user.username, emailToken);
+    this.sendConfirmationEmail(user.email, user.username, emailToken);
 
     return user;
   }
@@ -44,22 +52,26 @@ export class UsersService {
     username?: string;
     password: string;
   }) {
-    let currentUser = loginUserDto.email
-      ? await this.prisma.user.findUnique({
-          where: { email: loginUserDto.email },
-        })
-      : await this.prisma.user.findUnique({
-          where: { username: loginUserDto.username },
-        });
+    try {
+      let currentUser = loginUserDto.email
+        ? await this.prisma.user.findUnique({
+            where: { email: loginUserDto.email },
+          })
+        : await this.prisma.user.findUnique({
+            where: { username: loginUserDto.username },
+          });
 
-    const [salt, storedHash] = currentUser.password.split('.');
-    const hash = (await scrypt(loginUserDto.password, salt, 16)) as Buffer;
+      const [salt, storedHash] = currentUser.password.split('.');
+      const hash = (await scrypt(loginUserDto.password, salt, 16)) as Buffer;
 
-    if (storedHash !== hash.toString('hex')) {
-      throw new BadRequestException('Invalid password');
+      if (storedHash !== hash.toString('hex')) {
+        throw new BadRequestException('Invalid password');
+      }
+
+      return currentUser;
+    } catch (error) {
+      throw new BadRequestException('Invalid credentials');
     }
-
-    return currentUser;
   }
 
   findAll() {
@@ -88,6 +100,6 @@ export class UsersService {
     username: string,
     emailToken: string,
   ) {
-    // await this.mailService.sendConfirmationEmail(email, username, emailToken);
+    await this.mailService.sendConfirmationEmail(email, username, emailToken);
   }
 }
