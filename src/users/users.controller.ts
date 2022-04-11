@@ -35,6 +35,7 @@ export class UsersController {
     return user;
   }
 
+  @Serializer(ReturnUserDto)
   @Post('/login')
   async login(
     @Body()
