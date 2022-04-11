@@ -16,7 +16,7 @@ import { SubjectOffersService } from './subject-offers.service';
 export class SubjectOffersController {
   constructor(private readonly subjectOffersService: SubjectOffersService) {}
 
-  @Post('/create')
+  @Post()
   create(
     @Body() createSubjectOfferDto: Prisma.SubjectOfferCreateInput,
     @Req() req: Request,
@@ -35,7 +35,7 @@ export class SubjectOffersController {
     return this.subjectOffersService.findOne(+id);
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   update(
     @Param('id') id: string,
     @Req() req: Request,

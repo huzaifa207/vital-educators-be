@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Post,
-  Req
+  Req,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
@@ -16,7 +16,7 @@ import { RefereesService } from './referees.service';
 export class RefereesController {
   constructor(private readonly refereesService: RefereesService) {}
 
-  @Post('/create')
+  @Post()
   create(
     @Body() createRefereeDto: Prisma.RefereesCreateInput,
     @Req() request: Request,
@@ -26,7 +26,7 @@ export class RefereesController {
     return this.refereesService.create(createRefereeDto, +id);
   }
 
-  @Get('/all')
+  @Get()
   findAll(@Req() request: Request) {
     const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
     return this.refereesService.findAll(+id);
@@ -37,7 +37,7 @@ export class RefereesController {
     return this.refereesService.findOne(+id);
   }
 
-  @Patch('/update/:id')
+  @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateRefereeDto: Prisma.RefereesUpdateInput,
@@ -45,7 +45,7 @@ export class RefereesController {
     return this.refereesService.update(+id, updateRefereeDto);
   }
 
-  @Delete('/delete/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.refereesService.remove(+id);
   }

@@ -20,7 +20,7 @@ export class TutorsController {
   constructor(private readonly tutorsService: TutorsService) {}
 
   @UseGuards(TutorGuard)
-  @Post('/create')
+  @Post()
   create(
     @Body() createTutorDto: Prisma.TutorCreateInput,
     @Req() request: Request,
@@ -30,20 +30,20 @@ export class TutorsController {
     return this.tutorsService.create(createTutorDto, +id);
   }
 
-  @Get('/')
+  @Get()
   findOne(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.tutorsService.findOne(+id);
   }
 
   @UseGuards(TutorGuard)
-  @Patch('update/:id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() updateTutorDto: UpdateTutorDto) {
     return this.tutorsService.update(+id, updateTutorDto);
   }
 
   @UseGuards(TutorGuard)
-  @Delete('/delete')
+  @Delete()
   remove(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.tutorsService.deActivateTutor(+id);

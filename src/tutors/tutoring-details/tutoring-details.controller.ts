@@ -18,7 +18,7 @@ export class TutoringDetailsController {
     private readonly tutoringDetailsService: TutoringDetailsService,
   ) {}
 
-  @Post('/create')
+  @Post()
   create(
     @Body() createTutoringDetailDto: Prisma.TutoringDetailCreateInput,
     @Req() request: Request,
@@ -27,7 +27,7 @@ export class TutoringDetailsController {
     return this.tutoringDetailsService.create(createTutoringDetailDto, +id);
   }
 
-  @Get('/all')
+  @Get()
   findAll(@Req() request: Request) {
     const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
     return this.tutoringDetailsService.findAll(+id);
@@ -38,7 +38,7 @@ export class TutoringDetailsController {
     return this.tutoringDetailsService.findOne(+id);
   }
 
-  @Patch('/update')
+  @Patch()
   update(
     @Req() request: Request,
     @Body() updateTutoringDetailDto: Prisma.TutoringDetailUpdateInput,
@@ -47,7 +47,7 @@ export class TutoringDetailsController {
     return this.tutoringDetailsService.update(+id, updateTutoringDetailDto);
   }
 
-  @Delete('/delete')
+  @Delete()
   async remove(@Req() request: Request) {
     const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
     return await this.tutoringDetailsService.remove(+id);

@@ -16,7 +16,7 @@ import { QualificationsService } from './qualifications.service';
 export class QualificationsController {
   constructor(private readonly qualificationsService: QualificationsService) {}
 
-  @Post('/create')
+  @Post()
   create(
     @Body() createQualificationDto: Prisma.QualificationCreateInput,
     @Req() request: Request,
@@ -25,7 +25,7 @@ export class QualificationsController {
     return this.qualificationsService.create(createQualificationDto, +id);
   }
 
-  @Get('/all')
+  @Get()
   findAll(@Req() request: Request) {
     const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
     return this.qualificationsService.findAll(+id);
@@ -36,7 +36,7 @@ export class QualificationsController {
     return this.qualificationsService.findOne(+id);
   }
 
-  @Patch('/update/:id')
+  @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateQualificationDto: Prisma.QualificationUpdateInput,
@@ -44,7 +44,7 @@ export class QualificationsController {
     return this.qualificationsService.update(+id, updateQualificationDto);
   }
 
-  @Delete('/delete/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.qualificationsService.remove(+id);
   }

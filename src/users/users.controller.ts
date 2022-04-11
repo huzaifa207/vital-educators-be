@@ -23,7 +23,7 @@ export class UsersController {
     private jwtService: JwtService,
   ) {}
 
-  @Post('/create')
+  @Post()
   @Serializer(ReturnUserDto)
   async create(
     @Body() createUserDto: Prisma.UserCreateInput,
@@ -65,7 +65,7 @@ export class UsersController {
     return { message: 'Logged out' };
   }
 
-  @Get('/all')
+  @Get()
   @Serializer(ReturnUserDto)
   findAll() {
     return this.usersService.findAll();
@@ -77,7 +77,7 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @Patch('/update')
+  @Patch()
   @Serializer(ReturnUserDto)
   update(
     @Body() updateUserDto: Prisma.UserUpdateInput,
@@ -87,7 +87,7 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
-  @Delete('/delete')
+  @Delete()
   remove(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.usersService.remove(+id);
