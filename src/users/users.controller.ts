@@ -31,7 +31,7 @@ export class UsersController {
   ) {
     const user = await this.usersService.create(createUserDto);
     const jwt = await this.jwtService.signAsync({ id: user.id });
-    response.cookie('jwt', jwt, { httpOnly: true });
+    response.cookie('jwt', jwt, { httpOnly: true, sameSite: 'none' });
     return user;
   }
 
@@ -47,7 +47,7 @@ export class UsersController {
   ) {
     const user = await this.usersService.login(loginUserDto);
     const jwt = await this.jwtService.signAsync({ id: user.id });
-    response.cookie('jwt', jwt, { httpOnly: true });
+    response.cookie('jwt', jwt, { httpOnly: true, sameSite: 'none' });
     return user;
   }
 

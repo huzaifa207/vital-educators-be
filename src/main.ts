@@ -28,9 +28,9 @@ async function bootstrap() {
   app.use(
     cookieSession({
       keys: ['user'],
-      'same-site': 'none',
     }),
   );
+
   await app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 bootstrap();
