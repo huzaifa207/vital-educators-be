@@ -55,23 +55,16 @@ export class SubjectOffersService {
     updateSubjectOfferDto: Prisma.SubjectOfferUncheckedUpdateInput,
   ) {
     try {
-      const subject = await this.prisma.subjectOffer.findUnique({
-        where: { id },
-      });
-      if (+subject.tutorId !== tutorId) {
-        throw new ForbiddenException(
-          'You are not the owner of this subject offer',
-        );
+      if (await this.checkSubjectOffer(id, tutorId)) {
+        return await this.prisma.subjectOffer.update({
+          where: {
+            id,
+          },
+          data: {
+            ...updateSubjectOfferDto,
+          },
+        });
       }
-
-      return await this.prisma.subjectOffer.update({
-        where: {
-          id,
-        },
-        data: {
-          ...updateSubjectOfferDto,
-        },
-      });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientValidationError) {
         throw new BadRequestException('Please send a valid data');
@@ -81,19 +74,28 @@ export class SubjectOffersService {
   }
 
   async remove(id: number, tutorId: number) {
-    const subject = await this.prisma.subjectOffer.findUnique({
-      where: { id },
+    if (await this.checkSubjectOffer(id, tutorId)) {
+      try {
+        await this.prisma.subjectOffer.delete({ where: { id } });
+        return { message: 'Subject offer deleted' };
+      } catch (error) {
+        throw new NotFoundException('Subject offer not found');
+      }
+    }
+  }
+
+  private async checkSubjectOffer(
+    subjectOfferId: number,
+    tutorId: number,
+  ): Promise<Boolean> {
+    const subjectOffer = await this.prisma.subjectOffer.findUnique({
+      where: { id: subjectOfferId },
     });
-    if (+subject.tutorId !== tutorId) {
+    if (+subjectOffer.tutorId !== +tutorId) {
       throw new ForbiddenException(
         'You are not the owner of this subject offer',
       );
     }
-    try {
-      await this.prisma.subjectOffer.delete({ where: { id } });
-      return { message: 'Subject offer deleted' };
-    } catch (error) {
-      throw new NotFoundException('Subject offer not found');
-    }
+    return true;
   }
 }

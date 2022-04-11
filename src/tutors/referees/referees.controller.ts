@@ -40,13 +40,16 @@ export class RefereesController {
   @Patch(':id')
   update(
     @Param('id') id: string,
+    @Req() request: Request,
     @Body() updateRefereeDto: Prisma.RefereesUpdateInput,
   ) {
-    return this.refereesService.update(+id, updateRefereeDto);
+    const { id: tutorId } = request.currentTutor as Prisma.TutorCreateManyInput;
+    return this.refereesService.update(+id, tutorId, updateRefereeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.refereesService.remove(+id);
+  remove(@Param('id') id: string, @Req() request: Request) {
+    const { id: tutorId } = request.currentTutor as Prisma.TutorCreateManyInput;
+    return this.refereesService.remove(+id, +tutorId);
   }
 }
