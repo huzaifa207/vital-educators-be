@@ -6,6 +6,7 @@ import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
 import { RefereesController } from './tutors/referees/referees.controller';
+import { SubjectOffersController } from './tutors/subject-offers/subject-offers.controller';
 import { TutoringDetailsController } from './tutors/tutoring-details/tutoring-details.controller';
 import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
@@ -34,6 +35,7 @@ export class AppModule {
         { path: 'user/create', method: RequestMethod.POST },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
+        { path: 'subject-offer/all', method: RequestMethod.GET },
       )
       .forRoutes(
         UsersController,
@@ -41,6 +43,7 @@ export class AppModule {
         RefereesController,
         QualificationsController,
         TutoringDetailsController,
+        SubjectOffersController,
       );
   }
 }

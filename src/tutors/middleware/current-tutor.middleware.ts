@@ -18,7 +18,6 @@ export class CurrentTutorMiddleware implements NestMiddleware {
     try {
       const user = req.currentUser as Prisma.UserCreateManyInput;
       const tutor = await this.tutorService.findOne(user.id);
-
       if (!tutor) {
         throw new NotFoundException('Tutor not found');
       }

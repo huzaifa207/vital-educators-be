@@ -47,6 +47,7 @@ model Tutor {
   referees                 Referees[]
   qualification            Qualification[]
   tutoringDetail           TutoringDetail?
+  subjectOffers            SubjectOffer[]
 }
 
 model Referees {
@@ -80,6 +81,23 @@ model TutoringDetail {
   availability        Availability @default(WEEKENDS)
   tutor               Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   tutorId             Int          @unique
+}
+
+model SubjectOffer {
+  id                Int     @id @default(autoincrement())
+  title             String
+  primary           Int     @default(0)
+  seconday          Int     @default(0)
+  gsce              Int     @default(0)
+  higher_education  Int     @default(0)
+  casual_learner    Int     @default(0)
+  a_level           Int     @default(0)
+  online_discount   Int     @default(0)
+  first_free_lesson Boolean @default(false)
+  in_person         Boolean @default(true)
+  online            Boolean @default(true)
+  tutor             Tutor   @relation(fields: [tutorId], references: [id])
+  tutorId           Int
 }
 
 enum Role {

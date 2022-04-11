@@ -5,18 +5,26 @@ import { QualificationsController } from './qualifications/qualifications.contro
 import { QualificationsModule } from './qualifications/qualifications.module';
 import { RefereesController } from './referees/referees.controller';
 import { RefereesModule } from './referees/referees.module';
+import { SubjectOffersController } from './subject-offers/subject-offers.controller';
+import { SubjectOffersModule } from './subject-offers/subject-offers.module';
 import { TutoringDetailsController } from './tutoring-details/tutoring-details.controller';
 import { TutoringDetailsModule } from './tutoring-details/tutoring-details.module';
 import { TutorsController } from './tutors.controller';
 import { TutorsService } from './tutors.service';
 
 @Module({
-  imports: [RefereesModule, QualificationsModule, TutoringDetailsModule],
+  imports: [
+    RefereesModule,
+    QualificationsModule,
+    TutoringDetailsModule,
+    SubjectOffersModule,
+  ],
   controllers: [
     TutorsController,
     RefereesController,
     QualificationsController,
     TutoringDetailsController,
+    SubjectOffersController,
   ],
   providers: [PrismaService, TutorsService],
 })
@@ -29,6 +37,7 @@ export class TutorsModule {
         RefereesController,
         QualificationsController,
         TutoringDetailsController,
+        SubjectOffersController,
       );
   }
 }
