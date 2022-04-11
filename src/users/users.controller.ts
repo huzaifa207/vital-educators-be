@@ -85,4 +85,11 @@ export class UsersController {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.usersService.remove(+id);
   }
+  @Get('/confirm-email/:token')
+  async confirmEmail(@Param('token') token: string, @Res() res: Response) {
+    const user = await this.usersService.confirmEmail(token);
+    if (user.approved) {
+      res.redirect('/');
+    }
+  }
 }

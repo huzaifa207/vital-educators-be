@@ -102,4 +102,19 @@ export class UsersService {
   ) {
     await this.mailService.sendConfirmationEmail(email, username, emailToken);
   }
+
+  async confirmEmail(emailToken: string) {
+    try {
+      await this.prisma.user.update({
+        where: { email_token: emailToken },
+        data: {
+          email_token: null,
+          email_approved: true,
+        },
+      });
+      return { approved: true };
+    } catch (error) {
+      return { approved: false };
+    }
+  }
 }
