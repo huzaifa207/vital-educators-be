@@ -58,17 +58,20 @@ export class UsersController {
     return { message: 'Logged out' };
   }
 
-  @Get('/getAll')
+  @Get('/all')
+  @Serializer(ReturnUserDto)
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
+  @Serializer(ReturnUserDto)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
   @Patch('/update')
+  @Serializer(ReturnUserDto)
   update(
     @Body() updateUserDto: Prisma.UserUpdateInput,
     @Req() request: Request,
