@@ -92,4 +92,10 @@ export class UsersController {
       res.redirect('/');
     }
   }
+
+  @Serializer(ReturnUserDto)
+  @Get()
+  currentUser(@Req() request: Request) {
+    return request.currentUser as Prisma.UserCreateManyInput;
+  }
 }
