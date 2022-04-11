@@ -2,6 +2,7 @@ require('dotenv').config();
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
+import { NextFunction, Request, Response } from 'express';
 import { AppModule } from './app.module';
 const cookieSession = require('cookie-session');
 
@@ -10,6 +11,12 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.set('etag', 'strong');
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    res.removeHeader('x-powered-by');
+    res.removeHeader('date');
+    next();
+  });
 
   app.enableCors({
     credentials: true,
