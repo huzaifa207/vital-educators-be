@@ -31,4 +31,26 @@ export class MediaController {
   } {
     return { imagePath: file.filename };
   }
+
+  @Post('/docs')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/document',
+        filename: (req, file, cb) => {
+          const filename: string = file.originalname.split('.')[0] + nanoid(4);
+          const extension: string = file.originalname.substring(
+            file.originalname.lastIndexOf('.'),
+            file.originalname.length,
+          );
+          cb(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  uploadDocs(@UploadedFile() file: Express.Multer.File): {
+    documentPath: string;
+  } {
+    return { documentPath: file.filename };
+  }
 }

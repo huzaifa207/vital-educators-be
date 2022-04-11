@@ -1,5 +1,4 @@
 import { Expose } from 'class-transformer';
-import { IsEmail } from 'class-validator';
 
 export class ReturnUserDto {
   @Expose()
@@ -11,7 +10,7 @@ export class ReturnUserDto {
   @Expose()
   last_name: string;
 
-  @IsEmail()
+  @Expose()
   email: string;
 
   @Expose()
