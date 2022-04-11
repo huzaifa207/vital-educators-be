@@ -47,19 +47,15 @@ export class UsersService {
     return user;
   }
 
-  async login(loginUserDto: {
-    email?: string;
-    username?: string;
-    password: string;
-  }) {
+  async login(loginUserDto: { username: string; password: string }) {
     try {
-      let currentUser = loginUserDto.email
-        ? await this.prisma.user.findUnique({
-            where: { email: loginUserDto.email },
-          })
-        : await this.prisma.user.findUnique({
-            where: { username: loginUserDto.username },
-          });
+      let currentUser =
+        (await this.prisma.user.findUnique({
+          where: { email: loginUserDto.username },
+        })) ||
+        (await this.prisma.user.findUnique({
+          where: { username: loginUserDto.username },
+        }));
 
       const [salt, storedHash] = currentUser.password.split('.');
       const hash = (await scrypt(loginUserDto.password, salt, 16)) as Buffer;

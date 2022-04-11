@@ -40,8 +40,7 @@ export class UsersController {
   async login(
     @Body()
     loginUserDto: {
-      email?: string;
-      username?: string;
+      username: string;
       password: string;
     },
     @Res({ passthrough: true }) response: Response,
