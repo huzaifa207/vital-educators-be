@@ -13,6 +13,7 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
+import { ChatsModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module';
     TutorsModule,
     MailModule,
     MediaModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [],

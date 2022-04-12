@@ -20,6 +20,7 @@ export class TutoringDetailsService {
       if (error instanceof Prisma.PrismaClientValidationError) {
         throw new BadRequestException('Please send a valid data');
       }
+      console.log(error);
       throw new BadRequestException('Tutor not found');
     }
   }

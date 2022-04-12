@@ -73,14 +73,14 @@ model Qualification {
 }
 
 model TutoringDetail {
-  id                  Int          @id @default(autoincrement())
+  id                  Int      @id @default(autoincrement())
   about               String
   year_of_experience  Int
   teaching_experience String
   approach            String
-  availability        Availability @default(WEEKENDS)
-  tutor               Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId             Int          @unique
+  availability        String[]
+  tutor               Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId             Int      @unique
 }
 
 model SubjectOffer {
