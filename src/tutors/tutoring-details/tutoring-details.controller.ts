@@ -28,9 +28,10 @@ export class TutoringDetailsController {
   }
 
   @Get()
-  findAll(@Req() request: Request) {
+  async findAll(@Req() request: Request) {
     const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
-    return this.tutoringDetailsService.findAll(+id);
+    const tutoringDetail = await this.tutoringDetailsService.findAll(+id);
+    return tutoringDetail[0];
   }
 
   @Get('/:id')
