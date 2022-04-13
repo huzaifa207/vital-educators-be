@@ -9,7 +9,7 @@ import {
   WsResponse,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Chat, IChat } from './chat';
+import { IChat } from './chat';
 import { ChatsService } from './chats.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
@@ -18,7 +18,7 @@ export class ChatsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(private readonly chatsService: ChatsService) {}
-  public chat = new Chat();
+  public chat = [];
 
   private logger: Logger = new Logger('StudentGateway');
 
@@ -36,12 +36,16 @@ export class ChatsGateway
 
   // Message to Server
   @SubscribeMessage('createChat')
-  create(@MessageBody() createChatDto: IChat): WsResponse<Object[]> {
-    this.chat.add(createChatDto);
+  create(@MessageBody() createChatDto: IChat): WsResponse<Object> {
+    this.add(createChatDto);
     return {
-      event: 'createChat',
-      data: this.chat.show(),
+      event: 'msToClient',
+      data: createChatDto,
     };
+  }
+
+  add(chat: IChat) {
+    this.chat.push({ msg: chat.msg, to: chat.to, from: chat.from });
   }
 
   @SubscribeMessage('findAllChats')
