@@ -1,4 +1,5 @@
-const socket = io('http://localhost:3000');
+// const socket = io('http://localhost:3000');
+const socket = io('https://vital-educator.herokuapp.com/');
 
 const message = document.getElementById('msg').innerHTML;
 

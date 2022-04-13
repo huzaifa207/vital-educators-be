@@ -11,43 +11,43 @@ datasource db {
 }
 
 model User {
-  id                   Int       @id @default(autoincrement())
-  first_name           String
-  last_name            String
-  email                String    @unique
-  username             String    @unique
-  password             String
-  address_1            String
-  address_2            String
-  phone                String
-  country              String
-  postal_code          String
-  email_approved       Boolean?
-  email_token          String?   @unique
-  password_reset_token String?   @unique
-  createdAt            DateTime? @default(now())
-  updatedAt            DateTime? @updatedAt
-  role                 Role      @default(STUDENT)
-  tutor                Tutor?
+  id                       Int       @id @default(autoincrement())
+  first_name               String
+  last_name                String
+  email                    String    @unique
+  username                 String    @unique
+  password                 String
+  address_1                String
+  address_2                String
+  phone                    String
+  country                  String
+  postal_code              String
+  search_visibility        Boolean?  @default(false)
+  promotion_vital_educator Boolean?  @default(false)
+  promotion_third_parties  Boolean?  @default(false)
+  email_approved           Boolean?
+  email_token              String?   @unique
+  password_reset_token     String?   @unique
+  createdAt                DateTime? @default(now())
+  updatedAt                DateTime? @updatedAt
+  role                     Role      @default(STUDENT)
+  tutor                    Tutor?
 }
 
 model Tutor {
-  id                       Int             @id @default(autoincrement())
-  profile_url              String
-  crb_check                Boolean
-  skype_id                 String
-  search_visibility        Boolean
-  promotion_vital_educator Boolean
-  promotion_third_parties  Boolean
-  deActivate               Boolean         @default(false)
-  createdAt                DateTime?       @default(now())
-  updatedAt                DateTime?       @updatedAt
-  user                     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                   Int             @unique
-  referees                 Referees[]
-  qualification            Qualification[]
-  tutoringDetail           TutoringDetail?
-  subjectOffers            SubjectOffer[]
+  id             Int             @id @default(autoincrement())
+  profile_url    String
+  crb_check      Boolean
+  skype_id       String
+  deActivate     Boolean         @default(false)
+  createdAt      DateTime?       @default(now())
+  updatedAt      DateTime?       @updatedAt
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int             @unique
+  referees       Referees[]
+  qualification  Qualification[]
+  tutoringDetail TutoringDetail?
+  subjectOffers  SubjectOffer[]
 }
 
 model Referees {
