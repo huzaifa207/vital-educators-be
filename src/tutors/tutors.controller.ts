@@ -3,9 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
-  Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -19,16 +17,16 @@ import { TutorsService } from './tutors.service';
 export class TutorsController {
   constructor(private readonly tutorsService: TutorsService) {}
 
-  @UseGuards(TutorGuard)
-  @Post()
-  create(
-    @Body() createTutorDto: Prisma.TutorCreateInput,
-    @Req() request: Request,
-  ) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+  // @UseGuards(TutorGuard)
+  // @Post()
+  // create(
+  //   @Body() createTutorDto: Prisma.TutorCreateInput,
+  //   @Req() request: Request,
+  // ) {
+  //   const { id } = request.currentUser as Prisma.UserCreateManyInput;
 
-    return this.tutorsService.create(createTutorDto, +id);
-  }
+  //   return this.tutorsService.create(createTutorDto, +id);
+  // }
 
   @Get()
   findOne(@Req() request: Request) {
@@ -37,8 +35,9 @@ export class TutorsController {
   }
 
   @UseGuards(TutorGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTutorDto: UpdateTutorDto) {
+  @Patch()
+  update(@Body() updateTutorDto: UpdateTutorDto, @Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.tutorsService.update(+id, updateTutorDto);
   }
 

@@ -1,5 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
+import { DocumentsController } from './documents/documents.controller';
+import { DocumentsModule } from './documents/documents.module';
 import { CurrentTutorMiddleware } from './middleware/current-tutor.middleware';
 import { QualificationsController } from './qualifications/qualifications.controller';
 import { QualificationsModule } from './qualifications/qualifications.module';
@@ -18,6 +20,7 @@ import { TutorsService } from './tutors.service';
     QualificationsModule,
     TutoringDetailsModule,
     SubjectOffersModule,
+    DocumentsModule,
   ],
   controllers: [
     TutorsController,
@@ -25,8 +28,10 @@ import { TutorsService } from './tutors.service';
     QualificationsController,
     TutoringDetailsController,
     SubjectOffersController,
+    DocumentsController,
   ],
   providers: [PrismaService, TutorsService],
+  exports: [TutorsService],
 })
 export class TutorsModule {
   configure(consumer: MiddlewareConsumer) {
@@ -38,6 +43,7 @@ export class TutorsModule {
         QualificationsController,
         TutoringDetailsController,
         SubjectOffersController,
+        DocumentsController,
       );
   }
 }

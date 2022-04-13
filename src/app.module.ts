@@ -1,10 +1,12 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
+import { ChatsModule } from './chats/chats.module';
 import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { DocumentsController } from './tutors/documents/documents.controller';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
 import { RefereesController } from './tutors/referees/referees.controller';
 import { SubjectOffersController } from './tutors/subject-offers/subject-offers.controller';
@@ -13,7 +15,6 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { ChatsModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ export class AppModule {
         TutoringDetailsController,
         SubjectOffersController,
         MediaController,
+        DocumentsController,
       );
   }
 }

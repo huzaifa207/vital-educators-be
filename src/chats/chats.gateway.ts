@@ -27,11 +27,12 @@ export class ChatsGateway
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log('Client Connected: ', client.id);
+    this.logger.log('Client DisConnected: ', client.id);
   }
 
   handleConnection(client: any, ...args: any[]) {
-    this.logger.log('Client DisConnected: ', client.id);
+    console.log('Client: ', client.handshake.headers.authorization);
+    this.logger.log('Client Connected: ', client.id);
   }
 
   // Message to Server

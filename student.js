@@ -1,5 +1,14 @@
-// const socket = io('http://localhost:3000');
-const socket = io('https://vital-educator.herokuapp.com/');
+const socket = io('http://localhost:3000', {
+  extraHeaders: {
+    Authorization: 'Bearer asldlajsdlkaj190elaskjd12dasl',
+  },
+});
+
+// const socket = io('https://vital-educator.herokuapp.com/', {
+//   extraHeaders: {
+//     Authorization: 'Bearer asldlajsdlkaj190elaskjd12dasl',
+//   },
+// });
 
 const message = document.getElementById('msg').innerHTML;
 

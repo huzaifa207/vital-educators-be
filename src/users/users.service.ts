@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
+import { Exception } from 'handlebars';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
 import { promisify } from 'util';
@@ -35,16 +36,28 @@ export class UsersService {
 
     const emailToken = nanoid(12);
 
-    const user = await this.prisma.user.create({
+    const newUser = await this.prisma.user.create({
       data: Object.assign(createUserDto, {
         password: hashPassowrd,
         email_token: emailToken,
       }),
     });
 
-    this.sendConfirmationEmail(user.email, user.username, emailToken);
+    if (newUser.role === 'TUTOR') {
+      try {
+        await this.prisma.tutor.create({
+          data: {
+            user: { connect: { id: newUser.id } },
+          },
+        });
+      } catch (error) {
+        throw new Exception("Couldn't create tutor");
+      }
+    }
 
-    return user;
+    // this.sendConfirmationEmail(newUser.email, newUser.username, emailToken);
+
+    return newUser;
   }
 
   async login(loginUserDto: { username: string; password: string }) {
