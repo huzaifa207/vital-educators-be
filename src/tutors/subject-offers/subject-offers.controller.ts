@@ -25,7 +25,7 @@ export class SubjectOffersController {
     return this.subjectOffersService.create(createSubjectOfferDto, +id);
   }
 
-  @Get('all')
+  @Get()
   findAll(@Req() request: Request) {
     const { id: tutorId } = request.currentTutor;
     return this.subjectOffersService.findAll(+tutorId);

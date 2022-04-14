@@ -96,7 +96,7 @@ model SubjectOffer {
   id                Int     @id @default(autoincrement())
   title             String
   primary           Int     @default(0)
-  seconday          Int     @default(0)
+  secondary         Int     @default(0)
   gsce              Int     @default(0)
   higher_education  Int     @default(0)
   casual_learner    Int     @default(0)
