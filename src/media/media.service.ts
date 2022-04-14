@@ -9,4 +9,11 @@ export class MediaService {
       throw new BadRequestException('Invalid file type.');
     });
   }
+
+  async uploadFileToCloudinary(file: Express.Multer.File) {
+    return await this.cloudinary.uploadFile(file).catch((err) => {
+      console.log('error - ', err);
+      throw new BadRequestException('Invalid file type.', err);
+    });
+  }
 }

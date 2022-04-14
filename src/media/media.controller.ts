@@ -59,7 +59,15 @@ export class MediaController {
 
   @Post('/upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadImageSDN(@UploadedFile() file: Express.Multer.File) {
+  uploadImageCDN(@UploadedFile() file: Express.Multer.File) {
     return this.mediaService.uploadImageToCloudinary(file);
+  }
+
+  @Post('/upload-file')
+  // @Header('Content-Type', 'application/pdf')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFileCDN(@UploadedFile() file: Express.Multer.File) {
+    console.log('file imported');
+    return this.mediaService.uploadFileToCloudinary(file);
   }
 }
