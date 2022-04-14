@@ -7,9 +7,12 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { nanoid } from 'nanoid';
+import { MediaService } from './media.service';
 
 @Controller('media')
 export class MediaController {
+  constructor(private mediaService: MediaService) {}
+
   @Post('/image')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -52,5 +55,11 @@ export class MediaController {
     documentPath: string;
   } {
     return { documentPath: file.filename };
+  }
+
+  @Post('/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImageSDN(@UploadedFile() file: Express.Multer.File) {
+    return this.mediaService.uploadImageToCloudinary(file);
   }
 }

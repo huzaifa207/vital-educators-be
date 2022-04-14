@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { ChatsModule } from './chats/chats.module';
+import { CloudinaryModule } from './cloudinay/cloudinay.module';
 import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
@@ -26,9 +27,9 @@ import { UsersModule } from './users/users.module';
     MailModule,
     MediaModule,
     ChatsModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule {
   configure(consumner: MiddlewareConsumer) {
