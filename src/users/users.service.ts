@@ -118,11 +118,19 @@ export class UsersService {
       const hash = (await scrypt(currentPassword, salt, 16)) as Buffer;
 
       if (storedHash !== hash.toString('hex')) {
-        throw new BadRequestException('Invalid password');
+        throw new BadRequestException('Invalid-Password');
       }
-      return 'user is correct';
+      const newHash = await this.passHashGenerator(newPassword);
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { password: newHash },
+      });
+      return { success: true };
     } catch (error) {
-      console.error(error);
+      if (error.message === 'Invalid-Password') {
+        throw new BadRequestException('Invalid-Password');
+      }
+      throw new BadRequestException('Something went wrong');
     }
   }
 

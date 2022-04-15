@@ -89,13 +89,13 @@ export class UsersController {
 
   @Patch('/updatePassword')
   async updatePassword(
-    @Body() body: { currentPassword: string; newPassword: string },
+    @Body() body: { password: string; newPassword: string },
     @Req() request: Request,
   ) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return await this.usersService.updatePassword(
       +id,
-      body.currentPassword,
+      body.password,
       body.newPassword,
     );
   }

@@ -45,7 +45,6 @@ export class TutorsService {
   async findOne(userId: number) {
     try {
       const tutor = await this.prisma.tutor.findUnique({ where: { userId } });
-      console.log('tutor - ', tutor);
       return tutor;
     } catch (err) {
       throw new NotFoundException('Tutor not found');
