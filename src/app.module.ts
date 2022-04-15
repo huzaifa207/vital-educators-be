@@ -41,7 +41,7 @@ export class AppModule {
       .apply(CurrentUserMiddleware)
       .exclude(
         { path: 'user/login', method: RequestMethod.POST },
-        { path: 'user/create', method: RequestMethod.POST },
+        { path: 'user', method: RequestMethod.POST },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
