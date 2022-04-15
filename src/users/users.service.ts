@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  NotAcceptableException,
+  NotAcceptableException
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';

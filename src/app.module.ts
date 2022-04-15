@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import {
+  HttpException,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -39,7 +44,16 @@ import { UsersModule } from './users/users.module';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useValue: new RavenInterceptor(),
+      useValue: new RavenInterceptor({
+        filters: [
+          // Filter exceptions of type HttpException. Ignore those that
+          // have status code of less than 500
+          {
+            type: HttpException,
+            filter: (exception: HttpException) => 500 > exception.getStatus(),
+          },
+        ],
+      }),
     },
   ],
 })
