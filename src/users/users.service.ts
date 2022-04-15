@@ -34,7 +34,7 @@ export class UsersService {
     // const hash = (await scrypt(createUserDto.password, salt, 16)) as Buffer;
     // const hashPassowrd = salt + '.' + hash.toString('hex');
 
-    const hashPassowrd = this.passHashGenerator(createUserDto.password);
+    const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
 
     const newUser = await this.prisma.user.create({

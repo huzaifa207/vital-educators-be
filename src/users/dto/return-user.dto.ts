@@ -17,6 +17,9 @@ export class ReturnUserDto {
   username: string;
 
   @Expose()
+  profile_url: string;
+
+  @Expose()
   address_1: string;
 
   @Expose()
@@ -30,6 +33,15 @@ export class ReturnUserDto {
 
   @Expose()
   postal_code: string;
+
+  @Expose()
+  search_visibility: boolean;
+
+  @Expose()
+  promotion_vital_educator: boolean;
+
+  @Expose()
+  promotion_third_parties: boolean;
 
   @Expose()
   email_approved: boolean;
