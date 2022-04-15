@@ -1,6 +1,7 @@
 require('dotenv').config();
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as Sentry from '@sentry/node';
 import * as cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
 import { join } from 'path';
@@ -33,6 +34,10 @@ async function bootstrap() {
       keys: ['user'],
     }),
   );
+
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+  });
 
   await app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }

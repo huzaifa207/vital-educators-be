@@ -1,6 +1,8 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { RavenInterceptor } from 'nest-raven';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { ChatsModule } from './chats/chats.module';
@@ -34,6 +36,12 @@ import { UsersModule } from './users/users.module';
     CloudinaryModule,
   ],
   controllers: [AppController],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useValue: new RavenInterceptor(),
+    },
+  ],
 })
 export class AppModule {
   configure(consumner: MiddlewareConsumer) {
