@@ -28,11 +28,6 @@ export class UsersService {
     if (userAlreadyExists) {
       throw new NotAcceptableException('User already exists');
     }
-    //   -- Generate a HashPassowrd
-
-    // const salt = randomBytes(8).toString('hex'); // 8 Bytes, 16 character long string
-    // const hash = (await scrypt(createUserDto.password, salt, 16)) as Buffer;
-    // const hashPassowrd = salt + '.' + hash.toString('hex');
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);

@@ -118,4 +118,15 @@ export class UsersController {
   currentUser(@Req() request: Request) {
     return request.currentUser as Prisma.UserCreateManyInput;
   }
+
+  @Post('/send')
+  async sendEmail(
+    @Body() body: { email: string; username: string; emailToken: string },
+  ) {
+    return await this.usersService.sendConfirmationEmail(
+      body.email,
+      body.username,
+      body.emailToken,
+    );
+  }
 }
