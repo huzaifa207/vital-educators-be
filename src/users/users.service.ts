@@ -30,10 +30,11 @@ export class UsersService {
     }
     //   -- Generate a HashPassowrd
 
-    const salt = randomBytes(8).toString('hex'); // 8 Bytes, 16 character long string
-    const hash = (await scrypt(createUserDto.password, salt, 16)) as Buffer;
-    const hashPassowrd = salt + '.' + hash.toString('hex');
+    // const salt = randomBytes(8).toString('hex'); // 8 Bytes, 16 character long string
+    // const hash = (await scrypt(createUserDto.password, salt, 16)) as Buffer;
+    // const hashPassowrd = salt + '.' + hash.toString('hex');
 
+    const hashPassowrd = this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
 
     const newUser = await this.prisma.user.create({
@@ -104,6 +105,27 @@ export class UsersService {
     return this.prisma.user.delete({ where: { id } });
   }
 
+  async updatePassword(
+    userId: number,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    try {
+      const currentUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+      const [salt, storedHash] = currentUser.password.split('.');
+      const hash = (await scrypt(currentPassword, salt, 16)) as Buffer;
+
+      if (storedHash !== hash.toString('hex')) {
+        throw new BadRequestException('Invalid password');
+      }
+      return 'user is correct';
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async sendConfirmationEmail(
     email: string,
     username: string,
@@ -125,5 +147,11 @@ export class UsersService {
     } catch (error) {
       return { approved: false };
     }
+  }
+
+  private async passHashGenerator(password: string): Promise<string> {
+    const salt = randomBytes(8).toString('hex'); // 8 Bytes, 16 character long string
+    const hash = (await scrypt(password, salt, 16)) as Buffer;
+    return salt + '.' + hash.toString('hex');
   }
 }

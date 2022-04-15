@@ -17,6 +17,7 @@ model User {
   email                    String    @unique
   username                 String    @unique
   password                 String
+  profile_url              String    @default("")
   address_1                String
   address_2                String
   phone                    String
@@ -44,7 +45,6 @@ model Student {
 
 model Tutor {
   id             Int             @id @default(autoincrement())
-  profile_url    String          @default("")
   crb_check      Boolean         @default(false)
   skype_id       String          @default("")
   deActivate     Boolean         @default(false)

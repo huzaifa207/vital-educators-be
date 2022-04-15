@@ -13,7 +13,11 @@ import { IChat } from './chat';
 import { ChatsService } from './chats.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class ChatsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
