@@ -19,7 +19,7 @@ export class MediaController {
       storage: diskStorage({
         destination: './uploads/images',
         filename: (req, file, cb) => {
-          const filename: string = file.originalname.split('.')[0] + nanoid(4);
+          const filename: string = nanoid(10);
           const extension: string = file.originalname.substring(
             file.originalname.lastIndexOf('.'),
             file.originalname.length,
