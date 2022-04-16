@@ -128,12 +128,12 @@ export const passwordResetTemplate = (username: string, token: number) => {
                 cellpadding="0"
                 cellspacing="0"
                 width="100%"
-                style="max-width: 600px"
+                style="max-width: 600px;background-color: #e9ecef"
               >
                 <tr>
                   <td align="center" valign="top" style="padding: 36px 24px">
                     <a
-                      href="https://sendgrid.com"
+                      href="https://vital-educators.vercel.app/tutor"
                       target="_blank"
                       style="display: inline-block"
                     >
