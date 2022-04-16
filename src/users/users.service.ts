@@ -66,13 +66,7 @@ export class UsersService {
 
   async login(loginUserDto: { username: string; password: string }) {
     try {
-      let currentUser =
-        (await this.prisma.user.findUnique({
-          where: { email: loginUserDto.username },
-        })) ||
-        (await this.prisma.user.findUnique({
-          where: { username: loginUserDto.username },
-        }));
+      let currentUser = await this.findUser(loginUserDto.username);
 
       const [salt, storedHash] = currentUser.password.split('.');
       const hash = (await scrypt(loginUserDto.password, salt, 16)) as Buffer;
@@ -138,14 +132,6 @@ export class UsersService {
     }
   }
 
-  async sendConfirmationEmail(
-    email: string,
-    username: string,
-    emailToken: string,
-  ) {
-    await this.mailService.sendConfirmationEmail(email, username, emailToken);
-  }
-
   async confirmEmail(emailToken: string) {
     try {
       await this.prisma.user.update({
@@ -161,9 +147,84 @@ export class UsersService {
     }
   }
 
+  async forgotPassword(username: string) {
+    try {
+      let user = await this.findUser(username);
+
+      //generate 4 digit random number
+      const token = Math.floor(1000 + Math.random() * 9000);
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password_reset_token: String(token),
+        },
+      });
+
+      await this.mailService.sendResetPasswordEmail(
+        user.email,
+        user.username,
+        +token,
+      );
+      return { success: true };
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Something went wrong');
+    }
+  }
+
+  async resetPassword(
+    username: string,
+    password: string,
+    passwordToken: number,
+  ) {
+    try {
+      let user = await this.findUser(username);
+      if (parseInt(user.password_reset_token) !== passwordToken) {
+        throw new BadRequestException('Invalid token');
+      }
+      const newHash = await this.passHashGenerator(password);
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: newHash,
+          password_reset_token: null,
+        },
+      });
+      return { success: true };
+    } catch (error) {
+      throw new BadRequestException('Something went wrong');
+    }
+  }
+
+  private async findUser(username: string) {
+    try {
+      let user =
+        (await this.prisma.user.findUnique({
+          where: { email: username },
+        })) ||
+        (await this.prisma.user.findUnique({
+          where: { username: username },
+        }));
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+      return user;
+    } catch (error) {
+      throw new BadRequestException('Something went wrong');
+    }
+  }
+
   private async passHashGenerator(password: string): Promise<string> {
     const salt = randomBytes(8).toString('hex'); // 8 Bytes, 16 character long string
     const hash = (await scrypt(password, salt, 16)) as Buffer;
     return salt + '.' + hash.toString('hex');
+  }
+
+  async sendConfirmationEmail(
+    email: string,
+    username: string,
+    emailToken: string,
+  ) {
+    await this.mailService.sendConfirmationEmail(email, username, emailToken);
   }
 }

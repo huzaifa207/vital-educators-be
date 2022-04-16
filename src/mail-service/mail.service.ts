@@ -1,6 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { emailConfirm } from './templates/email-confirm';
+import { passwordResetTemplate } from './templates/reset-password';
 
 @Injectable()
 export class MailService {
@@ -16,18 +17,12 @@ export class MailService {
     });
   }
 
-  async sendResetPasswordEmail(email: string, username: string, token: string) {
-    const url = 'http://localhost:3000/user/reset-password/' + token;
-    console.log('url = ', url);
+  async sendResetPasswordEmail(email: string, username: string, token: number) {
     await this.mailerService.sendMail({
       to: email,
       text: 'This is from VitalEducators',
       subject: 'Reset your password',
-      template: '/reset-password',
-      context: {
-        username,
-        url,
-      },
+      html: passwordResetTemplate(username, token),
     });
   }
 }

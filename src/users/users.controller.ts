@@ -138,4 +138,20 @@ export class UsersController {
       body.emailToken,
     );
   }
+
+  @Post('/forgot-password')
+  async forgotPassword(@Body() body: { username: string }) {
+    return await this.usersService.forgotPassword(body.username);
+  }
+
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() body: { username: string; password: string; passwordToken: number },
+  ) {
+    return await this.usersService.resetPassword(
+      body.username,
+      body.password,
+      body.passwordToken,
+    );
+  }
 }
