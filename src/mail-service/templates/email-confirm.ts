@@ -293,7 +293,7 @@ export const emailConfirm = (username: string, url: string) => {
                                 style="border-radius: 6px"
                               >
                                 <a
-                                  href="https://sendgrid.com"
+                                  href=${url}
                                   target="_blank"
                                   style="
                                     display: inline-block;
