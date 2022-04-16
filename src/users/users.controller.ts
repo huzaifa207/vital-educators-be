@@ -61,7 +61,11 @@ export class UsersController {
 
   @Post('/signout')
   async logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('jwt');
+    response.clearCookie('jwt', {
+      sameSite: 'none',
+      httpOnly: true,
+      secure: true,
+    });
     return { message: 'Logged out' };
   }
 
