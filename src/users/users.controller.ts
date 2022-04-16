@@ -101,15 +101,15 @@ export class UsersController {
   }
 
   @Delete()
-  remove(@Req() request: Request) {
+  async remove(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return this.usersService.remove(+id);
+    return await this.usersService.remove(+id);
   }
   @Get('/confirm-email/:token')
   async confirmEmail(@Param('token') token: string, @Res() res: Response) {
     const user = await this.usersService.confirmEmail(token);
     if (user.approved) {
-      res.redirect('/');
+      res.redirect('https://vital-educators.vercel.app/tutor');
     }
   }
 

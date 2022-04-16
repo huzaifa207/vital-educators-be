@@ -1,13 +1,14 @@
 import {
   BadRequestException,
   Injectable,
-  NotAcceptableException
+  NotAcceptableException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
 import { Exception } from 'handlebars';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
+import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { promisify } from 'util';
 import { PrismaService } from './../prisma.service';
 
@@ -18,6 +19,7 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private mailService: MailService,
+    private documentsService: DocumentsService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
@@ -41,17 +43,24 @@ export class UsersService {
 
     if (newUser.role === 'TUTOR') {
       try {
-        await this.prisma.tutor.create({
+        const tutor = await this.prisma.tutor.create({
           data: {
             user: { connect: { id: newUser.id } },
           },
         });
+        const doc = {
+          id_card_back: '',
+          id_card_front: '',
+          criminal_record: '',
+        } as Prisma.DocumentsCreateInput;
+
+        await this.documentsService.create(doc, tutor.id);
       } catch (error) {
         throw new Exception("Couldn't create tutor");
       }
     }
 
-    // this.sendConfirmationEmail(newUser.email, newUser.username, emailToken);
+    this.sendConfirmationEmail(newUser.email, newUser.username, emailToken);
 
     return newUser;
   }
@@ -96,8 +105,9 @@ export class UsersService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.user.delete({ where: { id } });
+  async remove(id: number) {
+    await this.prisma.user.delete({ where: { id } });
+    return 'User deleted';
   }
 
   async updatePassword(

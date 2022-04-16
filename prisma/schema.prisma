@@ -105,7 +105,7 @@ model SubjectOffer {
   first_free_lesson Boolean @default(false)
   in_person         Boolean @default(true)
   online            Boolean @default(true)
-  tutor             Tutor   @relation(fields: [tutorId], references: [id])
+  tutor             Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   tutorId           Int
 }
 

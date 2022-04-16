@@ -5,9 +5,9 @@ import { emailConfirm } from './templates/email-confirm';
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
-
+  private domain = 'http://vital-educator.herokuapp.com/';
   async sendConfirmationEmail(email: string, username: string, token: string) {
-    const url = 'http://localhost:3000/user/confirm-email/' + token;
+    const url = this.domain + `confirm-email/${token}`;
     await this.mailerService.sendMail({
       to: email,
       text: 'This is from VitalEducators',
