@@ -64,6 +64,8 @@ export class AppModule {
       .exclude(
         { path: 'user/login', method: RequestMethod.POST },
         { path: 'user', method: RequestMethod.POST },
+        { path: 'user/forgot-password', method: RequestMethod.POST },
+        { path: 'user/reset-password', method: RequestMethod.POST },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
