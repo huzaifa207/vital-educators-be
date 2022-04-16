@@ -113,7 +113,12 @@ export class UsersController {
   async confirmEmail(@Param('token') token: string, @Res() res: Response) {
     const user = await this.usersService.confirmEmail(token);
     if (user.approved) {
-      res.redirect('https://vital-educators.vercel.app/tutor');
+      res.header(
+        'Location',
+        'https://vital-educators.vercel.app/email-verified',
+      );
+      res.statusCode = 301;
+      res.end();
     }
   }
 

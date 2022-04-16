@@ -271,8 +271,8 @@ export const emailConfirm = (username: string, url: string) => {
                   >
                     <p style="margin: 0">
                       Hi ${username}, Tap the button below to confirm your email address. If you
-                      didn't create an account with
-                      <a href="https://blogdesire.com">Paste</a>, you can safely
+                      didn't create an account on
+                      <a href="https://vital-educators.vercel.app">VitalEducators</a>, you can safely
                       delete this email.
                     </p>
                   </td>
