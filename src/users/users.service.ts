@@ -61,7 +61,6 @@ export class UsersService {
     }
 
     this.sendConfirmationEmail(newUser.email, newUser.username, emailToken);
-
     return newUser;
   }
 
