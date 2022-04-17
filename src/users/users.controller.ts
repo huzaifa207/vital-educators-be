@@ -108,11 +108,15 @@ export class UsersController {
     @Req() request: Request,
   ) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return await this.usersService.updatePassword(
+    const { success } = await this.usersService.updatePassword(
       +id,
       body.password,
       body.newPassword,
     );
+    if (success) {
+      await this.tokenService.deleteAllTokens(id);
+    }
+    return success;
   }
 
   @Delete()
