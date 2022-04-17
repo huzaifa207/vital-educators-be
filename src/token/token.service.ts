@@ -76,4 +76,18 @@ export class TokenService {
       throw new ForbiddenException('Invalid token for delete');
     }
   }
+
+  async deleteAllTokens(id: number) {
+    try {
+      await this.prisma.whitelist.deleteMany({
+        where: {
+          id,
+        },
+      });
+      return { ok: true };
+    } catch (error) {
+      console.log(error);
+      throw new ForbiddenException('Invalid token for delete');
+    }
+  }
 }

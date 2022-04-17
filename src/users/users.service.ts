@@ -201,7 +201,7 @@ export class UsersService {
           password_reset_token: null,
         },
       });
-      return { success: true };
+      return { success: true, id: user.id };
     } catch (error) {
       throw new BadRequestException('Something went wrong');
     }

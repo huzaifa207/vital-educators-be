@@ -159,10 +159,14 @@ export class UsersController {
   async resetPassword(
     @Body() body: { username: string; password: string; passwordToken: number },
   ) {
-    return await this.usersService.resetPassword(
+    const { id, success } = await this.usersService.resetPassword(
       body.username,
       body.password,
       body.passwordToken,
     );
+    if (success) {
+      await this.tokenService.deleteAllTokens(id);
+    }
+    return success;
   }
 }
