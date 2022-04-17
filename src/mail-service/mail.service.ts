@@ -6,7 +6,7 @@ import { passwordResetTemplate } from './templates/reset-password';
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
-  private domain = 'http://vital-educator.herokuapp.com/';
+  private domain = 'http://vital-educator.herokuapp.com/user/';
   async sendConfirmationEmail(email: string, username: string, token: string) {
     const url = this.domain + `confirm-email/${token}`;
     await this.mailerService.sendMail({

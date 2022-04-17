@@ -349,8 +349,8 @@ export const passwordResetTemplate = (username: string, token: number) => {
                     "
                   >
                     <p style="margin: 0">
-                      You received this email because you have create a new account. If you didn't create and 
-                      Account then you can safely delete this email.
+                      You received this email because you request for reset password. 
+                      If you didn't send password reset request, please ignore this email. 
                     </p>
                   </td>
                 </tr>
