@@ -9,6 +9,7 @@ import { Exception } from 'handlebars';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
+import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
 import { promisify } from 'util';
 import { PrismaService } from './../prisma.service';
 const scrypt = promisify(_script);
@@ -19,6 +20,7 @@ export class UsersService {
     private prisma: PrismaService,
     private mailService: MailService,
     private documentsService: DocumentsService,
+    private tutoringDetailsService: TutoringDetailsService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
@@ -54,6 +56,16 @@ export class UsersService {
         } as Prisma.DocumentsCreateInput;
 
         await this.documentsService.create(doc, tutor.id);
+
+        const tutoringDetail = {
+          about: '',
+          year_of_experience: 0,
+          teaching_experience: '',
+          approach: '',
+          availability: '',
+        } as Prisma.TutoringDetailCreateInput;
+
+        await this.tutoringDetailsService.create(tutoringDetail, newUser.id);
       } catch (error) {
         throw new Exception("Couldn't create tutor");
       }
@@ -227,7 +239,7 @@ export class UsersService {
     await this.mailService.sendConfirmationEmail(email, username, emailToken);
   }
 
-  // deleteMany() {
-  //   return this.prisma.user.deleteMany({});
-  // }
+  deleteMany() {
+    return this.prisma.user.deleteMany({});
+  }
 }
