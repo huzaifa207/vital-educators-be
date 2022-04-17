@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
 
@@ -19,26 +23,14 @@ export class TokenService {
         expiresIn: '1d',
       },
     );
-    let returnToken: string;
 
-    try {
-      const newToken = await this.prisma.whitelist.create({
-        data: {
-          id,
-          token,
-        },
-      });
-      returnToken = newToken.token;
-    } catch (error) {
-      const currentToken = await this.prisma.whitelist.findFirst({
-        where: {
-          id,
-        },
-      });
-      returnToken = currentToken.token;
-    }
-
-    return returnToken;
+    const newToken = await this.prisma.whitelist.create({
+      data: {
+        id,
+        token,
+      },
+    });
+    return newToken.token;
   }
 
   async verify(token: string) {
@@ -48,39 +40,39 @@ export class TokenService {
       const whitelistToken = await this.prisma.whitelist.findFirst({
         where: {
           id,
+          token,
         },
       });
 
-      console.log({ white: whitelistToken.token, token });
-      if (whitelistToken.token !== token) {
-        throw new Error('comparison');
+      if (!whitelistToken) {
+        throw new NotFoundException('Token not found');
       }
 
       let JWTToken: string = '';
-      // 14400
+
+      // Assign new token to user after 4 hours
+
       if (Math.floor(Date.now() / 1000) - iat > 14400) {
-        if ((await this.deleteToken(id)).ok) {
+        if ((await this.deleteToken(token)).ok) {
           JWTToken = await this.sign(id);
         }
       }
       return { id, token: JWTToken };
     } catch (error) {
-      if (error.message === 'comparison') {
-        throw new ForbiddenException('Please provide latest token');
-      }
       throw new ForbiddenException('Something went wrong');
     }
   }
 
-  async deleteToken(id: number) {
+  async deleteToken(token: string) {
     try {
       await this.prisma.whitelist.delete({
         where: {
-          id,
+          token,
         },
       });
       return { ok: true };
     } catch (error) {
+      console.log(error);
       throw new ForbiddenException('Invalid token for delete');
     }
   }

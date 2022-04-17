@@ -65,8 +65,9 @@ export class UsersController {
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { id } = req.currentUser as Prisma.UserCreateManyInput;
-    await this.tokenService.deleteToken(id);
+    const jwt: string = req.cookies['jwt'];
+    await this.tokenService.deleteToken(jwt);
+
     response.clearCookie('jwt', {
       sameSite: 'none',
       httpOnly: true,

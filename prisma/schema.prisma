@@ -37,8 +37,8 @@ model User {
 }
 
 model whitelist {
-  id        Int       @id @unique
-  token     String
+  id        Int
+  token     String    @id @unique
   createdAt DateTime? @default(now())
 }
 

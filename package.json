@@ -20,7 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:dev": "npx prisma migrate dev --name",
-    "doc": "npx @compodoc/compodoc --config compodoc.json"
+    "doc": "npx @compodoc/compodoc --config compodoc.json",
+    "gen": "npx prisma generate"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",
