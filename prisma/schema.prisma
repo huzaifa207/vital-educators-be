@@ -36,6 +36,12 @@ model User {
   student                  Student?
 }
 
+model whitelist {
+  id        Int       @id @unique
+  token     String
+  createdAt DateTime? @default(now())
+}
+
 model Student {
   id          Int    @id @default(autoincrement())
   profile_pic String

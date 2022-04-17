@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { TokenService } from 'src/token/token.service';
 import { UsersService } from 'src/users/users.service';
 
 declare global {
@@ -16,13 +16,22 @@ declare global {
 export class CurrentUserMiddleware implements NestMiddleware {
   constructor(
     private readonly userService: UsersService,
-    private jwtService: JwtService,
+    private tokenService: TokenService,
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
     try {
       const jwt = req.cookies['jwt'];
-      const { id } = this.jwtService.verify(jwt) || {};
-      console.log('jwt', id, jwt);
+      console.log('jwt', jwt);
+      const { id, token } = await this.tokenService.verify(jwt);
+
+      if (token) {
+        res.cookie('jwt', token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+        });
+      }
+
       if (id) {
         const user = await this.userService.findOne(id);
         req.currentUser = user;

@@ -9,10 +9,10 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
+import { TokenService } from 'src/token/token.service';
 import { ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
 
@@ -20,7 +20,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly tokenService: TokenService, // private jwtService: JwtService,
   ) {}
 
   @Post()
@@ -30,7 +30,8 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = await this.usersService.create(createUserDto);
-    const jwt = await this.jwtService.signAsync({ id: user.id });
+    const jwt = await this.tokenService.sign(user.id);
+
     response.cookie('jwt', jwt, {
       httpOnly: true,
       secure: true,
@@ -50,7 +51,7 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = await this.usersService.login(loginUserDto);
-    const jwt = await this.jwtService.signAsync({ id: user.id });
+    const jwt = await this.tokenService.sign(user.id);
     response.cookie('jwt', jwt, {
       httpOnly: true,
       secure: true,
@@ -60,7 +61,12 @@ export class UsersController {
   }
 
   @Post('/signout')
-  async logout(@Res({ passthrough: true }) response: Response) {
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { id } = req.currentUser as Prisma.UserCreateManyInput;
+    await this.tokenService.deleteToken(id);
     response.clearCookie('jwt', {
       sameSite: 'none',
       httpOnly: true,

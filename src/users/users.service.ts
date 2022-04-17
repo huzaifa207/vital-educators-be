@@ -11,7 +11,6 @@ import { MailService } from 'src/mail-service/mail.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { promisify } from 'util';
 import { PrismaService } from './../prisma.service';
-
 const scrypt = promisify(_script);
 
 @Injectable()
