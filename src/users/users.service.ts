@@ -226,4 +226,8 @@ export class UsersService {
   ) {
     await this.mailService.sendConfirmationEmail(email, username, emailToken);
   }
+
+  // deleteMany() {
+  //   return this.prisma.user.deleteMany({});
+  // }
 }

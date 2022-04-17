@@ -16,6 +16,7 @@ import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { TokenModule } from './token/token.module';
 import { DocumentsController } from './tutors/documents/documents.controller';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
 import { RefereesController } from './tutors/referees/referees.controller';
@@ -25,7 +26,6 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { TokenModule } from './token/token.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({

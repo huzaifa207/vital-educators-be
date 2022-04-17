@@ -76,10 +76,14 @@ export class UsersController {
     return { message: 'Logged out' };
   }
 
-  // @Get()
-  // @Serializer(ReturnUserDto)
+  // @Get('/findall')
   // findAll() {
   //   return this.usersService.findAll();
+  // }
+
+  // @Delete('/all')
+  // deleteMany() {
+  //   return this.usersService.deleteMany();
   // }
 
   @Get(':id')

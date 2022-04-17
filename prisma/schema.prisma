@@ -26,7 +26,7 @@ model User {
   search_visibility        Boolean?  @default(false)
   promotion_vital_educator Boolean?  @default(false)
   promotion_third_parties  Boolean?  @default(false)
-  email_approved           Boolean?
+  email_approved           Boolean?  @default(false)
   email_token              String?   @unique
   password_reset_token     String?   @unique
   createdAt                DateTime? @default(now())
