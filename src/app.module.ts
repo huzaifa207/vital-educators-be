@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  MiddlewareConsumer,
-  Module,
-  RequestMethod,
-} from '@nestjs/common';
+import { HttpException, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -69,6 +64,7 @@ export class AppModule {
         { path: 'user/forgot-password', method: RequestMethod.POST },
         { path: 'user/findall', method: RequestMethod.GET },
         { path: 'user/all', method: RequestMethod.DELETE },
+        { path: 'user/send', method: RequestMethod.POST },
         { path: 'user/reset-password', method: RequestMethod.POST },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },

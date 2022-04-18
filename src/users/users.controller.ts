@@ -1,17 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
+import { EmailType } from 'src/mail-service/mail.utils';
 import { TokenService } from 'src/token/token.service';
 import { ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
@@ -61,10 +52,7 @@ export class UsersController {
   }
 
   @Post('/signout')
-  async logout(
-    @Req() req: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) response: Response) {
     const jwt: string = req.cookies['jwt'];
     await this.tokenService.deleteToken(jwt);
 
@@ -94,10 +82,7 @@ export class UsersController {
 
   @Patch()
   @Serializer(ReturnUserDto)
-  update(
-    @Body() updateUserDto: Prisma.UserUpdateInput,
-    @Req() request: Request,
-  ) {
+  update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.usersService.update(+id, updateUserDto);
   }
@@ -128,10 +113,7 @@ export class UsersController {
   async confirmEmail(@Param('token') token: string, @Res() res: Response) {
     const user = await this.usersService.confirmEmail(token);
     if (user.approved) {
-      res.header(
-        'Location',
-        'https://vital-educators.vercel.app/email-verified',
-      );
+      res.header('Location', 'https://vital-educators.vercel.app/email-verified');
       res.statusCode = 301;
       res.end();
     }
@@ -144,13 +126,12 @@ export class UsersController {
   }
 
   @Post('/send')
-  async sendEmail(
-    @Body() body: { email: string; username: string; emailToken: string },
-  ) {
-    return await this.usersService.sendConfirmationEmail(
+  async sendEmail(@Body() body: { email: string; username: string; emailToken: string }) {
+    return await this.usersService.sendEmail(
       body.email,
       body.username,
-      body.emailToken,
+      EmailType.CONFIRM_EMAIL,
+      +body.emailToken,
     );
   }
 
@@ -160,9 +141,7 @@ export class UsersController {
   }
 
   @Post('/reset-password')
-  async resetPassword(
-    @Body() body: { username: string; password: string; passwordToken: number },
-  ) {
+  async resetPassword(@Body() body: { username: string; password: string; passwordToken: number }) {
     const { id, success } = await this.usersService.resetPassword(
       body.username,
       body.password,
