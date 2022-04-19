@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -17,13 +18,14 @@ export class RefereesController {
   constructor(private readonly refereesService: RefereesService) {}
 
   @Post()
-  create(
-    @Body() createRefereeDto: Prisma.RefereesCreateInput,
-    @Req() request: Request,
-  ) {
+  create(@Body() createRefereeDto: Prisma.RefereesCreateInput, @Req() request: Request) {
+    const user = request.currentUser;
     const { id } = request.currentTutor as Prisma.TutorCreateManyInput;
 
-    return this.refereesService.create(createRefereeDto, +id);
+    if (createRefereeDto.email === user.email) {
+      throw new ForbiddenException('You cannot add yourself as a referee');
+    }
+    return this.refereesService.create(createRefereeDto, +id, user);
   }
 
   @Get()

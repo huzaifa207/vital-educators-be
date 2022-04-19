@@ -1,16 +1,23 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
+import { MailService } from 'src/mail-service/mail.service';
+import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class RefereesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private mailService: MailService,
+  ) {}
 
-  async create(createRefereeDto: Prisma.RefereesCreateInput, tutorId: number) {
+  async create(
+    createRefereeDto: Prisma.RefereesCreateInput,
+    tutorId: number,
+    user: Prisma.UserCreateManyInput,
+  ) {
     // insert data in one to many relation in prisma
     const referee = await this.prisma.referees.create({
       data: {
@@ -18,8 +25,28 @@ export class RefereesService {
         tutor: { connect: { id: tutorId } },
       },
     });
+    const { id } = referee;
+    const token = await this.jwtService.signAsync(
+      { id },
+      {
+        expiresIn: '1d',
+      },
+    );
+    try {
+      console.log(referee.email);
+      await this.mailService.sendMail(
+        new EmailUtility({
+          email: referee.email,
+          username: `${user.first_name} ${user.last_name}`,
+          action: EmailType.REFEREE_REGISTER,
+          token,
+          other: { referee_name: `${referee.first_name} ${referee.last_name}` },
+        }),
+      );
+    } catch (error) {
+      console.log(error);
+    }
 
-    // return the referee
     return referee;
   }
 
@@ -39,11 +66,7 @@ export class RefereesService {
     );
   }
 
-  async update(
-    id: number,
-    tutorId: number,
-    updateRefereeDto: Prisma.RefereesUpdateInput,
-  ) {
+  async update(id: number, tutorId: number, updateRefereeDto: Prisma.RefereesUpdateInput) {
     try {
       if (await this.checkReferee(id, tutorId)) {
         return await this.prisma.referees.update({
@@ -67,10 +90,7 @@ export class RefereesService {
     }
   }
 
-  private async checkReferee(
-    refereeId: number,
-    tutorId: number,
-  ): Promise<Boolean> {
+  private async checkReferee(refereeId: number, tutorId: number): Promise<Boolean> {
     const referee = await this.prisma.referees.findUnique({
       where: { id: refereeId },
     });

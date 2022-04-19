@@ -1,21 +1,23 @@
 import { emailConfirm } from './templates/email-confirm';
+import { EmailReferee } from './templates/email-referee';
 import { passwordResetTemplate } from './templates/reset-password';
-
-const domain = 'http://vital-educator.herokuapp.com/';
 
 export enum EmailType {
   CONFIRM_EMAIL = 'CONFIRM_EMAIL',
   RESET_PASSWORD = 'RESET_PASSWORD',
+  REFEREE_REGISTER = 'REFEREE_REGISTER',
 }
 
 export interface EmailParam {
   [EmailType.CONFIRM_EMAIL]: { username: string; url: string };
   [EmailType.RESET_PASSWORD]: { username: string; token: number };
+  [EmailType.REFEREE_REGISTER]: { username: string; referee_name: string; url: string };
 }
 
 export interface IEmailTemplate {
   [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) => string;
   [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) => string;
+  [EmailType.REFEREE_REGISTER]: (data: EmailParam['REFEREE_REGISTER']) => string;
 }
 
 export abstract class GenericMail {
@@ -35,6 +37,9 @@ export abstract class GenericMail {
 
       [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) =>
         passwordResetTemplate(data.username, data.token),
+
+      [EmailType.REFEREE_REGISTER]: (data: EmailParam['REFEREE_REGISTER']) =>
+        EmailReferee(data.username, data.referee_name, data.url),
     };
   }
   abstract renderTemplate(): string;
@@ -45,8 +50,9 @@ export class EmailUtility extends GenericMail {
     public data: {
       email: string;
       username?: string;
-      token?: number;
       action: EmailType;
+      token?: string | number;
+      other?: { [key: string]: string | number };
     },
   ) {
     super(data.email);
@@ -63,7 +69,16 @@ export class EmailUtility extends GenericMail {
 
     if (this.data.action === EmailType.RESET_PASSWORD) {
       const passTemp = this.templates[EmailType.RESET_PASSWORD];
-      return passTemp({ username: this.data.username, token: this.data.token });
+      return passTemp({ username: this.data.username, token: +this.data.token });
+    }
+
+    if (this.data.action === EmailType.REFEREE_REGISTER) {
+      const refereeTemp = this.templates[EmailType.REFEREE_REGISTER];
+      return refereeTemp({
+        username: this.data.username,
+        referee_name: this.data.other.referee_name as string,
+        url: `${this.domain}confirm-referee/${this.data.token}` as string,
+      });
     }
   };
 }
