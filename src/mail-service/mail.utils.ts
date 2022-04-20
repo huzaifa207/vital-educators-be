@@ -26,26 +26,20 @@ export abstract class GenericMail {
   domain: string;
   templates: IEmailTemplate;
 
-  constructor(email: string) {
+  constructor(email: string, subject: string) {
     this.email = email;
-    this.subject;
+    this.subject = subject;
     this.domain = 'https://vital-educators.vercel.app/';
 
     this.templates = {
-      [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) => {
-        this.subject = 'Comfirm Your Email';
-        return emailConfirm(data.username, data.url);
-      },
+      [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) =>
+        emailConfirm(data.username, data.url),
 
-      [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) => {
-        this.subject = 'Reset Your Password';
-        return passwordResetTemplate(data.username, data.token);
-      },
+      [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) =>
+        passwordResetTemplate(data.username, data.token),
 
-      [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) => {
-        this.subject = 'Review Referee';
-        return EmailReferee(data.username, data.referee_name, data.url);
-      },
+      [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) =>
+        EmailReferee(data.username, data.referee_name, data.url),
     };
   }
   abstract renderTemplate(): string;
@@ -61,7 +55,7 @@ export class EmailUtility extends GenericMail {
       other?: { [key: string]: string | number };
     },
   ) {
-    super(data.email);
+    super(data.email, data.action);
   }
 
   renderTemplate = () => {
