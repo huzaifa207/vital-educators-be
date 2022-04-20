@@ -69,7 +69,7 @@ export class AppModule {
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
-        { path: 'referee/add-review/:token', method: RequestMethod.POST },
+        { path: 'referee/review/:token', method: RequestMethod.POST },
       )
       .forRoutes(
         UsersController,
