@@ -38,7 +38,7 @@ export class TutorsModule {
     consumer
       .apply(CurrentTutorMiddleware)
       .exclude({ path: 'tutoring-detail/:id', method: RequestMethod.GET })
-      .exclude({ path: 'referee/add-review/:token', method: RequestMethod.POST })
+      .exclude({ path: 'referee/review/:token', method: RequestMethod.POST })
       .forRoutes(
         RefereesController,
         QualificationsController,

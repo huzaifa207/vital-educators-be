@@ -19,6 +19,15 @@ export class RefereesService {
     user: Prisma.UserCreateManyInput,
   ) {
     // insert data in one to many relation in prisma
+    const refereeAlreadyExist = await this.prisma.referees.findMany({
+      where: {
+        email: createRefereeDto.email,
+      },
+    });
+    if (refereeAlreadyExist.length > 0) {
+      throw new BadRequestException('Referee Already Exist');
+    }
+
     const referee = await this.prisma.referees.create({
       data: {
         ...createRefereeDto,
@@ -40,7 +49,7 @@ export class RefereesService {
         token,
         other: { referee_name: `${referee.first_name} ${referee.last_name}` },
       });
-      let email = await this.mailService.sendMail(
+      await this.mailService.sendMail(
         new EmailUtility({
           email: referee.email,
           username: `${user.first_name} ${user.last_name}`,
@@ -49,9 +58,8 @@ export class RefereesService {
           other: { referee_name: `${referee.first_name} ${referee.last_name}` },
         }),
       );
-      console.log(email);
     } catch (error) {
-      console.log(error);
+      throw new BadRequestException(error);
     }
 
     return referee;
@@ -114,6 +122,7 @@ export class RefereesService {
     let refereeId: number;
     try {
       const { id } = await this.jwtService.verify(token);
+      console.log('id');
       refereeId = id;
     } catch (error) {
       console.log('token error', error);
