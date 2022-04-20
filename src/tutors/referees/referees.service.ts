@@ -36,7 +36,7 @@ export class RefereesService {
       console.log({
         email: referee.email,
         username: `${user.first_name} ${user.last_name}`,
-        action: EmailType.REFEREE_REGISTER,
+        action: EmailType.REFEREE_REVIEW,
         token,
         other: { referee_name: `${referee.first_name} ${referee.last_name}` },
       });
@@ -44,7 +44,7 @@ export class RefereesService {
         new EmailUtility({
           email: referee.email,
           username: `${user.first_name} ${user.last_name}`,
-          action: EmailType.REFEREE_REGISTER,
+          action: EmailType.REFEREE_REVIEW,
           token,
           other: { referee_name: `${referee.first_name} ${referee.last_name}` },
         }),

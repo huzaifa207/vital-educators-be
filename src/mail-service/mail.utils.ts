@@ -5,19 +5,19 @@ import { passwordResetTemplate } from './templates/reset-password';
 export enum EmailType {
   CONFIRM_EMAIL = 'CONFIRM_EMAIL',
   RESET_PASSWORD = 'RESET_PASSWORD',
-  REFEREE_REGISTER = 'REFEREE_REGISTER',
+  REFEREE_REVIEW = 'REFEREE_REVIEW',
 }
 
 export interface EmailParam {
   [EmailType.CONFIRM_EMAIL]: { username: string; url: string };
   [EmailType.RESET_PASSWORD]: { username: string; token: number };
-  [EmailType.REFEREE_REGISTER]: { username: string; referee_name: string; url: string };
+  [EmailType.REFEREE_REVIEW]: { username: string; referee_name: string; url: string };
 }
 
 export interface IEmailTemplate {
   [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) => string;
   [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) => string;
-  [EmailType.REFEREE_REGISTER]: (data: EmailParam['REFEREE_REGISTER']) => string;
+  [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) => string;
 }
 
 export abstract class GenericMail {
@@ -29,7 +29,7 @@ export abstract class GenericMail {
   constructor(email: string) {
     this.email = email;
     this.subject;
-    this.domain = 'http://vital-educator.herokuapp.com/';
+    this.domain = 'https://vital-educators.vercel.app/';
 
     this.templates = {
       [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) => {
@@ -42,7 +42,7 @@ export abstract class GenericMail {
         return passwordResetTemplate(data.username, data.token);
       },
 
-      [EmailType.REFEREE_REGISTER]: (data: EmailParam['REFEREE_REGISTER']) => {
+      [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) => {
         this.subject = 'Review Referee';
         return EmailReferee(data.username, data.referee_name, data.url);
       },
@@ -69,7 +69,7 @@ export class EmailUtility extends GenericMail {
       const emailTemp = this.templates[EmailType.CONFIRM_EMAIL];
       return emailTemp({
         username: this.data.username,
-        url: `${this.domain}/confirm-email/${this.data.token}`,
+        url: `${this.domain}email-verified/${this.data.token}`,
       });
     }
 
@@ -78,12 +78,12 @@ export class EmailUtility extends GenericMail {
       return passTemp({ username: this.data.username, token: +this.data.token });
     }
 
-    if (this.data.action === EmailType.REFEREE_REGISTER) {
-      const refereeTemp = this.templates[EmailType.REFEREE_REGISTER];
+    if (this.data.action === EmailType.REFEREE_REVIEW) {
+      const refereeTemp = this.templates[EmailType.REFEREE_REVIEW];
       return refereeTemp({
         username: this.data.username,
         referee_name: this.data.other.referee_name as string,
-        url: `${this.domain}confirm-referee/${this.data.token}` as string,
+        url: `${this.domain}referee-review?t=${this.data.token}` as string,
       });
     }
   };
