@@ -54,4 +54,12 @@ export class RefereesController {
     const { id: tutorId } = request.currentTutor as Prisma.TutorCreateManyInput;
     return this.refereesService.remove(+id, +tutorId);
   }
+
+  @Post('/add-review/:token')
+  async verify(
+    @Param('token') token: string,
+    @Body() refereesReviewsCreateInput: Prisma.RefereesReviewsCreateInput,
+  ) {
+    return this.refereesService.addRefereeReviw(token, refereesReviewsCreateInput);
+  }
 }

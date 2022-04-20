@@ -33,8 +33,14 @@ export class RefereesService {
       },
     );
     try {
-      console.log(referee.email);
-      await this.mailService.sendMail(
+      console.log({
+        email: referee.email,
+        username: `${user.first_name} ${user.last_name}`,
+        action: EmailType.REFEREE_REGISTER,
+        token,
+        other: { referee_name: `${referee.first_name} ${referee.last_name}` },
+      });
+      let email = await this.mailService.sendMail(
         new EmailUtility({
           email: referee.email,
           username: `${user.first_name} ${user.last_name}`,
@@ -43,6 +49,7 @@ export class RefereesService {
           other: { referee_name: `${referee.first_name} ${referee.last_name}` },
         }),
       );
+      console.log(email);
     } catch (error) {
       console.log(error);
     }
@@ -98,5 +105,36 @@ export class RefereesService {
       throw new ForbiddenException('You are not the owner of this referee');
     }
     return true;
+  }
+
+  async addRefereeReviw(
+    token: string,
+    refereesReviewsCreateInput: Prisma.RefereesReviewsCreateInput,
+  ) {
+    let refereeId: number;
+    try {
+      const { id } = await this.jwtService.verify(token);
+      refereeId = id;
+    } catch (error) {
+      console.log('token error', error);
+      throw new ForbiddenException('Please Enter Valid Token');
+    }
+    try {
+      const review = await this.prisma.refereesReviews.create({
+        data: {
+          ...refereesReviewsCreateInput,
+          referees: { connect: { id: refereeId } },
+        },
+      });
+      if (!review) {
+        throw new ForbiddenException('Please Enter Valid Data');
+      }
+      return 'Review Added successfully';
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        throw new ForbiddenException('Please Enter Valid Data');
+      }
+      throw new ForbiddenException('Already Reviewed');
+    }
   }
 }

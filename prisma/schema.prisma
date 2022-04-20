@@ -66,14 +66,24 @@ model Tutor {
 }
 
 model Referees {
-  id         Int          @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String       @unique
-  phone      String
-  relation   RelationType @default(OTHER)
-  tutor      Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId    Int
+  id              Int              @id @default(autoincrement())
+  first_name      String
+  last_name       String
+  email           String           @unique
+  phone           String
+  relation        RelationType     @default(OTHER)
+  tutor           Tutor            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId         Int
+  RefereesReviews RefereesReviews?
+}
+
+model RefereesReviews {
+  referees               Referees @relation(fields: [refereeId], references: [id], onDelete: Cascade)
+  refereeId              Int      @unique
+  reliability_rating     Int
+  trust_rating           Int
+  professionalism_rating Int
+  description            String
 }
 
 model Qualification {

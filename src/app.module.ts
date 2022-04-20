@@ -47,7 +47,7 @@ import { UsersModule } from './users/users.module';
           // have status code of less than 500
           {
             type: HttpException,
-            filter: (exception: HttpException) => 500 > exception.getStatus(),
+            filter: (exception: HttpException) => 500 >= exception.getStatus(),
           },
         ],
       }),
@@ -69,6 +69,7 @@ export class AppModule {
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
+        { path: 'referee/add-review/:token', method: RequestMethod.POST },
       )
       .forRoutes(
         UsersController,

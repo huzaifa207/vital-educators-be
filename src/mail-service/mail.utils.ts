@@ -28,18 +28,24 @@ export abstract class GenericMail {
 
   constructor(email: string) {
     this.email = email;
-    this.subject = 'Confirm your email';
+    this.subject;
     this.domain = 'http://vital-educator.herokuapp.com/';
 
     this.templates = {
-      [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) =>
-        emailConfirm(data.username, data.url),
+      [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) => {
+        this.subject = 'Comfirm Your Email';
+        return emailConfirm(data.username, data.url);
+      },
 
-      [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) =>
-        passwordResetTemplate(data.username, data.token),
+      [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) => {
+        this.subject = 'Reset Your Password';
+        return passwordResetTemplate(data.username, data.token);
+      },
 
-      [EmailType.REFEREE_REGISTER]: (data: EmailParam['REFEREE_REGISTER']) =>
-        EmailReferee(data.username, data.referee_name, data.url),
+      [EmailType.REFEREE_REGISTER]: (data: EmailParam['REFEREE_REGISTER']) => {
+        this.subject = 'Review Referee';
+        return EmailReferee(data.username, data.referee_name, data.url);
+      },
     };
   }
   abstract renderTemplate(): string;

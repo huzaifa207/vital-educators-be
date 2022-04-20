@@ -217,7 +217,7 @@ export class UsersService {
   }
 
   async sendEmail(email: string, username: string, action: EmailType, token?: number) {
-    await this.mailService.sendMail(new EmailUtility({ email, username, token, action }));
+    await this.mailService.sendMail(new EmailUtility({ email, username, action, token }));
   }
 
   deleteMany() {
