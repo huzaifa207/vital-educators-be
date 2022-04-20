@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  MiddlewareConsumer,
-  Module,
-  RequestMethod,
-} from '@nestjs/common';
+import { HttpException, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -16,6 +11,7 @@ import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { TokenModule } from './token/token.module';
 import { DocumentsController } from './tutors/documents/documents.controller';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
 import { RefereesController } from './tutors/referees/referees.controller';
@@ -25,7 +21,6 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { TokenModule } from './token/token.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -52,7 +47,7 @@ import { TokenModule } from './token/token.module';
           // have status code of less than 500
           {
             type: HttpException,
-            filter: (exception: HttpException) => 500 > exception.getStatus(),
+            filter: (exception: HttpException) => 500 >= exception.getStatus(),
           },
         ],
       }),
@@ -67,10 +62,14 @@ export class AppModule {
         { path: 'user/login', method: RequestMethod.POST },
         { path: 'user', method: RequestMethod.POST },
         { path: 'user/forgot-password', method: RequestMethod.POST },
+        { path: 'user/findall', method: RequestMethod.GET },
+        { path: 'user/all', method: RequestMethod.DELETE },
+        { path: 'user/send', method: RequestMethod.POST },
         { path: 'user/reset-password', method: RequestMethod.POST },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
+        { path: 'referee/add-review/:token', method: RequestMethod.POST },
       )
       .forRoutes(
         UsersController,

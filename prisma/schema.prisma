@@ -26,7 +26,7 @@ model User {
   search_visibility        Boolean?  @default(false)
   promotion_vital_educator Boolean?  @default(false)
   promotion_third_parties  Boolean?  @default(false)
-  email_approved           Boolean?
+  email_approved           Boolean?  @default(false)
   email_token              String?   @unique
   password_reset_token     String?   @unique
   createdAt                DateTime? @default(now())
@@ -66,14 +66,24 @@ model Tutor {
 }
 
 model Referees {
-  id         Int          @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String       @unique
-  phone      String
-  relation   RelationType @default(OTHER)
-  tutor      Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId    Int
+  id              Int              @id @default(autoincrement())
+  first_name      String
+  last_name       String
+  email           String           @unique
+  phone           String
+  relation        RelationType     @default(OTHER)
+  tutor           Tutor            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId         Int
+  RefereesReviews RefereesReviews?
+}
+
+model RefereesReviews {
+  referees               Referees @relation(fields: [refereeId], references: [id], onDelete: Cascade)
+  refereeId              Int      @unique
+  reliability_rating     Int
+  trust_rating           Int
+  professionalism_rating Int
+  description            String
 }
 
 model Qualification {

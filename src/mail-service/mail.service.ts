@@ -1,28 +1,19 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { emailConfirm } from './templates/email-confirm';
-import { passwordResetTemplate } from './templates/reset-password';
+import { GenericMail } from './mail.utils';
 
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
-  private domain = 'http://vital-educator.herokuapp.com/';
-  async sendConfirmationEmail(email: string, username: string, token: string) {
-    const url = this.domain + `confirm-email/${token}`;
-    await this.mailerService.sendMail({
-      to: email,
-      text: 'This is from VitalEducators',
-      subject: 'Welcome to Vital Educators! Confirm your email',
-      html: emailConfirm(username, url),
-    });
-  }
+  private domain = 'http://vital-educator.herokuapp.com/user/';
 
-  async sendResetPasswordEmail(email: string, username: string, token: number) {
+  async sendMail(mail: GenericMail) {
+    const { email, subject, renderTemplate } = mail;
     await this.mailerService.sendMail({
       to: email,
       text: 'This is from VitalEducators',
-      subject: 'Reset your password',
-      html: passwordResetTemplate(username, token),
+      subject: subject,
+      html: renderTemplate(),
     });
   }
 }

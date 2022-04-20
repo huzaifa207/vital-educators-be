@@ -1,14 +1,12 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotAcceptableException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotAcceptableException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
 import { Exception } from 'handlebars';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
+import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
+import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
 import { promisify } from 'util';
 import { PrismaService } from './../prisma.service';
 const scrypt = promisify(_script);
@@ -19,6 +17,7 @@ export class UsersService {
     private prisma: PrismaService,
     private mailService: MailService,
     private documentsService: DocumentsService,
+    private tutoringDetailsService: TutoringDetailsService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
@@ -53,13 +52,23 @@ export class UsersService {
           criminal_record: '',
         } as Prisma.DocumentsCreateInput;
 
-        await this.documentsService.create(doc, tutor.id);
+        await this.documentsService.create(doc, +tutor.id);
+
+        const tutoringDetail = {
+          about: '',
+          year_of_experience: 0,
+          teaching_experience: '',
+          approach: '',
+          availability: '',
+        } as Prisma.TutoringDetailCreateInput;
+
+        await this.tutoringDetailsService.create(tutoringDetail, +tutor.id);
       } catch (error) {
         throw new Exception("Couldn't create tutor");
       }
     }
 
-    this.sendConfirmationEmail(newUser.email, newUser.username, emailToken);
+    this.sendEmail(newUser.email, newUser.username, EmailType.CONFIRM_EMAIL, +emailToken);
     return newUser;
   }
 
@@ -102,11 +111,7 @@ export class UsersService {
     return 'User deleted';
   }
 
-  async updatePassword(
-    userId: number,
-    currentPassword: string,
-    newPassword: string,
-  ) {
+  async updatePassword(userId: number, currentPassword: string, newPassword: string) {
     try {
       const currentUser = await this.prisma.user.findUnique({
         where: { id: userId },
@@ -159,11 +164,7 @@ export class UsersService {
         },
       });
 
-      await this.mailService.sendResetPasswordEmail(
-        user.email,
-        user.username,
-        +token,
-      );
+      await this.sendEmail(user.email, user.username, EmailType.RESET_PASSWORD, +token);
       return { success: true };
     } catch (error) {
       console.log(error);
@@ -171,11 +172,7 @@ export class UsersService {
     }
   }
 
-  async resetPassword(
-    username: string,
-    password: string,
-    passwordToken: number,
-  ) {
+  async resetPassword(username: string, password: string, passwordToken: number) {
     try {
       let user = await this.findUser(username);
       if (parseInt(user.password_reset_token) !== passwordToken) {
@@ -189,7 +186,7 @@ export class UsersService {
           password_reset_token: null,
         },
       });
-      return { success: true };
+      return { success: true, id: user.id };
     } catch (error) {
       throw new BadRequestException('Something went wrong');
     }
@@ -219,11 +216,11 @@ export class UsersService {
     return salt + '.' + hash.toString('hex');
   }
 
-  async sendConfirmationEmail(
-    email: string,
-    username: string,
-    emailToken: string,
-  ) {
-    await this.mailService.sendConfirmationEmail(email, username, emailToken);
+  async sendEmail(email: string, username: string, action: EmailType, token?: number) {
+    await this.mailService.sendMail(new EmailUtility({ email, username, action, token }));
+  }
+
+  deleteMany() {
+    return this.prisma.user.deleteMany({});
   }
 }

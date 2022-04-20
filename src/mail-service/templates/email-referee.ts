@@ -1,4 +1,4 @@
-export const passwordResetTemplate = (username: string, token: number) => {
+export const EmailReferee = (username: string, referee_name: string, url: string) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -175,7 +175,8 @@ export const passwordResetTemplate = (username: string, token: number) => {
                 cellpadding="0"
                 cellspacing="0"
                 width="100%"
-                style="max-width: 600px"
+                style="max-width: 600px;"
+                     
               >
                 <tr>
                   <td
@@ -195,13 +196,17 @@ export const passwordResetTemplate = (username: string, token: number) => {
                         letter-spacing: -1px;
                         line-height: 48px;
                         text-align: center;
+                        margin-top:-20px;
                       "
                     >
-                      Reset Password
+                      First Tutor
                     </h1>
+                  <hr />
                   </td>
                 </tr>
+              
               </table>
+              
               <!--[if (gte mso 9)|(IE)]>
             </td>
             </tr>
@@ -242,15 +247,17 @@ export const passwordResetTemplate = (username: string, token: number) => {
                       line-height: 24px;
                     "
                   >
-                    <p style="margin: 0;text-align:center">
-                      Hi ${username}, Use below OTP Code to reset your password
-                     
+                    <p style="margin: 0;">
+                      Dear ${referee_name},
                     </p>
+                 
+                    <p>You have been selected as a referee by ${username} as part of an ID checking system implemented by First Tutors. You are kindly requested to please complete a a short on-line form which will confirm ${username}'s identity and allow them to use First Tutors to offer their private tuition services. It is a short form and should take no longer than 2 minutes to complete. Please note: the completed reference form will be passed on to any clients who choose ${username} as their tutor, but your contact information will remain confidential. </p>
+                    <p>The reference form can be accessed <a href="#">here.</a> </p>
                   </td>
                 </tr>
                 <!-- end copy -->
 
-                <!-- start button -->
+                 <!-- start button -->
                 <tr>
                   <td align="left" bgcolor="#ffffff">
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -263,7 +270,21 @@ export const passwordResetTemplate = (username: string, token: number) => {
                                 bgcolor="#1a82e2"
                                 style="border-radius: 6px"
                               >
-                                
+                                <a
+                                  href=${url}
+                                  target="_blank"
+                                  style="
+                                    display: inline-block;
+                                    padding: 16px 36px;
+                                    font-family: 'Source Sans Pro', Helvetica, Arial,
+                                      sans-serif;
+                                    font-size: 16px;
+                                    color: #ffffff;
+                                    text-decoration: none;
+                                    border-radius: 6px;
+                                  "
+                                  >Fill The Form</a
+                                >
                               </td>
                             </tr>
                           </table>
@@ -274,22 +295,7 @@ export const passwordResetTemplate = (username: string, token: number) => {
                 </tr>
                 <!-- end button -->
 
-                <!-- start copy -->
-                <tr>
-                  <td
-                    align="left"
-                    bgcolor="#ffffff"
-                    style="
-                      padding: 14px;
-                      font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-                      font-size: 16px;
-                      line-height: 14px;
-                    "
-                  >
-                    <h1 style="text-align:center;letter-spacing:.5rem;">${token}</h1>
-                  </td>
-                </tr>
-                <!-- end copy -->
+                
 
                 <!-- start copy -->
                 <tr>
@@ -304,9 +310,26 @@ export const passwordResetTemplate = (username: string, token: number) => {
                       border-bottom: 3px solid #d4dadf;
                     "
                   >
+                      <p style="margin: 0">
+                      This link will remain <strong>active for the next 30 days</strong> for you to complete at your convenience. If you do not wish to act as a referee you may use the same page to let us know.
+                    </p>
+                    <br/>
+                     <p style="margin: 0">
+                      On behalf of ${username} we thank you for your time. Kind Regards
+                    </p>
+                    <br/>
+                    <p style="margin: 0">
+                      Kind Regards
+                    </p>
+                   
+                    <a href="#">
+                      https://vital-educators.vercel.app
+                    </a>
+                    <br/><br/>
                     <p style="margin: 0">
                       Cheers
                     </p>
+                    
                   </td>
                 </tr>
                 <!-- end copy -->
@@ -349,8 +372,8 @@ export const passwordResetTemplate = (username: string, token: number) => {
                     "
                   >
                     <p style="margin: 0">
-                      You received this email because you request for reset password. 
-                      If you didn't send password reset request, please ignore this email. 
+                      You received this email because you request for a referee.
+                      If you don't know this person then you can ignore this email. 
                     </p>
                   </td>
                 </tr>

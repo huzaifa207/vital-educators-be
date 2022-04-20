@@ -4,6 +4,7 @@ import { MailModule } from 'src/mail-service/mail.module';
 import { TokenModule } from 'src/token/token.module';
 import { TokenService } from 'src/token/token.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
+import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { PrismaService } from './../prisma.service';
 import { UsersController } from './users.controller';
@@ -24,6 +25,7 @@ import { UsersService } from './users.service';
     PrismaService,
     TokenService,
     DocumentsService,
+    TutoringDetailsService,
   ],
   exports: [UsersService],
 })
