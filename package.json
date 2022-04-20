@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:dev": "npx prisma migrate dev --name",
     "doc": "npx @compodoc/compodoc --config compodoc.json",
-    "gen": "npx prisma generate"
+    "gen": "npx prisma generate",
+    "deploy": "git push heroku main"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",
