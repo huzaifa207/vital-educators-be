@@ -19,6 +19,14 @@ export class RefereesService {
     user: Prisma.UserCreateManyInput,
   ) {
     // insert data in one to many relation in prisma
+    const isUserWithEmailExist = await this.prisma.user.findUnique({
+      where: { email: createRefereeDto.email },
+    });
+
+    if (!isUserWithEmailExist) {
+      throw new BadRequestException('Tutor with this email does not exist');
+    }
+
     const refereeAlreadyExist = await this.prisma.referees.findMany({
       where: {
         email: createRefereeDto.email,
@@ -42,14 +50,7 @@ export class RefereesService {
       },
     );
     try {
-      console.log({
-        email: referee.email,
-        username: `${user.first_name} ${user.last_name}`,
-        action: EmailType.REFEREE_REVIEW,
-        token,
-        other: { referee_name: `${referee.first_name} ${referee.last_name}` },
-      });
-      await this.mailService.sendMail(
+      this.mailService.sendMail(
         new EmailUtility({
           email: referee.email,
           username: `${user.first_name} ${user.last_name}`,

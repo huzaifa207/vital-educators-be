@@ -252,7 +252,7 @@ export const EmailReferee = (username: string, referee_name: string, url: string
                     </p>
                  
                     <p>You have been selected as a referee by ${username} as part of an ID checking system implemented by First Tutors. You are kindly requested to please complete a a short on-line form which will confirm ${username}'s identity and allow them to use First Tutors to offer their private tuition services. It is a short form and should take no longer than 2 minutes to complete. Please note: the completed reference form will be passed on to any clients who choose ${username} as their tutor, but your contact information will remain confidential. </p>
-                    <p>The reference form can be accessed <a href="#">here.</a> </p>
+                    <p>The reference form can be accessed <a href=${url}>here.</a> </p>
                   </td>
                 </tr>
                 <!-- end copy -->
