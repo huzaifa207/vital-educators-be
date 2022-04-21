@@ -1,16 +1,20 @@
 import { HttpException, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { RavenInterceptor } from 'nest-raven';
 import { join } from 'path';
 import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { ChatsModule } from './chats/chats.module';
 import { CloudinaryModule } from './cloudinay/cloudinay.module';
 import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { TaskSchadularsModule } from './task-schadulars/task-schadulars.module';
+import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
 import { TokenModule } from './token/token.module';
 import { DocumentsController } from './tutors/documents/documents.controller';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
@@ -30,15 +34,19 @@ import { UsersModule } from './users/users.module';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
+    EventEmitterModule.forRoot(),
     TutorsModule,
     MailModule,
     MediaModule,
     ChatsModule,
     CloudinaryModule,
     TokenModule,
+    TaskSchadularsModule,
   ],
   controllers: [AppController],
   providers: [
+    AppService,
+    TaskSchadularsService,
     {
       provide: APP_INTERCEPTOR,
       useValue: new RavenInterceptor({
@@ -70,6 +78,7 @@ export class AppModule {
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
         { path: 'referee/review/:token', method: RequestMethod.POST },
+        { path: '/', method: RequestMethod.POST },
       )
       .forRoutes(
         UsersController,

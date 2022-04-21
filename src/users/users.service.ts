@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, NotAcceptableException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
-import { Exception } from 'handlebars';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
@@ -64,7 +63,7 @@ export class UsersService {
 
         await this.tutoringDetailsService.create(tutoringDetail, +tutor.id);
       } catch (error) {
-        throw new Exception("Couldn't create tutor");
+        throw new BadRequestException("Couldn't create tutor");
       }
     }
 
