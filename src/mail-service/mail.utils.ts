@@ -55,7 +55,7 @@ export class EmailUtility extends GenericMail {
       other?: { [key: string]: string | number };
     },
   ) {
-    super(data.email, data.action);
+    super(data.email, data.action.replace('_', ' '));
   }
 
   renderTemplate = () => {
