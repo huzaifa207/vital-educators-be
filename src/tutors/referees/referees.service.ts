@@ -18,12 +18,11 @@ export class RefereesService {
     tutorId: number,
     user: Prisma.UserCreateManyInput,
   ) {
-    // insert data in one to many relation in prisma
-    const isUserWithEmailExist = await this.prisma.user.findUnique({
-      where: { email: createRefereeDto.email },
+    const isTutorWithEmailExist = await this.prisma.tutor.findMany({
+      where: { user: { email: createRefereeDto.email } },
     });
 
-    if (!isUserWithEmailExist) {
+    if (isTutorWithEmailExist.length !== 1) {
       throw new BadRequestException('Tutor with this email does not exist');
     }
 
