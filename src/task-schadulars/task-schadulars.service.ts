@@ -1,13 +1,49 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { Prisma } from '@prisma/client';
 import { CronJob } from 'cron';
 import { UserDto } from 'src/userDto';
+import { TutorsService } from './../tutors/tutors.service';
 
 @Injectable()
 export class TaskSchadularsService {
-  constructor(private schedulerRegistry: SchedulerRegistry, private eventEmitter: EventEmitter2) {}
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private readonly tutorsService: TutorsService,
+  ) {}
   private readonly logger = new Logger('AppService');
+
+  async newTutorSchedule(tutor: Prisma.TutorCreateManyInput) {
+    const tutorJob = new CronJob(CronExpression.EVERY_DAY_AT_9PM, async () => {
+      const { documents, referees, subjects, tutoringDetail } = await this.tutorsService.tutorStats(
+        tutor.id,
+      );
+      let tutorReminder: string[] = [];
+      if (referees.length === 0) {
+        tutorReminder.push('Referees Information');
+      }
+
+      if (subjects.length === 0) {
+        tutorReminder.push('Subjects Information');
+      }
+
+      const { about, approach, availability, teaching_experience, year_of_experience } =
+        tutoringDetail;
+      if (!about || !approach || !availability || !teaching_experience || !year_of_experience) {
+        tutorReminder.push('Tutoring Details Information');
+      }
+
+      if (documents.length === 1) {
+        const { id_card_back, id_card_front, criminal_record } = documents[1];
+        if (!id_card_back || !id_card_front || !criminal_record) {
+          tutorReminder.push('Government Documents Information');
+        }
+      }
+      if (tutorReminder.length > 0) {
+      }
+    });
+    tutorJob.start();
+  }
 
   emitt(user: UserDto) {
     this.userCreatedSchedular(user);

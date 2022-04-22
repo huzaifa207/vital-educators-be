@@ -127,7 +127,7 @@ export class UsersController {
 
   @Post('/send')
   async sendEmail(@Body() body: { email: string; username: string; emailToken: string }) {
-    return await this.usersService.sendEmail(
+    await this.usersService.sendEmail(
       body.email,
       body.username,
       EmailType.CONFIRM_EMAIL,

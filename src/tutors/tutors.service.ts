@@ -50,4 +50,23 @@ export class TutorsService {
       throw new NotFoundException('Tutor not found');
     }
   }
+
+  async tutorStats(tutorId: number) {
+    return {
+      referees: await this.prisma.referees.findMany({
+        where: { tutorId },
+      }),
+
+      subjects: await this.prisma.subjectOffer.findMany({
+        where: { tutorId },
+      }),
+
+      documents: await this.prisma.documents.findMany({
+        where: { tutorId },
+      }),
+      tutoringDetail: await this.prisma.tutoringDetail.findUnique({
+        where: { tutorId },
+      }),
+    };
+  }
 }
