@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/mail-service/mail.module';
+import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { TokenModule } from 'src/token/token.module';
 import { TokenService } from 'src/token/token.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
@@ -26,6 +27,7 @@ import { UsersService } from './users.service';
     TokenService,
     DocumentsService,
     TutoringDetailsService,
+    TaskSchadularsService,
   ],
   exports: [UsersService],
 })

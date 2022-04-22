@@ -1,23 +1,27 @@
 import { emailConfirm } from './templates/email-confirm';
 import { EmailReferee } from './templates/email-referee';
+import { emailRemainder } from './templates/email-remainder';
 import { passwordResetTemplate } from './templates/reset-password';
 
 export enum EmailType {
   CONFIRM_EMAIL = 'CONFIRM_EMAIL',
   RESET_PASSWORD = 'RESET_PASSWORD',
   REFEREE_REVIEW = 'REFEREE_REVIEW',
+  REMINDER = 'REMINDER',
 }
 
 export interface EmailParam {
   [EmailType.CONFIRM_EMAIL]: { username: string; url: string };
   [EmailType.RESET_PASSWORD]: { username: string; token: number };
   [EmailType.REFEREE_REVIEW]: { username: string; referee_name: string; url: string };
+  [EmailType.REMINDER]: { username: string; list: string; url: string };
 }
 
 export interface IEmailTemplate {
   [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) => string;
   [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) => string;
   [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) => string;
+  [EmailType.REMINDER]: (data: EmailParam['REMINDER']) => string;
 }
 
 export abstract class GenericMail {
@@ -40,6 +44,9 @@ export abstract class GenericMail {
 
       [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) =>
         EmailReferee(data.username, data.referee_name, data.url),
+
+      [EmailType.REMINDER]: (data: EmailParam['REMINDER']) =>
+        emailRemainder(data.username, data.list, data.url),
     };
   }
   abstract renderTemplate(): string;
@@ -63,7 +70,7 @@ export class EmailUtility extends GenericMail {
       const emailTemp = this.templates[EmailType.CONFIRM_EMAIL];
       return emailTemp({
         username: this.data.username,
-        url: `${this.domain}email-verified/${this.data.token}`,
+        url: `${this.domain}email-verified/${this.data.token as string}`,
       });
     }
 
@@ -78,6 +85,15 @@ export class EmailUtility extends GenericMail {
         username: this.data.username,
         referee_name: this.data.other.referee_name as string,
         url: `${this.domain}referee-review?t=${this.data.token}` as string,
+      });
+    }
+
+    if (this.data.action === EmailType.REMINDER) {
+      const reminderTemp = this.templates[EmailType.REMINDER];
+      return reminderTemp({
+        username: this.data.username,
+        list: this.data.other.list as string,
+        url: `${this.domain}/tutor` as string,
       });
     }
   };

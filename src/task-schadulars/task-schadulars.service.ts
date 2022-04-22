@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { Prisma } from '@prisma/client';
 import { CronJob } from 'cron';
+import { MailService } from 'src/mail-service/mail.service';
+import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { UserDto } from 'src/userDto';
 import { TutorsService } from './../tutors/tutors.service';
 
@@ -10,14 +12,15 @@ export class TaskSchadularsService {
   constructor(
     private schedulerRegistry: SchedulerRegistry,
     private readonly tutorsService: TutorsService,
+    private mailService: MailService,
   ) {}
   private readonly logger = new Logger('AppService');
-
-  async newTutorSchedule(tutor: Prisma.TutorCreateManyInput) {
+  async newTutorSchedule(userData: Prisma.UserCreateManyInput, tutor: Prisma.TutorCreateManyInput) {
     const tutorJob = new CronJob(CronExpression.EVERY_DAY_AT_9PM, async () => {
       const { documents, referees, subjects, tutoringDetail } = await this.tutorsService.tutorStats(
         tutor.id,
       );
+
       let tutorReminder: string[] = [];
       if (referees.length === 0) {
         tutorReminder.push('Referees Information');
@@ -34,12 +37,27 @@ export class TaskSchadularsService {
       }
 
       if (documents.length === 1) {
-        const { id_card_back, id_card_front, criminal_record } = documents[1];
+        const { id_card_back, id_card_front, criminal_record } = documents[0];
         if (!id_card_back || !id_card_front || !criminal_record) {
           tutorReminder.push('Government Documents Information');
         }
       }
       if (tutorReminder.length > 0) {
+        let data = '';
+        tutorReminder.forEach((rem) => {
+          data += `<li>${rem}</li>`;
+        });
+
+        await this.mailService.sendMail(
+          new EmailUtility({
+            email: userData.email,
+            username: `${userData.first_name} ${userData.last_name}`,
+            action: EmailType.REMINDER,
+            other: {
+              list: data as string,
+            },
+          }),
+        );
       }
     });
     tutorJob.start();

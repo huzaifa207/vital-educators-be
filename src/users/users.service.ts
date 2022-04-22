@@ -4,6 +4,7 @@ import { randomBytes, scrypt as _script } from 'crypto';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
+import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
 import { promisify } from 'util';
@@ -17,6 +18,7 @@ export class UsersService {
     private mailService: MailService,
     private documentsService: DocumentsService,
     private tutoringDetailsService: TutoringDetailsService,
+    private taskSchadularsService: TaskSchadularsService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
@@ -30,7 +32,7 @@ export class UsersService {
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
-
+    console.log('emailToken - ', emailToken);
     const newUser = await this.prisma.user.create({
       data: Object.assign(createUserDto, {
         password: hashPassowrd,
@@ -45,6 +47,9 @@ export class UsersService {
             user: { connect: { id: newUser.id } },
           },
         });
+        if (tutor) {
+          this.taskSchadularsService.newTutorSchedule(newUser, tutor);
+        }
         const doc = {
           id_card_back: '',
           id_card_front: '',
@@ -66,8 +71,8 @@ export class UsersService {
         throw new BadRequestException("Couldn't create tutor");
       }
     }
-
-    this.sendEmail(newUser.email, newUser.username, EmailType.CONFIRM_EMAIL, +emailToken);
+    console.log('+newUser.email_token', emailToken);
+    this.sendEmail(newUser.email, newUser.username, EmailType.CONFIRM_EMAIL, newUser.email_token);
     return newUser;
   }
 
@@ -215,7 +220,7 @@ export class UsersService {
     return salt + '.' + hash.toString('hex');
   }
 
-  async sendEmail(email: string, username: string, action: EmailType, token?: number) {
+  async sendEmail(email: string, username: string, action: EmailType, token: string | number) {
     await this.mailService.sendMail(new EmailUtility({ email, username, action, token }));
   }
 

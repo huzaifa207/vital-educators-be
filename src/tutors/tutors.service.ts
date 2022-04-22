@@ -53,6 +53,7 @@ export class TutorsService {
 
   async tutorStats(tutorId: number) {
     return {
+      tutor: await this.findOne(tutorId),
       referees: await this.prisma.referees.findMany({
         where: { tutorId },
       }),
