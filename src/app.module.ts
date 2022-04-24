@@ -25,6 +25,7 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
+import { StudentsModule } from './students/students.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -42,6 +43,7 @@ import { UsersModule } from './users/users.module';
     CloudinaryModule,
     TokenModule,
     TaskSchadularsModule,
+    StudentsModule,
   ],
   controllers: [AppController],
   providers: [

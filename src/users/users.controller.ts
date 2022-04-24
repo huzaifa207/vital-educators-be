@@ -131,7 +131,7 @@ export class UsersController {
       body.email,
       body.username,
       EmailType.CONFIRM_EMAIL,
-      +body.emailToken,
+      body.emailToken,
     );
   }
 

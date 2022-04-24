@@ -1,15 +1,7 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Patch,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Req, UseGuards } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
-import { TutorGuard } from 'src/guards/tutor.guar';
+import { TutorGuard } from 'src/guards/tutor.guard';
 import { UpdateTutorDto } from './dto/update-tutor.dto';
 import { TutorsService } from './tutors.service';
 
