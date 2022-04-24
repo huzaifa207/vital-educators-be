@@ -20,10 +20,14 @@ export class StudentsService {
   }
 
   async findByUserId(userId: number) {
-    return await this.prisma.student.findUnique({
-      where: {
-        id: userId,
-      },
-    });
+    try {
+      return await this.prisma.student.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }

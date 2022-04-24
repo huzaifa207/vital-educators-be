@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
 
@@ -88,6 +84,85 @@ export class TokenService {
     } catch (error) {
       console.log(error);
       throw new ForbiddenException('Invalid token for delete');
+    }
+  }
+
+  async verifyStudentToken(token: string) {
+    try {
+      const { id }: IJwt = await this.jwtService.verifyAsync(token);
+
+      const whitelistToken = await this.prisma.whitelist.findFirst({
+        where: {
+          id,
+          token,
+        },
+      });
+
+      if (!whitelistToken) {
+        throw new NotFoundException('Please Enter Valid Token');
+      }
+
+      const isStudent = await this.prisma.student.findUnique({
+        where: { id },
+      });
+
+      if (!isStudent) {
+        throw new ForbiddenException('Please Enter Valid Token');
+      }
+
+      return { id, token };
+    } catch (error) {
+      throw new ForbiddenException('Something went wrong');
+    }
+  }
+
+  async verifyTutorToken(token: string) {
+    try {
+      const { id }: IJwt = await this.jwtService.verifyAsync(token);
+
+      const whitelistToken = await this.prisma.whitelist.findFirst({
+        where: {
+          id,
+          token,
+        },
+      });
+
+      if (!whitelistToken) {
+        throw new NotFoundException('Please Enter Valid Token');
+      }
+
+      const isTutor = await this.prisma.tutor.findUnique({
+        where: { id },
+      });
+
+      if (!isTutor) {
+        throw new ForbiddenException('Please Enter Valid Token');
+      }
+
+      return { id, token };
+    } catch (error) {
+      throw new ForbiddenException('Something went wrong');
+    }
+  }
+
+  async verifyToken(token: string) {
+    try {
+      const { id }: IJwt = await this.jwtService.verifyAsync(token);
+
+      const whitelistToken = await this.prisma.whitelist.findFirst({
+        where: {
+          id,
+          token,
+        },
+      });
+
+      if (!whitelistToken) {
+        throw new NotFoundException('Please Enter Valid Token');
+      }
+
+      return { id, token };
+    } catch (error) {
+      throw new ForbiddenException('Something went wrong');
     }
   }
 }

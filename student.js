@@ -1,6 +1,10 @@
-const socket = io('http://localhost:3000', {
+// generate 4 digit random number
+const generateRandomNumber = () => {
+  return Math.floor(Math.random() * 10000);
+};
+const socket = io('https://localhost:3001', {
   extraHeaders: {
-    Authorization: 'Bearer asldlajsdlkaj190elaskjd12dasl',
+    Authorization: `Bearer ${generateRandomNumber()}`,
   },
 });
 
@@ -15,11 +19,14 @@ const message = document.getElementById('msg').innerHTML;
 const handleMessage = () => {
   console.log('message.value', message);
   // message to server
+  let reveiverId = document.getElementById('reveiverId');
+  console.log('reveiverId', reveiverId.value);
   socket.emit('createChat', {
-    data: { message, to: 'husnain', from: 'ahmad' },
+    data: { msg: 'hello', to: `${reveiverId.value}`, from: 'ahmad' },
   });
 };
 
-socket.on('msToClient', (data) => {
-  console.log('msgToClient', data);
+socket.on('reveiveMsg', (data) => {
+  console.log('data', data);
+  document.getElementById('receiveMsg').innerHTML = data.msg;
 });
