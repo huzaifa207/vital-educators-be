@@ -11,8 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { TokenService } from 'src/token/token.service';
 import { IChat } from './chat';
-import { ChatsService } from './chats.service';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { CHAT_STATUS, ConversationService } from './conversation.service';
 
 @WebSocketGateway({
   cors: {
@@ -21,7 +20,7 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 })
 export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
-    private readonly chatsService: ChatsService,
+    private readonly conversationService: ConversationService,
     private readonly tokenService: TokenService,
   ) {}
   private chat = new Map();
@@ -53,40 +52,75 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   // Message to Server
   @SubscribeMessage('createChat')
-  create(
-    @MessageBody() { data: { to, from, msg } }: { data: IChat },
-    @ConnectedSocket() client: Socket,
-  ) {
-    this.logger.log({ to, from, msg });
+  create(@MessageBody() { data: { to, msg } }: { data: IChat }, @ConnectedSocket() client: Socket) {
+    this.logger.log({ to, msg });
     let receriverId = this.chat.get(to);
     if (receriverId) {
       receriverId.forEach((id: string) => {
-        client.broadcast.to(id).emit('reveiveMsg', { to, from, msg });
+        client.broadcast.to(id).emit('reveiveMsg', { to, msg });
       });
     }
   }
 
-  add(chat: IChat) {
-    // this.chat.push({ msg: chat.msg, to: chat.to, from: chat.from });
+  @SubscribeMessage('sendMsgFromStudent')
+  async msgFromStudent(
+    @MessageBody() { data: { to, msg } }: { data: IChat },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const token = client.handshake.headers.authorization.split(' ')[1];
+
+    const { id: from } = await this.tokenService.verifyStudentToken(token);
+    const {
+      status,
+      data: { senderId, receiverId, message },
+    } = await this.conversationService.msgFromStudent(from, to, msg);
+
+    if (status === CHAT_STATUS.PENDING) {
+      client.broadcast.to(client.id).emit('pending', 'PENDING');
+    }
+
+    if (status === CHAT_STATUS.REJECTED) {
+      client.broadcast.to(client.id).emit('rejected', 'REJECTED');
+    }
+
+    if (status === CHAT_STATUS.ACCEPTED) {
+      this.logger.log({ to, msg });
+      let receriverId = this.chat.get(to);
+      if (receriverId) {
+        receriverId.forEach((id: string) => {
+          client.broadcast.to(id).emit('reveiveMsgFromStudent', {
+            studentId: senderId,
+            tutorId: receiverId,
+            msg: message,
+          });
+        });
+      }
+    }
   }
 
-  @SubscribeMessage('findAllChats')
-  findAll() {
-    return this.chatsService.findAll();
-  }
-
-  @SubscribeMessage('findOneChat')
-  findOne(@MessageBody() id: number) {
-    return this.chatsService.findOne(id);
-  }
-
-  @SubscribeMessage('updateChat')
-  update(@MessageBody() updateChatDto: UpdateChatDto) {
-    return this.chatsService.update(updateChatDto.id, updateChatDto);
-  }
-
-  @SubscribeMessage('removeChat')
-  remove(@MessageBody() id: number) {
-    return this.chatsService.remove(id);
+  @SubscribeMessage('sendMsgFromTutor')
+  async msgFromTutor(
+    @MessageBody() { data: { to, msg } }: { data: IChat },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const token = client.handshake.headers.authorization.split(' ')[1];
+    const { id: from } = await this.tokenService.verifyTutorToken(token);
+    const { data, status } = await this.conversationService.msgFromTutor(from, to, msg);
+    if (status === CHAT_STATUS.ERROR) {
+      client.broadcast.to(client.id).emit('error', 'ERROR');
+    }
+    if (status === CHAT_STATUS.ACCEPTED) {
+      this.logger.log({ to, msg });
+      let receriverId = this.chat.get(to);
+      if (receriverId) {
+        receriverId.forEach((id: string) => {
+          client.broadcast.to(id).emit('reveiveMsgFromTutor', {
+            tutorId: from,
+            studentId: to,
+            msg: data,
+          });
+        });
+      }
+    }
   }
 }

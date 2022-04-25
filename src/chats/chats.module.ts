@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma.service';
 import { TokenModule } from 'src/token/token.module';
 import { TokenService } from 'src/token/token.service';
 import { ChatsGateway } from './chats.gateway';
-import { ChatsService } from './chats.service';
+import { ConversationService } from './conversation.service';
 
 @Module({
   imports: [
@@ -13,6 +13,6 @@ import { ChatsService } from './chats.service';
     }),
     TokenModule,
   ],
-  providers: [ChatsGateway, ChatsService, TokenService, PrismaService],
+  providers: [ChatsGateway, ConversationService, TokenService, PrismaService],
 })
 export class ChatsModule {}
