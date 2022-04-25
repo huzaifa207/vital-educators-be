@@ -82,6 +82,36 @@ export class ConversationService {
     }
   }
 
+  async getChat(senderId: number) {
+    const chats = await this.prisma.chats.findMany({
+      where: {
+        OR: [
+          {
+            AND: [
+              {
+                senderId: senderId,
+              },
+              {
+                receiverId: senderId,
+              },
+            ],
+          },
+          {
+            AND: [
+              {
+                senderId: senderId,
+              },
+              {
+                receiverId: senderId,
+              },
+            ],
+          },
+        ],
+      },
+    });
+    return chats;
+  }
+
   private async createChat(createChatDto: Prisma.ChatsCreateInput) {
     const newChat = {
       senderId: createChatDto.senderId,

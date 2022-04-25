@@ -38,29 +38,27 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   async handleConnection(client: any, ...args: any[]) {
     const token = client.handshake.headers.authorization.split(' ')[1];
-    // const { id } = await this.tokenService.verifyToken(token);
-    const alreadyConnected = this.chat.get(token);
+    const { id } = await this.tokenService.verifyToken(token);
 
+    const alreadyConnected = this.chat.get(token);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
     } else {
       this.chat.set(token, [client.id]);
     }
 
-    this.inc += 1;
-  }
+    //---------------- GET CHAT LIST ----------------
 
-  // Message to Server
-  @SubscribeMessage('createChat')
-  create(@MessageBody() { data: { to, msg } }: { data: IChat }, @ConnectedSocket() client: Socket) {
-    this.logger.log({ to, msg });
-    let receriverId = this.chat.get(to);
+    const data = await this.conversationService.getChat(+id);
+    let receriverId = this.chat.get(id);
     if (receriverId) {
       receriverId.forEach((id: string) => {
-        client.broadcast.to(id).emit('reveiveMsg', { to, msg });
+        client.broadcast.to(id).emit('reveiveMsg', { ...data });
       });
     }
   }
+
+  // Message to Server
 
   @SubscribeMessage('sendMsgFromStudent')
   async msgFromStudent(
