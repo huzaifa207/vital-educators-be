@@ -17,7 +17,7 @@ export class TaskSchadularsService {
   private readonly logger = new Logger('AppService');
   async newTutorSchedule(userData: Prisma.UserCreateManyInput, tutor: Prisma.TutorCreateManyInput) {
     // EVERY_DAY_AT_9PM
-    const tutorJob = new CronJob(CronExpression.EVERY_10_SECONDS, async () => {
+    const tutorJob = new CronJob(CronExpression.EVERY_10_MINUTES, async () => {
       const { documents, referees, subjects, tutoringDetail } = await this.tutorsService.tutorStats(
         tutor.id,
       );
