@@ -24,7 +24,6 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     private readonly tokenService: TokenService,
   ) {}
   private chat = new Map();
-  private inc = 0;
 
   private logger: Logger = new Logger('StudentGateway');
 
@@ -40,29 +39,24 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     const token = client.handshake.headers.authorization.split(' ')[1];
     const { id } = await this.tokenService.verifyToken(token);
 
-    const alreadyConnected = this.chat.get(token);
+    const alreadyConnected = this.chat.get(id);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
     } else {
-      this.chat.set(token, [client.id]);
+      this.chat.set(id, [client.id]);
     }
 
     //---------------- GET CHAT LIST ----------------
 
     const data = await this.conversationService.getChat(+id);
-    let receriverId = this.chat.get(id);
-    if (receriverId) {
-      receriverId.forEach((id: string) => {
-        client.broadcast.to(id).emit('reveiveMsg', { ...data });
-      });
-    }
+    client.broadcast.to(client.id).emit('reveiveMsg', { ...data });
   }
 
   // Message to Server
 
   @SubscribeMessage('sendMsgFromStudent')
   async msgFromStudent(
-    @MessageBody() { data: { to, msg } }: { data: IChat },
+    @MessageBody() { data: { tutorId, msg } }: { data: Partial<IChat> },
     @ConnectedSocket() client: Socket,
   ) {
     const token = client.handshake.headers.authorization.split(' ')[1];
@@ -71,10 +65,15 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     const {
       status,
       data: { senderId, receiverId, message },
-    } = await this.conversationService.msgFromStudent(from, to, msg);
+    } = await this.conversationService.msgFromStudent(from, tutorId, msg);
 
     if (status === CHAT_STATUS.PENDING) {
-      client.broadcast.to(client.id).emit('pending', 'PENDING');
+      this.broadCastMsg(client, String(tutorId), 'reveiveMsgFromStudent', {
+        studentId: senderId,
+        tutorId: receiverId,
+        msg: message,
+        status,
+      });
     }
 
     if (status === CHAT_STATUS.REJECTED) {
@@ -82,43 +81,67 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     if (status === CHAT_STATUS.ACCEPTED) {
-      this.logger.log({ to, msg });
-      let receriverId = this.chat.get(to);
-      if (receriverId) {
-        receriverId.forEach((id: string) => {
-          client.broadcast.to(id).emit('reveiveMsgFromStudent', {
-            studentId: senderId,
-            tutorId: receiverId,
-            msg: message,
-          });
-        });
-      }
+      this.logger.log({ tutorId, msg });
+      this.broadCastMsg(client, String(tutorId), 'reveiveMsgFromStudent', {
+        studentId: senderId,
+        tutorId: receiverId,
+        msg: message,
+        status,
+      });
+
+      // let receriverId = this.chat.get(tutorId);
+      // if (receriverId) {
+      //   receriverId.forEach((id: string) => {
+      //     client.broadcast.to(id).emit('reveiveMsgFromStudent', {
+      //       studentId: senderId,
+      //       tutorId: receiverId,
+      //       msg: message,
+      //       status,
+      //     });
+      //   });
+      // }
     }
   }
 
   @SubscribeMessage('sendMsgFromTutor')
   async msgFromTutor(
-    @MessageBody() { data: { to, msg } }: { data: IChat },
+    @MessageBody() { data: { studentId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
     const token = client.handshake.headers.authorization.split(' ')[1];
     const { id: from } = await this.tokenService.verifyTutorToken(token);
-    const { data, status } = await this.conversationService.msgFromTutor(from, to, msg);
+    const { data, status } = await this.conversationService.msgFromTutor(from, studentId, msg);
     if (status === CHAT_STATUS.ERROR) {
       client.broadcast.to(client.id).emit('error', 'ERROR');
     }
     if (status === CHAT_STATUS.ACCEPTED) {
-      this.logger.log({ to, msg });
-      let receriverId = this.chat.get(to);
-      if (receriverId) {
-        receriverId.forEach((id: string) => {
-          client.broadcast.to(id).emit('reveiveMsgFromTutor', {
-            tutorId: from,
-            studentId: to,
-            msg: data,
-          });
-        });
-      }
+      this.broadCastMsg(client, String(studentId), 'reveiveMsgFromTutor', {
+        tutorId: from,
+        studentId,
+        msg: data.message,
+        status,
+      });
+
+      // let receriverId = this.chat.get(studentId);
+      // if (receriverId) {
+      //   receriverId.forEach((id: string) => {
+      //     client.broadcast.to(id).emit('reveiveMsgFromTutor', {
+      //       tutorId: from,
+      //       studentId,
+      //       msg: data,
+      //       status,
+      //     });
+      //   });
+      // }
+    }
+  }
+
+  private broadCastMsg(client: Socket, socketKey: string, eventName: string, data: IChat) {
+    let receriverId = this.chat.get(socketKey);
+    if (receriverId) {
+      receriverId.forEach((id: string) => {
+        client.broadcast.to(id).emit(eventName, { ...data });
+      });
     }
   }
 }

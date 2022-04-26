@@ -29,7 +29,11 @@ export class ConversationService {
       });
       return {
         status: CHAT_STATUS.PENDING,
-        data: null,
+        data: await this.createChat({
+          senderId: studentId,
+          receiverId: tutorId,
+          message: msg,
+        }),
       };
     }
     if (conversation.status === CHAT_STATUS.PENDING) {
@@ -82,31 +86,11 @@ export class ConversationService {
     }
   }
 
-  async getChat(senderId: number) {
+  async getChat(clientId: number) {
     const chats = await this.prisma.chats.findMany({
       where: {
-        OR: [
-          {
-            AND: [
-              {
-                senderId: senderId,
-              },
-              {
-                receiverId: senderId,
-              },
-            ],
-          },
-          {
-            AND: [
-              {
-                senderId: senderId,
-              },
-              {
-                receiverId: senderId,
-              },
-            ],
-          },
-        ],
+        OR: [{ senderId: clientId }, { receiverId: clientId }],
+        // senderId: clientId,
       },
     });
     return chats;

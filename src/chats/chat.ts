@@ -1,14 +1,8 @@
-export interface IChat {
-  msg: string;
-  to: number;
-}
-// export class Chat {
-//   constructor(public chatList: IChat[] = []) {}
+import { CHAT_STATUS } from './conversation.service';
 
-//   public show(): IChat[] {
-//     return this.chatList;
-//   }
-//   public add(chat: IChat) {
-//     this.chatList.push({ msg: chat.msg, to: chat.to });
-//   }
-// }
+export interface IChat {
+  studentId: number;
+  tutorId: number;
+  msg: string;
+  status: CHAT_STATUS;
+}
