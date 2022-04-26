@@ -240,7 +240,7 @@ export const emailRemainder = (username: string, list: string, url: string) => {
                             border-bottom: 3px solid #d4dadf;
                             ">
                     <p style="margin: 0">
-                        Cheers<br />
+                    VitalEducators Team<br />
                     </p>
                     </td>
                 </tr>

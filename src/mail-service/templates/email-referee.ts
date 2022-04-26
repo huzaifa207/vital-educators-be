@@ -309,7 +309,7 @@ export const EmailReferee = (username: string, referee_name: string, url: string
                     </a>
                     <br/><br/>
                     <p style="margin: 0">
-                      Cheers
+                      VitalEducators Team
                     </p>
                     
                   </td>

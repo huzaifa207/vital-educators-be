@@ -287,7 +287,7 @@ export const passwordResetTemplate = (username: string, token: number) => {
                     "
                   >
                     <p style="margin: 0">
-                      Cheers
+                    VitalEducators Team
                     </p>
                   </td>
                 </tr>

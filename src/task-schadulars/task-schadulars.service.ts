@@ -61,7 +61,9 @@ export class TaskSchadularsService {
         );
       }
     });
-    tutorJob.start();
+    setTimeout(() => {
+      tutorJob.start();
+    }, 60000);
   }
 
   emitt(user: UserDto) {

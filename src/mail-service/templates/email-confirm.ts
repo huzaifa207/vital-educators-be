@@ -338,8 +338,7 @@ export const emailConfirm = (username: string, url: string) => {
                     "
                   >
                     <p style="margin: 0">
-                      Cheers,<br />
-                      Paste
+                      VitalEducators Team
                     </p>
                   </td>
                 </tr>
