@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 import { TutorGuard } from 'src/guards/tutor.guard';
@@ -38,5 +38,10 @@ export class TutorsController {
   remove(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.tutorsService.deActivateTutor(+id);
+  }
+
+  @Get('filter')
+  async getFilteredTutor(@Query() { subject, postCode }: { subject: string; postCode: number }) {
+    return await this.tutorsService.filterTutor(subject, postCode);
   }
 }

@@ -51,6 +51,43 @@ export class TutorsService {
     }
   }
 
+  async filterTutor(subject: string, postCode: number) {
+    const tutors = await this.prisma.tutor.findMany({
+      where: {
+        AND: [
+          {
+            subjectOffers: {
+              some: {
+                title: subject,
+              },
+            },
+          },
+          {
+            user: {
+              postal_code: String(postCode),
+            },
+          },
+        ],
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            phone: true,
+            postal_code: true,
+            username: true,
+            country: true,
+            profile_url: true,
+          },
+        },
+      },
+    });
+    return tutors;
+  }
+
   async tutorStats(tutorId: number) {
     return {
       tutor: await this.findOne(tutorId),
