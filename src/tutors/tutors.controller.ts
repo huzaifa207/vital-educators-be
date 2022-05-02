@@ -9,39 +9,30 @@ import { TutorsService } from './tutors.service';
 export class TutorsController {
   constructor(private readonly tutorsService: TutorsService) {}
 
-  // @UseGuards(TutorGuard)
-  // @Post()
-  // create(
-  //   @Body() createTutorDto: Prisma.TutorCreateInput,
-  //   @Req() request: Request,
-  // ) {
-  //   const { id } = request.currentUser as Prisma.UserCreateManyInput;
-
-  //   return this.tutorsService.create(createTutorDto, +id);
-  // }
-
   @Get()
-  findOne(@Req() request: Request) {
+  findOneTutor(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return this.tutorsService.findOne(+id);
+    return this.tutorsService.findOneTutor(+id);
   }
 
   @UseGuards(TutorGuard)
   @Patch()
   update(@Body() updateTutorDto: UpdateTutorDto, @Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return this.tutorsService.update(+id, updateTutorDto);
+    return this.tutorsService.updateTutor(+id, updateTutorDto);
   }
 
   @UseGuards(TutorGuard)
   @Delete()
-  remove(@Req() request: Request) {
+  deActivateTutor(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.tutorsService.deActivateTutor(+id);
   }
 
   @Get('filter')
-  async getFilteredTutor(@Query() { subject, postCode }: { subject: string; postCode: number }) {
-    return await this.tutorsService.filterTutor(subject, postCode);
+  async getFilteredTutor(
+    @Query() { subject, postCode, skip }: { subject: string; postCode: number; skip: number },
+  ) {
+    return await this.tutorsService.filterTutor(subject, postCode, skip);
   }
 }

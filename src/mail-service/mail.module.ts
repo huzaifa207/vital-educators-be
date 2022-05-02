@@ -9,7 +9,7 @@ import { MailService } from './mail.service';
     ConfigModule.forRoot(),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
+      useFactory: async () => ({
         transport: {
           host: MailConfig.SMTP_HOST,
           port: MailConfig.EMAIL_PORT,

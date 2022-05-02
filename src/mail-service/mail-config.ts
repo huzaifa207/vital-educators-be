@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 require('dotenv').config();
 
 export const MailConfig = {

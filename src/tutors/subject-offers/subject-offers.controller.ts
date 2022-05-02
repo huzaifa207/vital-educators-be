@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 import { SubjectOffersService } from './subject-offers.service';
@@ -17,10 +8,7 @@ export class SubjectOffersController {
   constructor(private readonly subjectOffersService: SubjectOffersService) {}
 
   @Post()
-  create(
-    @Body() createSubjectOfferDto: Prisma.SubjectOfferCreateInput,
-    @Req() req: Request,
-  ) {
+  create(@Body() createSubjectOfferDto: Prisma.SubjectOfferCreateInput, @Req() req: Request) {
     const { id } = req.currentTutor as Prisma.TutorCreateManyInput;
     return this.subjectOffersService.create(createSubjectOfferDto, +id);
   }
@@ -43,11 +31,7 @@ export class SubjectOffersController {
     @Body() updateSubjectOfferDto: Prisma.SubjectOfferUncheckedUpdateInput,
   ) {
     const { id: tutorId } = req.currentTutor;
-    return this.subjectOffersService.update(
-      +id,
-      +tutorId,
-      updateSubjectOfferDto,
-    );
+    return this.subjectOffersService.update(+id, +tutorId, updateSubjectOfferDto);
   }
 
   @Delete(':id')

@@ -11,7 +11,8 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly tokenService: TokenService, // private jwtService: JwtService,
+    // private jwtService: JwtService
+    private readonly tokenService: TokenService,
   ) {}
 
   @Post()
@@ -21,7 +22,7 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = await this.usersService.create(createUserDto);
-    const jwt = await this.tokenService.sign(user.id);
+    const jwt = await this.tokenService.generateNewToken(user.id);
 
     response.cookie('jwt', jwt, {
       httpOnly: true,
@@ -42,7 +43,7 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = await this.usersService.login(loginUserDto);
-    const jwt = await this.tokenService.sign(user.id);
+    const jwt = await this.tokenService.generateNewToken(user.id);
     response.cookie('jwt', jwt, {
       httpOnly: true,
       secure: true,
@@ -64,20 +65,10 @@ export class UsersController {
     return { message: 'Logged out' };
   }
 
-  @Get('/findall')
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Delete('/all')
-  deleteMany() {
-    return this.usersService.deleteMany();
-  }
-
   @Get(':id')
   @Serializer(ReturnUserDto)
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.usersService.findOne(id);
   }
 
   @Patch()
@@ -104,11 +95,6 @@ export class UsersController {
     return success;
   }
 
-  @Delete()
-  async remove(@Req() request: Request) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return await this.usersService.remove(+id);
-  }
   @Get('/confirm-email/:token')
   async confirmEmail(@Param('token') token: string, @Res() res: Response) {
     const user = await this.usersService.confirmEmail(token);
@@ -151,5 +137,23 @@ export class UsersController {
       await this.tokenService.deleteAllTokens(id);
     }
     return success;
+  }
+
+  // ----------PORSONAL DEV ROUTES-----------
+
+  @Get('/findall')
+  findAll() {
+    return this.usersService.findAll();
+  }
+
+  @Delete('/all')
+  deleteMany() {
+    return this.usersService.deleteMany();
+  }
+
+  @Delete()
+  async remove(@Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+    return await this.usersService.remove(+id);
   }
 }

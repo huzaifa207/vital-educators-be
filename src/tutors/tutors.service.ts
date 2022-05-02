@@ -7,27 +7,13 @@ import { PrismaService } from './../prisma.service';
 export class TutorsService {
   constructor(private prisma: PrismaService) {}
 
-  // create(createTutorDto: Prisma.TutorCreateInput, userId: number) {
-  //   try {
-  //     return this.prisma.tutor.create({
-  //       data: {
-  //         ...createTutorDto,
-  //         user: { connect: { id: userId } },
-  //       },
-  //     });
-  //   } catch (error) {
-  //     throw new BadGatewayException('Tutor already exists');
-  //   }
-  // }
-
   async deActivateTutor(userId: number) {
-    const tutor = await this.findOne(userId);
+    const tutor = await this.findOneTutor(userId);
     tutor.deActivate = true;
-    await this.remove(tutor.id);
     return { message: 'Tutor deactivated' };
   }
 
-  update(userId: number, updateTutorDto: Prisma.TutorUpdateInput) {
+  updateTutor(userId: number, updateTutorDto: Prisma.TutorUpdateInput) {
     try {
       return this.prisma.tutor.update({
         where: { userId },
@@ -38,11 +24,7 @@ export class TutorsService {
     }
   }
 
-  remove(id: number) {
-    return this.prisma.tutor.delete({ where: { id } });
-  }
-
-  async findOne(userId: number) {
+  async findOneTutor(userId: number) {
     try {
       const tutor = await this.prisma.tutor.findUnique({ where: { userId } });
       return tutor;
@@ -51,10 +33,13 @@ export class TutorsService {
     }
   }
 
-  async filterTutor(subject: string, postCode: number) {
+  async filterTutor(subject: string, postCode: number, skip: number) {
     const tutors = await this.prisma.tutor.findMany({
       where: {
         AND: [
+          {
+            deActivate: false,
+          },
           {
             subjectOffers: {
               some: {
@@ -84,13 +69,15 @@ export class TutorsService {
           },
         },
       },
+      skip,
+      take: 10,
     });
     return tutors;
   }
 
   async tutorStats(tutorId: number) {
     return {
-      tutor: await this.findOne(tutorId),
+      tutor: await this.findOneTutor(tutorId),
       referees: await this.prisma.referees.findMany({
         where: { tutorId },
       }),

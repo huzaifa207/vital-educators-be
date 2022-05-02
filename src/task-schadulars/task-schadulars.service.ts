@@ -22,7 +22,7 @@ export class TaskSchadularsService {
         tutor.id,
       );
 
-      let tutorReminder: string[] = [];
+      const tutorReminder: string[] = [];
       if (referees.length === 0) {
         tutorReminder.push('Referees Information');
       }

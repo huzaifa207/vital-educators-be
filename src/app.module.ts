@@ -13,6 +13,7 @@ import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { StudentsModule } from './students/students.module';
 import { TaskSchadularsModule } from './task-schadulars/task-schadulars.module';
 import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
 import { TokenModule } from './token/token.module';
@@ -25,7 +26,6 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { StudentsModule } from './students/students.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -71,6 +71,7 @@ export class AppModule {
       .exclude(
         { path: 'user/login', method: RequestMethod.POST },
         { path: 'user', method: RequestMethod.POST },
+        { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/forgot-password', method: RequestMethod.POST },
         { path: 'user/findall', method: RequestMethod.GET },
         { path: 'user/all', method: RequestMethod.DELETE },

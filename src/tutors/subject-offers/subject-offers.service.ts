@@ -11,10 +11,7 @@ import { PrismaService } from 'src/prisma.service';
 export class SubjectOffersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createSubjectOfferDto: Prisma.SubjectOfferCreateInput,
-    tutorId: number,
-  ) {
+  async create(createSubjectOfferDto: Prisma.SubjectOfferCreateInput, tutorId: number) {
     try {
       return await this.prisma.subjectOffer.create({
         data: {
@@ -84,17 +81,12 @@ export class SubjectOffersService {
     }
   }
 
-  private async checkSubjectOffer(
-    subjectOfferId: number,
-    tutorId: number,
-  ): Promise<Boolean> {
+  private async checkSubjectOffer(subjectOfferId: number, tutorId: number): Promise<boolean> {
     const subjectOffer = await this.prisma.subjectOffer.findUnique({
       where: { id: subjectOfferId },
     });
     if (+subjectOffer.tutorId !== +tutorId) {
-      throw new ForbiddenException(
-        'You are not the owner of this subject offer',
-      );
+      throw new ForbiddenException('You are not the owner of this subject offer');
     }
     return true;
   }

@@ -5,10 +5,7 @@ import { PrismaService } from 'src/prisma.service';
 @Injectable()
 export class TutoringDetailsService {
   constructor(private prisma: PrismaService) {}
-  async create(
-    createTutoringDetailDto: Prisma.TutoringDetailCreateInput,
-    tutorId: number,
-  ) {
+  async create(createTutoringDetailDto: Prisma.TutoringDetailCreateInput, tutorId: number) {
     try {
       return await this.prisma.tutoringDetail.create({
         data: {
@@ -46,10 +43,7 @@ export class TutoringDetailsService {
     return tutoringDetail;
   }
 
-  update(
-    tutorId: number,
-    updateTutoringDetailDto: Prisma.TutoringDetailUpdateInput,
-  ) {
+  update(tutorId: number, updateTutoringDetailDto: Prisma.TutoringDetailUpdateInput) {
     try {
       return this.prisma.tutoringDetail.update({
         where: { tutorId },

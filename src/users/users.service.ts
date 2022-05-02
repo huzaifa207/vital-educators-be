@@ -78,7 +78,7 @@ export class UsersService {
 
   async login(loginUserDto: { username: string; password: string }) {
     try {
-      let currentUser = await this.findUser(loginUserDto.username);
+      const currentUser = await this.findUser(loginUserDto.username);
 
       const [salt, storedHash] = currentUser.password.split('.');
       const hash = (await scrypt(loginUserDto.password, salt, 16)) as Buffer;
@@ -93,10 +93,6 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
-  }
-
   async findOne(id: number) {
     return await this.prisma.user.findUnique({
       where: { id },
@@ -108,11 +104,6 @@ export class UsersService {
       where: { id },
       data: updateUserDto,
     });
-  }
-
-  async remove(id: number) {
-    await this.prisma.user.delete({ where: { id } });
-    return 'User deleted';
   }
 
   async updatePassword(userId: number, currentPassword: string, newPassword: string) {
@@ -157,18 +148,18 @@ export class UsersService {
 
   async forgotPassword(username: string) {
     try {
-      let user = await this.findUser(username);
+      const user = await this.findUser(username);
 
       //generate 4 digit random number
       const token = Math.floor(1000 + Math.random() * 9000);
       await this.prisma.user.update({
         where: { id: user.id },
         data: {
-          password_reset_token: String(token),
+          password_reset_token: token,
         },
       });
 
-      await this.sendEmail(user.email, user.username, EmailType.RESET_PASSWORD, +token);
+      await this.sendEmail(user.email, user.username, EmailType.RESET_PASSWORD, token);
       return { success: true };
     } catch (error) {
       console.log(error);
@@ -178,8 +169,8 @@ export class UsersService {
 
   async resetPassword(username: string, password: string, passwordToken: number) {
     try {
-      let user = await this.findUser(username);
-      if (parseInt(user.password_reset_token) !== passwordToken) {
+      const user = await this.findUser(username);
+      if (user.password_reset_token !== passwordToken) {
         throw new BadRequestException('Invalid token');
       }
       const newHash = await this.passHashGenerator(password);
@@ -198,7 +189,7 @@ export class UsersService {
 
   private async findUser(username: string) {
     try {
-      let user =
+      const user =
         (await this.prisma.user.findUnique({
           where: { email: username },
         })) ||
@@ -224,7 +215,18 @@ export class UsersService {
     await this.mailService.sendMail(new EmailUtility({ email, username, action, token }));
   }
 
+  // ------------ PERSONAL DEV SERVICES ------------
+
+  findAll() {
+    return this.prisma.user.findMany();
+  }
+
   deleteMany() {
     return this.prisma.user.deleteMany({});
+  }
+
+  async remove(id: number) {
+    await this.prisma.user.delete({ where: { id } });
+    return 'User deleted';
   }
 }

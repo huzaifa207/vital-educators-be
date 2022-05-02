@@ -8,7 +8,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { TokenService } from 'src/token/token.service';
 import { IChat } from './chat';
 import { CHAT_STATUS, ConversationService } from './conversation.service';
@@ -23,11 +23,11 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     private readonly conversationService: ConversationService,
     private readonly tokenService: TokenService,
   ) {}
-  private chat = new Map();
+  private connectionTable = new Map();
 
   private logger: Logger = new Logger('StudentGateway');
 
-  afterInit(server: Server) {
+  afterInit() {
     this.logger.log('Student Gateway Initialize!');
   }
 
@@ -35,15 +35,15 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     this.logger.log('Client DisConnected: ', client.id);
   }
 
-  async handleConnection(client: any, ...args: any[]) {
+  async handleConnection(client: any) {
     const token = client.handshake.headers.authorization.split(' ')[1];
     const { id } = await this.tokenService.verifyToken(token);
 
-    const alreadyConnected = this.chat.get(id);
+    const alreadyConnected = this.connectionTable.get(id);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
     } else {
-      this.chat.set(id, [client.id]);
+      this.connectionTable.set(id, [client.id]);
     }
 
     //---------------- GET CHAT LIST ----------------
@@ -89,7 +89,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         status,
       });
 
-      // let receriverId = this.chat.get(tutorId);
+      // let receriverId = this.connectionTable.get(tutorId);
       // if (receriverId) {
       //   receriverId.forEach((id: string) => {
       //     client.broadcast.to(id).emit('reveiveMsgFromStudent', {
@@ -122,7 +122,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         status,
       });
 
-      // let receriverId = this.chat.get(studentId);
+      // let receriverId = this.connectionTable.get(studentId);
       // if (receriverId) {
       //   receriverId.forEach((id: string) => {
       //     client.broadcast.to(id).emit('reveiveMsgFromTutor', {
@@ -137,7 +137,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   private broadCastMsg(client: Socket, socketKey: string, eventName: string, data: IChat) {
-    let receriverId = this.chat.get(socketKey);
+    const receriverId = this.connectionTable.get(socketKey);
     if (receriverId) {
       receriverId.forEach((id: string) => {
         client.broadcast.to(id).emit(eventName, { ...data });

@@ -105,7 +105,7 @@ export class RefereesService {
     }
   }
 
-  private async checkReferee(refereeId: number, tutorId: number): Promise<Boolean> {
+  private async checkReferee(refereeId: number, tutorId: number): Promise<boolean> {
     const referee = await this.prisma.referees.findUnique({
       where: { id: refereeId },
     });

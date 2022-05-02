@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Patch,
-  Post,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 import { DocumentsService } from './documents.service';
@@ -17,10 +9,7 @@ export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
   @Post()
-  create(
-    @Body() createDocumentDto: Prisma.DocumentsCreateInput,
-    @Req() request: Request,
-  ) {
+  create(@Body() createDocumentDto: Prisma.DocumentsCreateInput, @Req() request: Request) {
     const { id } = request.currentTutor;
     return this.documentsService.create(createDocumentDto, +id);
   }
@@ -32,10 +21,7 @@ export class DocumentsController {
   }
 
   @Patch('')
-  update(
-    @Body() updateDocumentDto: UpdateDocumentDto,
-    @Req() request: Request,
-  ) {
+  update(@Body() updateDocumentDto: UpdateDocumentDto, @Req() request: Request) {
     const { id } = request.currentTutor;
     return this.documentsService.update(+id, updateDocumentDto);
   }

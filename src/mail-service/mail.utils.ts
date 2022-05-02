@@ -18,10 +18,10 @@ export interface EmailParam {
 }
 
 export interface IEmailTemplate {
-  [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) => string;
-  [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) => string;
-  [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) => string;
-  [EmailType.REMINDER]: (data: EmailParam['REMINDER']) => string;
+  [EmailType.CONFIRM_EMAIL]: (data: EmailParam[EmailType.CONFIRM_EMAIL]) => string;
+  [EmailType.RESET_PASSWORD]: (data: EmailParam[EmailType.RESET_PASSWORD]) => string;
+  [EmailType.REFEREE_REVIEW]: (data: EmailParam[EmailType.REFEREE_REVIEW]) => string;
+  [EmailType.REMINDER]: (data: EmailParam[EmailType.REMINDER]) => string;
 }
 
 export abstract class GenericMail {
@@ -36,16 +36,16 @@ export abstract class GenericMail {
     this.domain = 'https://vital-educators.vercel.app/';
 
     this.templates = {
-      [EmailType.CONFIRM_EMAIL]: (data: EmailParam['CONFIRM_EMAIL']) =>
+      [EmailType.CONFIRM_EMAIL]: (data: EmailParam[EmailType.CONFIRM_EMAIL]) =>
         emailConfirm(data.username, data.url),
 
-      [EmailType.RESET_PASSWORD]: (data: EmailParam['RESET_PASSWORD']) =>
+      [EmailType.RESET_PASSWORD]: (data: EmailParam[EmailType.RESET_PASSWORD]) =>
         passwordResetTemplate(data.username, data.token),
 
-      [EmailType.REFEREE_REVIEW]: (data: EmailParam['REFEREE_REVIEW']) =>
+      [EmailType.REFEREE_REVIEW]: (data: EmailParam[EmailType.REFEREE_REVIEW]) =>
         EmailReferee(data.username, data.referee_name, data.url),
 
-      [EmailType.REMINDER]: (data: EmailParam['REMINDER']) =>
+      [EmailType.REMINDER]: (data: EmailParam[EmailType.REMINDER]) =>
         emailRemainder(data.username, data.list, data.url),
     };
   }

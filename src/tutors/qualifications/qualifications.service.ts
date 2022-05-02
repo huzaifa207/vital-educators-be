@@ -6,10 +6,7 @@ import { PrismaService } from 'src/prisma.service';
 export class QualificationsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createQualificationDto: Prisma.QualificationCreateInput,
-    userId: number,
-  ) {
+  async create(createQualificationDto: Prisma.QualificationCreateInput, userId: number) {
     try {
       return await this.prisma.qualification.create({
         data: {
@@ -43,10 +40,7 @@ export class QualificationsService {
     }
   }
 
-  async update(
-    id: number,
-    updateQualificationDto: Prisma.QualificationUpdateInput,
-  ) {
+  async update(id: number, updateQualificationDto: Prisma.QualificationUpdateInput) {
     try {
       return await this.prisma.qualification.update({
         where: { id },

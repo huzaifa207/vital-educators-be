@@ -28,7 +28,7 @@ model User {
   promotion_third_parties  Boolean?  @default(false)
   email_approved           Boolean?  @default(false)
   email_token              String?   @unique
-  password_reset_token     String?   @unique
+  password_reset_token     Int?      @unique
   createdAt                DateTime? @default(now())
   updatedAt                DateTime? @updatedAt
   role                     Role      @default(STUDENT)

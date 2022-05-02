@@ -6,8 +6,7 @@ import { GenericMail } from './mail.utils';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendMail(mail: GenericMail) {
-    const { email, subject, renderTemplate } = mail;
+  async sendMail({ email, subject, renderTemplate }: GenericMail) {
     await this.mailerService.sendMail({
       to: email,
       text: 'This is from VitalEducators',
