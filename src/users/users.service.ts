@@ -32,7 +32,6 @@ export class UsersService {
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
-    console.log('emailToken - ', emailToken);
     const newUser = await this.prisma.user.create({
       data: Object.assign(createUserDto, {
         password: hashPassowrd,
@@ -71,7 +70,6 @@ export class UsersService {
         throw new BadRequestException("Couldn't create tutor");
       }
     }
-    console.log('+newUser.email_token', emailToken);
     this.sendEmail(newUser.email, newUser.username, EmailType.CONFIRM_EMAIL, newUser.email_token);
     return newUser;
   }

@@ -17,7 +17,11 @@ export class TutorsService {
     try {
       return this.prisma.tutor.update({
         where: { userId },
-        data: updateTutorDto,
+        data: {
+          crb_check: updateTutorDto.crb_check,
+          skype_id: updateTutorDto.skype_id,
+          deActivate: updateTutorDto.deActivate,
+        },
       });
     } catch (error) {
       throw new Exception('Tutor not found');
