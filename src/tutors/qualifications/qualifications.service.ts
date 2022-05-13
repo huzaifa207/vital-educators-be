@@ -18,7 +18,7 @@ export class QualificationsService {
       if (error instanceof Prisma.PrismaClientValidationError) {
         throw new BadRequestException('Please send a valid data');
       }
-      throw new BadRequestException('Tutor not found');
+      throw new BadRequestException(error.message);
     }
   }
 
@@ -28,7 +28,7 @@ export class QualificationsService {
         where: { tutor: { id: tutorId } },
       });
     } catch (error) {
-      throw new BadRequestException('Tutor not found');
+      throw new BadRequestException(error.message);
     }
   }
 
