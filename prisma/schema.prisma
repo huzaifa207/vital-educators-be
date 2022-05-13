@@ -115,8 +115,7 @@ model Qualification {
   level              String
   institute          String
   year_of_completion Int
-  document           Int
-  documentId         Int
+  document           String
   tutor              Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   tutorId            Int
 }

@@ -31,6 +31,28 @@ export class MediaController {
     return { id };
   }
 
+  @Post('/image')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/docs',
+        filename: (req, file, cb) => {
+          const filename: string = nanoid(10);
+          const extension: string = file.originalname.substring(
+            file.originalname.lastIndexOf('.'),
+            file.originalname.length,
+          );
+          cb(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<{
+    imagePath: string;
+  }> {
+    return { imagePath: `${file.filename}` };
+  }
+
   @Get('/:id')
   async getMeida(@Param('id') id: number) {
     return await this.mediaService.getMedia(id);
