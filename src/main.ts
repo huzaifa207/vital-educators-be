@@ -10,7 +10,7 @@ import { AppModule } from './app.module';
 const cookieSession = require('cookie-session');
 
 async function bootstrap() {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || parseInt(process.env.DEV_PORT);
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.set('etag', 'strong');

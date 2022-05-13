@@ -82,6 +82,8 @@ export class AppModule {
         { path: 'subject-offer/all', method: RequestMethod.GET },
         { path: 'referee/review/:token', method: RequestMethod.POST },
         { path: '/', method: RequestMethod.POST },
+        { path: 'media', method: RequestMethod.POST },
+        { path: 'media/:id', method: RequestMethod.GET },
       )
       .forRoutes(
         UsersController,

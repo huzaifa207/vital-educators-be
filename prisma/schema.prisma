@@ -68,19 +68,24 @@ model Chats {
 }
 
 model Tutor {
-  id             Int             @id @default(autoincrement())
-  crb_check      Boolean         @default(false)
-  skype_id       String          @default("")
-  deActivate     Boolean         @default(false)
-  createdAt      DateTime?       @default(now())
-  updatedAt      DateTime?       @updatedAt
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         Int             @unique
-  referees       Referees[]
-  qualification  Qualification[]
-  tutoringDetail TutoringDetail?
-  subjectOffers  SubjectOffer[]
-  documents      Documents?
+  id                                 Int             @id @default(autoincrement())
+  crb_check                          Boolean         @default(false)
+  skype_id                           String          @default("")
+  deActivate                         Boolean         @default(false)
+  createdAt                          DateTime?       @default(now())
+  updatedAt                          DateTime?       @updatedAt
+  user                               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                             Int             @unique
+  referees                           Referees[]
+  qualification                      Qualification[]
+  tutoringDetail                     TutoringDetail?
+  subjectOffers                      SubjectOffer[]
+  documents                          Documents?
+  is_account_approved                ApprovalStatus  @default(PENDING)
+  is_profile_pic_approved            ApprovalStatus  @default(NOT_ADDED)
+  is_government_document_approved    ApprovalStatus  @default(NOT_ADDED)
+  is_qualification_document_approved ApprovalStatus  @default(NOT_ADDED)
+  is_referee_approved                ApprovalStatus  @default(NOT_ADDED)
 }
 
 model Referees {
@@ -110,7 +115,8 @@ model Qualification {
   level              String
   institute          String
   year_of_completion Int
-  document           String
+  document           Int
+  documentId         Int
   tutor              Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   tutorId            Int
 }
@@ -152,6 +158,12 @@ model Documents {
   tutorId         Int    @unique
 }
 
+model Media {
+  id   Int    @id @default(autoincrement())
+  url  String
+  type String
+}
+
 enum Role {
   STUDENT
   TUTOR
@@ -172,4 +184,11 @@ enum Availability {
   WEEKDAYS
   EVENING
   MORNINIG
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NOT_ADDED
 }
