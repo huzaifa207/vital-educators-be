@@ -3,13 +3,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/mail-service/mail.module';
 import { MailService } from 'src/mail-service/mail.service';
 import { PrismaService } from 'src/prisma.service';
+import { ENV } from 'src/settings';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: ENV['JWT_SECRET'],
     }),
     MailModule,
   ],

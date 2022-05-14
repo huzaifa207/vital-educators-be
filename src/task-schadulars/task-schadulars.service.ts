@@ -4,8 +4,8 @@ import { Prisma } from '@prisma/client';
 import { CronJob } from 'cron';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
+import { TutorsService } from 'src/tutors/tutors.service';
 import { UserDto } from 'src/userDto';
-import { TutorsService } from './../tutors/tutors.service';
 
 @Injectable()
 export class TaskSchadularsService {

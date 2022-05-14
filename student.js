@@ -1,4 +1,6 @@
 // generate 4 digit random number
+document.cookie = 'jwt=alsdkjaljsdlajsdlj';
+
 const generateRandomNumber = () => {
   return Math.floor(Math.random() * 10000);
 };

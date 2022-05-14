@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { RavenInterceptor } from 'nest-raven';
 import { join } from 'path';
+import { ENV } from 'src/settings';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatsModule } from './chats/chats.module';
@@ -33,7 +34,7 @@ import { UsersModule } from './users/users.module';
     }),
     UsersModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: ENV.JWT_SECRET,
     }),
     EventEmitterModule.forRoot(),
     TutorsModule,

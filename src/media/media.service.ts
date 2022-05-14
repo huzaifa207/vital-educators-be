@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinay/cloudinay.service';
 import { PrismaService } from 'src/prisma.service';
+import { ENV } from 'src/settings';
 
 @Injectable()
 export class MediaService {
@@ -22,8 +23,8 @@ export class MediaService {
     const extension = file.filename.split('.')[1];
 
     let baseUrl = 'https://vital-educator.herokuapp.com';
-    if (parseInt(process.env.DEV_PORT)) {
-      baseUrl = `http://localhost:${process.env.DEV_PORT.split(';')[0]}`;
+    if (Number(ENV['PORT']) === 3000) {
+      baseUrl = `http://localhost:${ENV['PORT']}`;
     }
 
     const url = `${baseUrl}/docs/${file.filename}`;

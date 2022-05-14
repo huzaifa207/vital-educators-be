@@ -35,8 +35,10 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     this.logger.log('Client DisConnected: ', client.id);
   }
 
-  async handleConnection(client: any) {
-    const token = client.handshake.headers.authorization.split(' ')[1];
+  async handleConnection(@ConnectedSocket() client: Socket) {
+    // const token = client.handshake.headers.authorization.split(' ')[1];
+    const token = client.handshake.headers.cookie;
+
     const { id } = await this.tokenService.verifyToken(token);
 
     const alreadyConnected = this.connectionTable.get(id);
@@ -48,7 +50,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     //---------------- GET CHAT LIST ----------------
 
-    const data = await this.conversationService.getChat(+id);
+    const data = await this.conversationService.getChat(id);
     client.broadcast.to(client.id).emit('reveiveMsg', { ...data });
   }
 
@@ -59,8 +61,9 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { tutorId, msg } }: { data: Partial<IChat> },
     @ConnectedSocket() client: Socket,
   ) {
-    const token = client.handshake.headers.authorization.split(' ')[1];
-
+    // const token = client.handshake.headers.authorization.split(' ')[1];
+    const token = client.handshake.headers.cookie;
+    console.log('token from chat module = ', token);
     const { id: from } = await this.tokenService.verifyStudentToken(token);
     const {
       status,
