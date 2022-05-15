@@ -27,15 +27,15 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
-    const userAlreadyExists = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
+    const userAlreadyExists = await this.prisma.user.findMany({
+      where: {
+        OR: [{ email: createUserDto.email }, { username: createUserDto.username }],
+      },
     });
 
-    if (userAlreadyExists) {
-      throw new NotAcceptableException('User already exists');
+    if (userAlreadyExists.length > 0) {
+      throw new NotAcceptableException('User with this email or username already exists');
     }
-
-    console.log('createUserDto', createUserDto);
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
