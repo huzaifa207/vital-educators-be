@@ -65,6 +65,13 @@ export class UsersController {
     return { message: 'Logged out' };
   }
 
+  @Serializer(ReturnUserDto)
+  @Get()
+  findAll() {
+    console.log('first 11');
+    return this.usersService.findAll();
+  }
+
   @Get(':id')
   @Serializer(ReturnUserDto)
   findOne(@Param('id') id: number) {
@@ -140,11 +147,6 @@ export class UsersController {
   }
 
   // ----------PORSONAL DEV ROUTES-----------
-
-  @Get('/findall')
-  findAll() {
-    return this.usersService.findAll();
-  }
 
   @Delete('/all')
   deleteMany() {

@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
 import { nanoid } from 'nanoid';
@@ -29,6 +34,8 @@ export class UsersService {
     if (userAlreadyExists) {
       throw new NotAcceptableException('User already exists');
     }
+
+    console.log('createUserDto', createUserDto);
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
@@ -216,7 +223,12 @@ export class UsersService {
   // ------------ PERSONAL DEV SERVICES ------------
 
   findAll() {
-    return this.prisma.user.findMany();
+    try {
+      console.log('first 22');
+      return this.prisma.user.findMany() || [];
+    } catch (error) {
+      throw new NotFoundException('Users not found', error.message);
+    }
   }
 
   deleteMany() {
