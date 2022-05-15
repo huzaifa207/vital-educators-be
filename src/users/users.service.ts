@@ -78,11 +78,17 @@ export class UsersService {
         } as Prisma.TutoringDetailCreateInput;
 
         await this.tutoringDetailsService.create(tutoringDetail, +tutor.id);
+        this.sendEmail(
+          newUser.email,
+          newUser.username,
+          EmailType.CONFIRM_EMAIL,
+          newUser.email_token,
+        ).catch((err) => console.log(err));
       } catch (error) {
         throw new BadRequestException("Couldn't create tutor");
       }
     }
-    this.sendEmail(newUser.email, newUser.username, EmailType.CONFIRM_EMAIL, newUser.email_token);
+
     return newUser;
   }
 

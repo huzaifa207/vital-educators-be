@@ -14,8 +14,9 @@ import { IChat } from './chat';
 import { CHAT_STATUS, ConversationService } from './conversation.service';
 
 @WebSocketGateway({
+  credentials: true,
   cors: {
-    origin: '*',
+    origin: ['https://localhost:5501', 'https://vital-educators.vercel.app'],
   },
 })
 export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -36,9 +37,8 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   async handleConnection(@ConnectedSocket() client: Socket) {
-    // const token = client.handshake.headers.authorization.split(' ')[1];
-    const token = client.handshake.headers.cookie;
-
+    const { cookie } = client.handshake.headers;
+    const token = cookie.split('=')[1];
     const { id } = await this.tokenService.verifyToken(token);
 
     const alreadyConnected = this.connectionTable.get(id);

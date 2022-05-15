@@ -1,5 +1,5 @@
 // generate 4 digit random number
-document.cookie = 'PHPSESSID=husnain';
+// document.cookie = 'PHPSESSID=husnain';
 
 // const generateRandomNumber = () => {
 //   return Math.floor(Math.random() * 10000);
@@ -9,12 +9,9 @@ document.cookie = 'PHPSESSID=husnain';
 
 const socket = io('https://localhost:3001', {
   transports: ['websocket'],
-
   methods: ['GET', 'POST'],
 
-  // extraHeaders: {
-  //   Authorization: `Bearer ${generateRandomNumber()}`,
-  // },
+  withCredentials: true,
 });
 
 const message = document.getElementById('msg').innerHTML;

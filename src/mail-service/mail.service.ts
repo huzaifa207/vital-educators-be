@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenericMail } from './mail.utils';
 
 @Injectable()
@@ -15,7 +15,8 @@ export class MailService {
         html: renderTemplate(),
       });
     } catch (error) {
-      throw new HttpException(error.message, 500);
+      console.log('email error - ', error);
+      // throw new HttpException(error.message, 500);
     }
   }
 }

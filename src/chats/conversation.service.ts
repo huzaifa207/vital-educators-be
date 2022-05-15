@@ -93,7 +93,7 @@ export class ConversationService {
         // senderId: clientId,
       },
     });
-    return chats;
+    return chats || [];
   }
 
   private async createChat(createChatDto: Prisma.ChatsCreateInput) {
