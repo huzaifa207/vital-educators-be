@@ -109,7 +109,7 @@ export class UsersController {
   @Serializer(ReturnUserDto)
   @Get()
   currentUser(@Req() request: Request) {
-    console.log("USER:");
+    console.log('USER:');
     console.log(request.currentUser);
     return request.currentUser as Prisma.UserCreateManyInput;
   }

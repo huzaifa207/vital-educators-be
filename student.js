@@ -21,10 +21,13 @@ const handleMessage = () => {
   // message to server
   let reveiverId = document.getElementById('reveiverId');
   console.log('reveiverId', reveiverId.value);
-  socket.emit('createChat', {
-    data: { msg: 'hello', to: `${reveiverId.value}`, from: 'ahmad' },
+  socket.emit('sendMsgFromStudent', {
+    data: { msg: 'wow', receiverId: 28 },
   });
 };
+socket.on('sent', (data) => {
+  console.log('data id', data);
+});
 
 socket.on('reveiveMsg', (data) => {
   console.log('data', data);

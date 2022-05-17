@@ -8,9 +8,11 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
+import { Role } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { TokenService } from 'src/token/token.service';
-import { IChat } from './chat';
+import { UsersService } from 'src/users/users.service';
+import { IChat, IChatReturn } from './chat';
 import { CHAT_STATUS, ConversationService } from './conversation.service';
 
 @WebSocketGateway({
@@ -27,6 +29,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   constructor(
     private readonly conversationService: ConversationService,
     private readonly tokenService: TokenService,
+    private readonly userService: UsersService,
   ) {}
   private connectionTable = new Map();
 
@@ -42,9 +45,8 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   async handleConnection(@ConnectedSocket() client: Socket) {
     const { cookie } = client.handshake.headers;
-    const token = this.extractToken(cookie);
-    const { id } = await this.tokenService.verifyToken(token);
 
+    const { from: id } = await this.verifyConnectedUser(cookie);
     const alreadyConnected = this.connectionTable.get(id);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
@@ -53,10 +55,8 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     //---------------- GET CHAT LIST ----------------
-    console.log('>Emiting receiveMsg ', id);
     const data = await this.conversationService.getChat(id);
-    console.log('>Data', JSON.stringify(data));
-    client.emit('reveiveMsg', data);
+    client.emit('receiveMsg', data);
 
     // Data arragnemnt
     /**
@@ -87,25 +87,25 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   @SubscribeMessage('sendMsgFromStudent')
   async msgFromStudent(
-    @MessageBody() { data: { tutorId, msg } }: { data: Partial<IChat> },
+    @MessageBody() { data: { receiverId: tutorId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    // const token = client.handshake.headers.authorization.split(' ')[1];
     const { cookie } = client.handshake.headers;
-    const token = this.extractToken(cookie);
-    const { id: from } = await this.tokenService.verifyStudentToken(token);
-    const {
-      status,
-      data: { senderId, receiverId, message },
-    } = await this.conversationService.msgFromStudent(from, tutorId, msg);
+    const { from, validUser } = await this.verifyConnectedUser(cookie, 'STUDENT');
 
+    if (!validUser) {
+      return { error: 'Enter Student Token' };
+    }
+
+    const { status, data } = await this.conversationService.msgFromStudent(from, tutorId, msg);
     if (status === CHAT_STATUS.PENDING) {
-      this.broadCastMsg(client, String(tutorId), 'reveiveMsgFromStudent', {
-        studentId: senderId,
-        tutorId: receiverId,
-        msg: message,
-        status,
-      });
+      // this.broadCastMsg<IChatReturn>(client, String(tutorId), 'reveiveMsgFromStudent', {
+      //   studentId: from,
+      //   tutorId,
+      //   msg: 'data.message',
+      //   status,
+      // });
+      return { error: 'PENDING' };
     }
 
     if (status === CHAT_STATUS.REJECTED) {
@@ -115,9 +115,10 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     if (status === CHAT_STATUS.ACCEPTED) {
       this.logger.log({ tutorId, msg });
       this.broadCastMsg(client, String(tutorId), 'reveiveMsgFromStudent', {
-        studentId: senderId,
-        tutorId: receiverId,
-        msg: message,
+        id: data.id,
+        studentId: from,
+        tutorId: tutorId,
+        msg: data.message,
         status,
       });
 
@@ -137,18 +138,23 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   @SubscribeMessage('sendMsgFromTutor')
   async msgFromTutor(
-    @MessageBody() { data: { studentId, msg } }: { data: IChat },
+    @MessageBody() { data: { receiverId: studentId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
     const { cookie } = client.handshake.headers;
-    const token = this.extractToken(cookie);
-    const { id: from } = await this.tokenService.verifyTutorToken(token);
+    const { from, validUser } = await this.verifyConnectedUser(cookie, 'STUDENT');
+
+    if (!validUser) {
+      return { error: 'Enter Tutor Token' };
+    }
+
     const { data, status } = await this.conversationService.msgFromTutor(from, studentId, msg);
     if (status === CHAT_STATUS.ERROR) {
       client.broadcast.to(client.id).emit('error', 'ERROR');
     }
     if (status === CHAT_STATUS.ACCEPTED) {
-      this.broadCastMsg(client, String(studentId), 'reveiveMsgFromTutor', {
+      this.broadCastMsg(client, String(from), 'reveiveMsgFromTutor', {
+        id: data.id,
         tutorId: from,
         studentId,
         msg: data.message,
@@ -169,7 +175,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
   }
 
-  private extractToken(cookie: string) {
+  private async verifyConnectedUser(cookie: string, checkRole?: Role) {
     let token = '';
     const tokenPair = cookie
       .split(';')
@@ -178,18 +184,23 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     if (tokenPair && tokenPair.length > 0) {
       token = tokenPair[0][1];
-      return token;
+
+      const { id: from } = await this.tokenService.verify(token);
+      const { role } = await this.userService.findOne(from);
+
+      return checkRole ? { validUser: checkRole === role, from } : { validUser: true, from };
     } else {
       console.error('Token invalid', tokenPair);
     }
   }
 
-  private broadCastMsg(client: Socket, socketKey: string, eventName: string, data: IChat) {
+  private broadCastMsg(client: Socket, socketKey: string, eventName: string, data: IChatReturn) {
     const receriverId = this.connectionTable.get(socketKey);
     if (receriverId) {
       receriverId.forEach((id: string) => {
         client.broadcast.to(id).emit(eventName, { ...data });
       });
     }
+    client.emit('sent', { id: data.id });
   }
 }

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from './../prisma.service';
 
@@ -35,7 +34,7 @@ export class ConversationService {
       await this.prisma.conversation.create({
         data: {
           studentId,
-          tutorId: tutorId,
+          tutorId,
           status: CHAT_STATUS.PENDING,
         },
       });
@@ -48,6 +47,7 @@ export class ConversationService {
         }),
       };
     }
+
     if (conversation.status === CHAT_STATUS.PENDING) {
       return {
         status: CHAT_STATUS.PENDING,
@@ -141,15 +141,23 @@ export class ConversationService {
     return conversations || [];
   }
 
-  private async createChat(createChatDto: Prisma.ChatsCreateInput) {
+  private async createChat(createChatDto: {
+    senderId: number;
+    receiverId: number;
+    message: string;
+  }) {
     const newChat = {
       senderId: createChatDto.senderId,
       receiverId: createChatDto.receiverId,
       message: createChatDto.message,
     };
-    await this.prisma.chats.create({
-      data: newChat,
-    });
-    return newChat;
+    try {
+      const { id } = await this.prisma.chats.create({
+        data: newChat,
+      });
+      return { ...newChat, id };
+    } catch (error) {
+      console.error('save message error- ', error);
+    }
   }
 }
