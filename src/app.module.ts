@@ -75,7 +75,7 @@ export class AppModule {
         { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/forgot-password', method: RequestMethod.POST },
         { path: 'user/all', method: RequestMethod.DELETE },
-        { path: 'user', method: RequestMethod.GET },
+        { path: 'user/all', method: RequestMethod.GET },
         { path: 'user/send', method: RequestMethod.POST },
         { path: 'user/reset-password', method: RequestMethod.POST },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },

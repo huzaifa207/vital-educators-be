@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { UsersService } from 'src/users/users.service';
 import { PrismaService } from './../prisma.service';
 
 export enum CHAT_STATUS {
@@ -9,9 +10,20 @@ export enum CHAT_STATUS {
   ERROR = 'ERROR',
 }
 
+type TMessage = { id: number; msg: string; createdAt: Date; sentBy: 'SELF' | 'PARTICIPIANT' };
+interface IConversation {
+  participantId: number;
+  participantData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  message: TMessage[];
+}
+
 @Injectable()
 export class ConversationService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly userService: UsersService) {}
 
   async msgFromStudent(studentId: number, tutorId: number, msg: string) {
     const conversation = await this.prisma.conversation.findFirst({
@@ -93,7 +105,40 @@ export class ConversationService {
         // senderId: clientId,
       },
     });
-    return chats || [];
+
+    const conversations: IConversation[] = [];
+    for (const chatMessage of chats) {
+      const participantId =
+        chatMessage.senderId === clientId ? chatMessage.receiverId : chatMessage.senderId;
+      const ind = conversations.findIndex((con) => con.participantId === participantId);
+      let conv: typeof conversations[0];
+
+      if (ind >= 0) {
+        // already conversation created
+        conv = conversations[ind];
+      } else {
+        // create conv
+        const { first_name, last_name, email } = await this.userService.findOne(participantId);
+        conv = {
+          participantId: participantId,
+          participantData: {
+            firstName: first_name,
+            lastName: last_name,
+            email: email,
+          },
+          message: [],
+        };
+        conversations.push(conv);
+      }
+
+      conv.message.push({
+        id: chatMessage.id,
+        msg: chatMessage.message,
+        createdAt: chatMessage.createdAt,
+        sentBy: chatMessage.senderId === clientId ? 'SELF' : 'PARTICIPIANT',
+      });
+    }
+    return conversations || [];
   }
 
   private async createChat(createChatDto: Prisma.ChatsCreateInput) {

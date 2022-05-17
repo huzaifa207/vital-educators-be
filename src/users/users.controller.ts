@@ -66,16 +66,10 @@ export class UsersController {
   }
 
   @Serializer(ReturnUserDto)
-  @Get()
+  @Get('/all')
   findAll() {
     console.log('first 11');
     return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  @Serializer(ReturnUserDto)
-  findOne(@Param('id') id: number) {
-    return this.usersService.findOne(id);
   }
 
   @Patch()
@@ -115,7 +109,15 @@ export class UsersController {
   @Serializer(ReturnUserDto)
   @Get()
   currentUser(@Req() request: Request) {
+    console.log("USER:");
+    console.log(request.currentUser);
     return request.currentUser as Prisma.UserCreateManyInput;
+  }
+
+  @Get(':id')
+  @Serializer(ReturnUserDto)
+  findOne(@Param('id') id: number) {
+    return this.usersService.findOne(id);
   }
 
   @Post('/send')

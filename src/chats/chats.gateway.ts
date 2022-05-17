@@ -14,9 +14,13 @@ import { IChat } from './chat';
 import { CHAT_STATUS, ConversationService } from './conversation.service';
 
 @WebSocketGateway({
-  credentials: true,
   cors: {
-    origin: ['https://localhost:5501', 'https://vital-educators.vercel.app'],
+    credentials: true,
+    origin: [
+      'https://localhost:5501',
+      'https://localhost:3000',
+      'https://vital-educators.vercel.app',
+    ],
   },
 })
 export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -38,7 +42,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   async handleConnection(@ConnectedSocket() client: Socket) {
     const { cookie } = client.handshake.headers;
-    const token = cookie.split('=')[1];
+    const token = this.extractToken(cookie);
     const { id } = await this.tokenService.verifyToken(token);
 
     const alreadyConnected = this.connectionTable.get(id);
@@ -49,9 +53,34 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     //---------------- GET CHAT LIST ----------------
-
+    console.log('>Emiting receiveMsg ', id);
     const data = await this.conversationService.getChat(id);
-    client.broadcast.to(client.id).emit('reveiveMsg', { ...data });
+    console.log('>Data', JSON.stringify(data));
+    client.emit('reveiveMsg', data);
+
+    // Data arragnemnt
+    /**
+     * [ -> Array of conversations
+     *   {
+     *
+     *      userData:{
+     *        userId: 1234,
+     *        name: 123,
+     *        email:123,
+     *      },
+     *      messages: [
+     *        {
+     *        msgId:
+     *        msg:"hello",
+     *        sentBy:"self|other",
+     *        createdAt:123
+     *        }
+     *      ]
+     *
+     *   }
+     * ]
+     *
+     */
   }
 
   // Message to Server
@@ -62,8 +91,8 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @ConnectedSocket() client: Socket,
   ) {
     // const token = client.handshake.headers.authorization.split(' ')[1];
-    const token = client.handshake.headers.cookie;
-    console.log('token from chat module = ', token);
+    const { cookie } = client.handshake.headers;
+    const token = this.extractToken(cookie);
     const { id: from } = await this.tokenService.verifyStudentToken(token);
     const {
       status,
@@ -111,7 +140,8 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { studentId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    const token = client.handshake.headers.authorization.split(' ')[1];
+    const { cookie } = client.handshake.headers;
+    const token = this.extractToken(cookie);
     const { id: from } = await this.tokenService.verifyTutorToken(token);
     const { data, status } = await this.conversationService.msgFromTutor(from, studentId, msg);
     if (status === CHAT_STATUS.ERROR) {
@@ -136,6 +166,21 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
       //     });
       //   });
       // }
+    }
+  }
+
+  private extractToken(cookie: string) {
+    let token = '';
+    const tokenPair = cookie
+      .split(';')
+      .map((v) => v.trim().split('='))
+      .filter((v) => v[0] == 'jwt');
+
+    if (tokenPair && tokenPair.length > 0) {
+      token = tokenPair[0][1];
+      return token;
+    } else {
+      console.error('Token invalid', tokenPair);
     }
   }
 

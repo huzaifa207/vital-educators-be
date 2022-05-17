@@ -38,6 +38,7 @@
     "@nestjs/serve-static": "^2.2.2",
     "@nestjs/websockets": "^8.4.4",
     "@prisma/client": "^3.14.0",
+    "@prisma/studio": "^0.460.0",
     "@sentry/node": "^6.19.6",
     "@types/cookie-session": "^2.0.44",
     "@types/cron": "^1.7.3",

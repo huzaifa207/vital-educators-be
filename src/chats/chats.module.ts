@@ -4,6 +4,8 @@ import { PrismaService } from 'src/prisma.service';
 import { ENV } from 'src/settings';
 import { TokenModule } from 'src/token/token.module';
 import { TokenService } from 'src/token/token.service';
+import { UsersModule } from 'src/users/users.module';
+import { UsersService } from 'src/users/users.service';
 import { ChatsGateway } from './chats.gateway';
 import { ConversationService } from './conversation.service';
 
@@ -13,7 +15,8 @@ import { ConversationService } from './conversation.service';
       secret: ENV['JWT_SECRET'],
     }),
     TokenModule,
+    UsersModule
   ],
-  providers: [ChatsGateway, ConversationService, TokenService, PrismaService],
+  providers: [ ChatsGateway, ConversationService, TokenService, PrismaService],
 })
 export class ChatsModule {}
