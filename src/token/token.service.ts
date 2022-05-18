@@ -55,7 +55,7 @@ export class TokenService {
       }
       return { id, token: JWTToken };
     } catch (error) {
-      throw new ForbiddenException('Something went wrong');
+      throw new ForbiddenException('Please provide new Token');
     }
   }
 

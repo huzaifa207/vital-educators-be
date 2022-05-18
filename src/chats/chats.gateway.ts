@@ -47,6 +47,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     const { cookie } = client.handshake.headers;
 
     const { from: id } = await this.verifyConnectedUser(cookie);
+    console.log('id = ', id);
     const alreadyConnected = this.connectionTable.get(id);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
@@ -56,6 +57,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     //---------------- GET CHAT LIST ----------------
     const data = await this.conversationService.getChat(id);
+    console.log('all data = ', JSON.stringify(data));
     client.emit('receiveMsg', data);
 
     // Data arragnemnt
@@ -98,41 +100,19 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     const { status, data } = await this.conversationService.msgFromStudent(from, tutorId, msg);
-    if (status === CHAT_STATUS.PENDING) {
-      // this.broadCastMsg<IChatReturn>(client, String(tutorId), 'reveiveMsgFromStudent', {
-      //   studentId: from,
-      //   tutorId,
-      //   msg: 'data.message',
-      //   status,
-      // });
-      return { error: 'PENDING' };
-    }
-
-    if (status === CHAT_STATUS.REJECTED) {
-      client.broadcast.to(client.id).emit('rejected', 'REJECTED');
-    }
-
-    if (status === CHAT_STATUS.ACCEPTED) {
-      this.logger.log({ tutorId, msg });
-      this.broadCastMsg(client, String(tutorId), 'reveiveMsgFromStudent', {
+    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.ACCEPTED) {
+      return this.broadCastMsg(client, String(tutorId), 'reveiveMsgFromStudent', {
         id: data.id,
         studentId: from,
         tutorId: tutorId,
         msg: data.message,
         status,
       });
+      // return { error: 'PENDING' };
+    }
 
-      // let receriverId = this.connectionTable.get(tutorId);
-      // if (receriverId) {
-      //   receriverId.forEach((id: string) => {
-      //     client.broadcast.to(id).emit('reveiveMsgFromStudent', {
-      //       studentId: senderId,
-      //       tutorId: receiverId,
-      //       msg: message,
-      //       status,
-      //     });
-      //   });
-      // }
+    if (status === CHAT_STATUS.REJECTED) {
+      client.broadcast.to(client.id).emit('rejected', 'REJECTED');
     }
   }
 
@@ -152,26 +132,14 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     if (status === CHAT_STATUS.ERROR) {
       client.broadcast.to(client.id).emit('error', 'ERROR');
     }
-    if (status === CHAT_STATUS.ACCEPTED) {
-      this.broadCastMsg(client, String(from), 'reveiveMsgFromTutor', {
+    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.ACCEPTED) {
+      return this.broadCastMsg(client, String(from), 'reveiveMsgFromTutor', {
         id: data.id,
         tutorId: from,
         studentId,
         msg: data.message,
         status,
       });
-
-      // let receriverId = this.connectionTable.get(studentId);
-      // if (receriverId) {
-      //   receriverId.forEach((id: string) => {
-      //     client.broadcast.to(id).emit('reveiveMsgFromTutor', {
-      //       tutorId: from,
-      //       studentId,
-      //       msg: data,
-      //       status,
-      //     });
-      //   });
-      // }
     }
   }
 
@@ -184,11 +152,13 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     if (tokenPair && tokenPair.length > 0) {
       token = tokenPair[0][1];
-
-      const { id: from } = await this.tokenService.verify(token);
-      const { role } = await this.userService.findOne(from);
-
-      return checkRole ? { validUser: checkRole === role, from } : { validUser: true, from };
+      try {
+        const { id: from } = await this.tokenService.verify(token);
+        const { role } = await this.userService.findOne(from);
+        return checkRole ? { validUser: checkRole === role, from } : { validUser: true, from };
+      } catch (error) {
+        console.log(error.message);
+      }
     } else {
       console.error('Token invalid', tokenPair);
     }
@@ -201,6 +171,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         client.broadcast.to(id).emit(eventName, { ...data });
       });
     }
-    client.emit('sent', { id: data.id });
+    return { data: { messageId: data.id } };
+    // client.emit('sent', { id: data.id });
   }
 }

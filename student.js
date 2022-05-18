@@ -19,15 +19,19 @@ const message = document.getElementById('msg').innerHTML;
 const handleMessage = () => {
   console.log('message.value', message);
   // message to server
-  let reveiverId = document.getElementById('reveiverId');
-  console.log('reveiverId', reveiverId.value);
-  socket.emit('sendMsgFromStudent', {
-    data: { msg: 'wow', receiverId: 28 },
-  });
+  socket.emit(
+    'sendMsgFromStudent',
+    {
+      data: { msg: 'wow how are you', receiverId: 28 },
+    },
+    (resp) => {
+      console.log('ACK', resp);
+    },
+  );
 };
-socket.on('sent', (data) => {
-  console.log('data id', data);
-});
+// socket.on('sent', (data) => {
+//   console.log('data id', data);
+// });
 
 socket.on('reveiveMsg', (data) => {
   console.log('data', data);

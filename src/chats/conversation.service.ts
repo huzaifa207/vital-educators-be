@@ -50,7 +50,13 @@ export class ConversationService {
 
     if (conversation.status === CHAT_STATUS.PENDING) {
       return {
+        // status: CHAT_STATUS.PENDING,
         status: CHAT_STATUS.PENDING,
+        data: await this.createChat({
+          senderId: studentId,
+          receiverId: tutorId,
+          message: msg,
+        }),
       };
     }
 
@@ -86,7 +92,10 @@ export class ConversationService {
       };
     }
 
-    if (conversation.status === CHAT_STATUS.ACCEPTED) {
+    if (
+      conversation.status === CHAT_STATUS.ACCEPTED ||
+      conversation.status === CHAT_STATUS.PENDING
+    ) {
       return {
         status: CHAT_STATUS.ACCEPTED,
         data: await this.createChat({
