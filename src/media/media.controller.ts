@@ -35,7 +35,7 @@ export class MediaController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads/docs',
+        destination: './uploads/media',
         filename: (req, file, cb) => {
           const filename: string = nanoid(10);
           const extension: string = file.originalname.substring(
