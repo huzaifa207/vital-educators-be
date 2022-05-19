@@ -10,9 +10,6 @@ export class UserFilter {
   email: string;
 
   @Expose()
-  username: string;
-
-  @Expose()
   profile_url: string;
 
   @Expose()

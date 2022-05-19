@@ -14,9 +14,6 @@ export class ReturnUserDto {
   email: string;
 
   @Expose()
-  username: string;
-
-  @Expose()
   profile_url: string;
 
   @Expose()

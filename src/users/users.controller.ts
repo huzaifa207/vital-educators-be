@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { Request, Response } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
 import { EmailType } from 'src/mail-service/mail.utils';
@@ -37,8 +37,9 @@ export class UsersController {
   async login(
     @Body()
     loginUserDto: {
-      username: string;
+      email: string;
       password: string;
+      role: Role;
     },
     @Res({ passthrough: true }) response: Response,
   ) {
@@ -121,24 +122,24 @@ export class UsersController {
   }
 
   @Post('/send')
-  async sendEmail(@Body() body: { email: string; username: string; emailToken: string }) {
+  async sendEmail(@Body() body: { email: string; name: string; emailToken: string }) {
     await this.usersService.sendEmail(
       body.email,
-      body.username,
+      body.name,
       EmailType.CONFIRM_EMAIL,
       body.emailToken,
     );
   }
 
   @Post('/forgot-password')
-  async forgotPassword(@Body() body: { username: string }) {
-    return await this.usersService.forgotPassword(body.username);
+  async forgotPassword(@Body() body: { email: string }) {
+    return await this.usersService.forgotPassword(body.email);
   }
 
   @Post('/reset-password')
-  async resetPassword(@Body() body: { username: string; password: string; passwordToken: number }) {
+  async resetPassword(@Body() body: { email: string; password: string; passwordToken: number }) {
     const { id, success } = await this.usersService.resetPassword(
-      body.username,
+      body.email,
       body.password,
       body.passwordToken,
     );

@@ -52,7 +52,7 @@ export class TaskSchadularsService {
         await this.mailService.sendMail(
           new EmailUtility({
             email: userData.email,
-            username: `${userData.first_name} ${userData.last_name}`,
+            name: `${userData.first_name} ${userData.last_name}`,
             action: EmailType.REMINDER,
             other: {
               list: data as string,

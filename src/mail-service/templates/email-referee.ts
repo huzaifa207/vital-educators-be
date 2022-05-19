@@ -1,4 +1,4 @@
-export const EmailReferee = (username: string, referee_name: string, url: string) => {
+export const EmailReferee = (name: string, referee_name: string, url: string) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -233,7 +233,7 @@ export const EmailReferee = (username: string, referee_name: string, url: string
                       Dear ${referee_name},
                     </p>
                  
-                    <p>You have been selected as a referee by ${username} as part of an ID checking system implemented by First Tutors. You are kindly requested to please complete a a short on-line form which will confirm ${username}'s identity and allow them to use First Tutors to offer their private tuition services. It is a short form and should take no longer than 2 minutes to complete. Please note: the completed reference form will be passed on to any clients who choose ${username} as their tutor, but your contact information will remain confidential. </p>
+                    <p>You have been selected as a referee by ${name} as part of an ID checking system implemented by First Tutors. You are kindly requested to please complete a a short on-line form which will confirm ${name}'s identity and allow them to use First Tutors to offer their private tuition services. It is a short form and should take no longer than 2 minutes to complete. Please note: the completed reference form will be passed on to any clients who choose ${name} as their tutor, but your contact information will remain confidential. </p>
                     <p>The reference form can be accessed <a href=${url}>here.</a> </p>
                   </td>
                 </tr>
@@ -297,7 +297,7 @@ export const EmailReferee = (username: string, referee_name: string, url: string
                     </p>
                     <br/>
                      <p style="margin: 0">
-                      On behalf of ${username} we thank you for your time. Kind Regards
+                      On behalf of ${name} we thank you for your time. Kind Regards
                     </p>
                     <br/>
                     <p style="margin: 0">

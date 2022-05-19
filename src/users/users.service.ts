@@ -4,7 +4,7 @@ import {
   NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
@@ -32,10 +32,6 @@ export class UsersService {
         where: { email: createUserDto.email },
       })) &&
         'Email aready exist') ||
-      ((await this.prisma.user.findUnique({
-        where: { username: createUserDto.username },
-      })) &&
-        'Username aready exist') ||
       '';
 
     if (userAlreadyExists) {
@@ -80,7 +76,7 @@ export class UsersService {
         await this.tutoringDetailsService.create(tutoringDetail, +tutor.id);
         this.sendEmail(
           newUser.email,
-          newUser.username,
+          `${newUser.first_name} ${newUser.last_name}`,
           EmailType.CONFIRM_EMAIL,
           newUser.email_token,
         ).catch((err) => console.log(err));
@@ -92,12 +88,17 @@ export class UsersService {
     return newUser;
   }
 
-  async login(loginUserDto: { username: string; password: string }) {
+  async login({ email, password, role }: { email: string; password: string; role: Role }) {
     try {
-      const currentUser = await this.findUser(loginUserDto.username);
+      const _role = role ? role : Role.TUTOR;
+      const currentUser = await this.prisma.user.findFirst({
+        where: {
+          AND: [{ email }, { role: _role }],
+        },
+      });
 
       const [salt, storedHash] = currentUser.password.split('.');
-      const hash = (await scrypt(loginUserDto.password, salt, 16)) as Buffer;
+      const hash = (await scrypt(password, salt, 16)) as Buffer;
 
       if (storedHash !== hash.toString('hex')) {
         throw new BadRequestException('Invalid password');
@@ -162,9 +163,9 @@ export class UsersService {
     }
   }
 
-  async forgotPassword(username: string) {
+  async forgotPassword(email: string) {
     try {
-      const user = await this.findUser(username);
+      const user = await this.findUser(email);
 
       //generate 4 digit random number
       const token = Math.floor(1000 + Math.random() * 9000);
@@ -175,7 +176,12 @@ export class UsersService {
         },
       });
 
-      await this.sendEmail(user.email, user.username, EmailType.RESET_PASSWORD, token);
+      await this.sendEmail(
+        user.email,
+        `${user.first_name} ${user.last_name}`,
+        EmailType.RESET_PASSWORD,
+        token,
+      );
       return { success: true };
     } catch (error) {
       console.log(error);
@@ -183,9 +189,9 @@ export class UsersService {
     }
   }
 
-  async resetPassword(username: string, password: string, passwordToken: number) {
+  async resetPassword(email: string, password: string, passwordToken: number) {
     try {
-      const user = await this.findUser(username);
+      const user = await this.findUser(email);
       if (user.password_reset_token !== passwordToken) {
         throw new BadRequestException('Invalid token');
       }
@@ -203,15 +209,12 @@ export class UsersService {
     }
   }
 
-  private async findUser(username: string) {
+  private async findUser(email: string) {
     try {
-      const user =
-        (await this.prisma.user.findUnique({
-          where: { email: username },
-        })) ||
-        (await this.prisma.user.findUnique({
-          where: { username: username },
-        }));
+      const user = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
       if (!user) {
         throw new BadRequestException('User not found');
       }
@@ -227,8 +230,8 @@ export class UsersService {
     return salt + '.' + hash.toString('hex');
   }
 
-  async sendEmail(email: string, username: string, action: EmailType, token: string | number) {
-    await this.mailService.sendMail(new EmailUtility({ email, username, action, token }));
+  async sendEmail(email: string, name: string, action: EmailType, token: string | number) {
+    await this.mailService.sendMail(new EmailUtility({ email, name, action, token }));
   }
 
   // ------------ PERSONAL DEV SERVICES ------------

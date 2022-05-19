@@ -45,15 +45,16 @@ export class TutorsService {
             deActivate: false,
           },
           {
+            user: {
+              postal_code: String(postCode),
+              email_approved: true,
+            },
+          },
+          {
             subjectOffers: {
               some: {
                 title: subject,
               },
-            },
-          },
-          {
-            user: {
-              postal_code: String(postCode),
             },
           },
         ],
@@ -67,7 +68,6 @@ export class TutorsService {
             email: true,
             phone: true,
             postal_code: true,
-            username: true,
             country: true,
             profile_url: true,
           },

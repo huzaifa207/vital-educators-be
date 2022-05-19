@@ -1,4 +1,4 @@
-export const emailRemainder = (username: string, list: string, url: string) => {
+export const emailRemainder = (name: string, list: string, url: string) => {
   return `
 
     <!DOCTYPE html>
@@ -181,7 +181,7 @@ export const emailRemainder = (username: string, list: string, url: string) => {
                             line-height: 24px;
                             ">
                     <p style="margin: 0">
-                        Hi ${username}, We know you’re super busy but some of your important details are missing. Please add these details so that your profile shows in search.
+                        Hi ${name}, We know you’re super busy but some of your important details are missing. Please add these details so that your profile shows in search.
                     </p>
                     </td>
                 </tr>

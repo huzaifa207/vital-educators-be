@@ -1,4 +1,4 @@
-export const passwordResetTemplate = (username: string, token: number) => {
+export const passwordResetTemplate = (name: string, token: number) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -225,7 +225,7 @@ export const passwordResetTemplate = (username: string, token: number) => {
                     "
                   >
                     <p style="margin: 0;text-align:center">
-                      Hi ${username}, Use below OTP Code to reset your password
+                      Hi ${name}, Use below OTP Code to reset your password
                      
                     </p>
                   </td>

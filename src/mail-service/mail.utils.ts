@@ -11,10 +11,10 @@ export enum EmailType {
 }
 
 export interface EmailParam {
-  [EmailType.CONFIRM_EMAIL]: { username: string; url: string };
-  [EmailType.RESET_PASSWORD]: { username: string; token: number };
-  [EmailType.REFEREE_REVIEW]: { username: string; referee_name: string; url: string };
-  [EmailType.REMINDER]: { username: string; list: string; url: string };
+  [EmailType.CONFIRM_EMAIL]: { name: string; url: string };
+  [EmailType.RESET_PASSWORD]: { name: string; token: number };
+  [EmailType.REFEREE_REVIEW]: { name: string; referee_name: string; url: string };
+  [EmailType.REMINDER]: { name: string; list: string; url: string };
 }
 
 export interface IEmailTemplate {
@@ -37,16 +37,16 @@ export abstract class GenericMail {
 
     this.templates = {
       [EmailType.CONFIRM_EMAIL]: (data: EmailParam[EmailType.CONFIRM_EMAIL]) =>
-        emailConfirm(data.username, data.url),
+        emailConfirm(data.name, data.url),
 
       [EmailType.RESET_PASSWORD]: (data: EmailParam[EmailType.RESET_PASSWORD]) =>
-        passwordResetTemplate(data.username, data.token),
+        passwordResetTemplate(data.name, data.token),
 
       [EmailType.REFEREE_REVIEW]: (data: EmailParam[EmailType.REFEREE_REVIEW]) =>
-        EmailReferee(data.username, data.referee_name, data.url),
+        EmailReferee(data.name, data.referee_name, data.url),
 
       [EmailType.REMINDER]: (data: EmailParam[EmailType.REMINDER]) =>
-        emailRemainder(data.username, data.list, data.url),
+        emailRemainder(data.name, data.list, data.url),
     };
   }
   abstract renderTemplate(): string;
@@ -56,7 +56,7 @@ export class EmailUtility extends GenericMail {
   constructor(
     public data: {
       email: string;
-      username?: string;
+      name?: string;
       action: EmailType;
       token?: string | number;
       other?: { [key: string]: string | number };
@@ -69,20 +69,20 @@ export class EmailUtility extends GenericMail {
     if (this.data.action === EmailType.CONFIRM_EMAIL) {
       const emailTemp = this.templates[EmailType.CONFIRM_EMAIL];
       return emailTemp({
-        username: this.data.username,
+        name: this.data.name,
         url: `https://vital-educator.herokuapp.com/user/confirm-email/${this.data.token as string}`,
       });
     }
 
     if (this.data.action === EmailType.RESET_PASSWORD) {
       const passTemp = this.templates[EmailType.RESET_PASSWORD];
-      return passTemp({ username: this.data.username, token: +this.data.token });
+      return passTemp({ name: this.data.name, token: +this.data.token });
     }
 
     if (this.data.action === EmailType.REFEREE_REVIEW) {
       const refereeTemp = this.templates[EmailType.REFEREE_REVIEW];
       return refereeTemp({
-        username: this.data.username,
+        name: this.data.name,
         referee_name: this.data.other.referee_name as string,
         url: `${this.domain}referee-review?t=${this.data.token}` as string,
       });
@@ -91,7 +91,7 @@ export class EmailUtility extends GenericMail {
     if (this.data.action === EmailType.REMINDER) {
       const reminderTemp = this.templates[EmailType.REMINDER];
       return reminderTemp({
-        username: this.data.username,
+        name: this.data.name,
         list: this.data.other.list as string,
         url: `${this.domain}/tutor` as string,
       });

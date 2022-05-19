@@ -1,4 +1,4 @@
-export const emailConfirm = (username: string, url: string) => {
+export const emailConfirm = (name: string, url: string) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -252,7 +252,7 @@ export const emailConfirm = (username: string, url: string) => {
                     "
                   >
                     <p style="margin: 0">
-                      Hi ${username}, Tap the button below to confirm your email address. If you
+                      Hi ${name}, Tap the button below to confirm your email address. If you
                       didn't create an account on
                       <a href="https://vital-educators.vercel.app">VitalEducators</a>, you can safely
                       delete this email.
