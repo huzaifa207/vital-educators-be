@@ -44,10 +44,8 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   async handleConnection(@ConnectedSocket() client: Socket) {
-    const { cookie } = client.handshake.headers;
+    const { from: id } = await this.verifyConnectedUser(client);
 
-    const { from: id } = await this.verifyConnectedUser(cookie);
-    console.log('id = ', id);
     const alreadyConnected = this.connectionTable.get(id);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
@@ -92,8 +90,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { receiverId: tutorId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    const { cookie } = client.handshake.headers;
-    const { from, validUser } = await this.verifyConnectedUser(cookie, 'STUDENT');
+    const { from, validUser } = await this.verifyConnectedUser(client, 'STUDENT');
 
     if (!validUser) {
       return { error: 'Enter Student Token' };
@@ -121,8 +118,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { receiverId: studentId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    const { cookie } = client.handshake.headers;
-    const { from, validUser } = await this.verifyConnectedUser(cookie, 'STUDENT');
+    const { from, validUser } = await this.verifyConnectedUser(client, 'TUTOR');
 
     if (!validUser) {
       return { error: 'Enter Tutor Token' };
@@ -143,7 +139,9 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
   }
 
-  private async verifyConnectedUser(cookie: string, checkRole?: Role) {
+  private async verifyConnectedUser(client: Socket, checkRole?: Role) {
+    const { cookie } = client.handshake.headers;
+
     let token = '';
     const tokenPair = cookie
       .split(';')
@@ -153,7 +151,10 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     if (tokenPair && tokenPair.length > 0) {
       token = tokenPair[0][1];
       try {
-        const { id: from } = await this.tokenService.verify(token);
+        const { id: from, token: _token } = await this.tokenService.verify(token);
+        if (_token) {
+          client.handshake.headers['set-cookie'] = [`jwt=${_token}`];
+        }
         const { role } = await this.userService.findOne(from);
         return checkRole ? { validUser: checkRole === role, from } : { validUser: true, from };
       } catch (error) {
