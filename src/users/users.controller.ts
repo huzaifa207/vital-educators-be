@@ -99,9 +99,18 @@ export class UsersController {
 
   @Get('/confirm-email/:token')
   async confirmEmail(@Param('token') token: string, @Res() res: Response) {
-    const user = await this.usersService.confirmEmail(token);
-    if (user.approved) {
-      res.header('Location', 'https://vital-educators.vercel.app/email-verified');
+    const { approved, role } = await this.usersService.confirmEmail(token);
+    let URL = '';
+    switch (role) {
+      case 'STUDENT':
+        URL = `https://vital-educators.vercel.app/student/email-verified`;
+        break;
+      case 'TUTOR':
+        URL = `https://vital-educators.vercel.app/tutor/email-verified`;
+        break;
+    }
+    if (approved) {
+      res.header('Location', URL);
       res.statusCode = 301;
       res.end();
     }

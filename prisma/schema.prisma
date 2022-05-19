@@ -19,7 +19,7 @@ model User {
   profile_url              String    @default("")
   address_1                String
   address_2                String    @default("")
-  phone                    String
+  phone                    String?
   country                  String
   postal_code              String
   search_visibility        Boolean?  @default(false)

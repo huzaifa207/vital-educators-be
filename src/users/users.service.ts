@@ -150,14 +150,14 @@ export class UsersService {
 
   async confirmEmail(emailToken: string) {
     try {
-      await this.prisma.user.update({
+      const user = await this.prisma.user.update({
         where: { email_token: emailToken },
         data: {
           email_token: null,
           email_approved: true,
         },
       });
-      return { approved: true };
+      return { approved: true, role: user.role };
     } catch (error) {
       return { approved: false };
     }
