@@ -92,8 +92,8 @@ export const EmailReferee = (name: string, referee_name: string, url: string) =>
             opacity: 0;
           "
         >
-          A preheader is the short summary text that follows the subject line when
-          an email is viewed in the inbox.
+          // A preheader is the short summary text that follows the subject line when
+          // an email is viewed in the inbox.
         </div>
         <!-- end preheader -->
 
