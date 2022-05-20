@@ -126,8 +126,8 @@ export class UsersController {
 
   @Get(':id')
   @Serializer(ReturnUserDto)
-  findOne(@Param('id') id: number) {
-    return this.usersService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
   }
 
   @Post('/send')
