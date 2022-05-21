@@ -16,6 +16,7 @@ interface IConversation {
     firstName: string;
     lastName: string;
     email: string;
+    profile_url: string;
   };
   message: TMessage[];
 }
@@ -130,13 +131,16 @@ export class ConversationService {
         conv = conversations[ind];
       } else {
         // create conv
-        const { first_name, last_name, email } = await this.userService.findOne(participantId);
+        const { first_name, last_name, email, profile_url } = await this.userService.findOne(
+          participantId,
+        );
         conv = {
           participantId: participantId,
           participantData: {
             firstName: first_name,
             lastName: last_name,
             email: email,
+            profile_url,
           },
           message: [],
         };
