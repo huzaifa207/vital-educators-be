@@ -106,6 +106,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         studentId: from,
         tutorId: receiverId,
         msg: data.message,
+        createdAt: data.createdAt,
         status,
       });
       // return { error: 'PENDING' };
@@ -136,6 +137,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         tutorId: from,
         studentId,
         msg: data.message,
+        createdAt: data.createdAt,
         status,
       });
     }

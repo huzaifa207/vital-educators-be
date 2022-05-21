@@ -164,10 +164,10 @@ export class ConversationService {
       message: createChatDto.message,
     };
     try {
-      const { id } = await this.prisma.chats.create({
+      const { id, createdAt } = await this.prisma.chats.create({
         data: newChat,
       });
-      return { ...newChat, id };
+      return { ...newChat, id, createdAt };
     } catch (error) {
       console.error('save message error- ', error);
     }

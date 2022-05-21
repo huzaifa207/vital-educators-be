@@ -9,5 +9,6 @@ export interface IChatReturn {
   tutorId: number;
   studentId: number;
   msg: string;
+  createdAt: Date;
   status: CHAT_STATUS;
 }
