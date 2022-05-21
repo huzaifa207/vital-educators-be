@@ -14,7 +14,7 @@ export interface EmailParam {
   [EmailType.CONFIRM_EMAIL]: { name: string; url: string };
   [EmailType.RESET_PASSWORD]: { name: string; token: number };
   [EmailType.REFEREE_REVIEW]: { name: string; referee_name: string; url: string };
-  [EmailType.REMINDER]: { name: string; list: string; url: string };
+  [EmailType.REMINDER]: { name: string };
 }
 
 export interface IEmailTemplate {
@@ -45,8 +45,7 @@ export abstract class GenericMail {
       [EmailType.REFEREE_REVIEW]: (data: EmailParam[EmailType.REFEREE_REVIEW]) =>
         EmailReferee(data.name, data.referee_name, data.url),
 
-      [EmailType.REMINDER]: (data: EmailParam[EmailType.REMINDER]) =>
-        emailRemainder(data.name, data.list, data.url),
+      [EmailType.REMINDER]: (data: EmailParam[EmailType.REMINDER]) => emailRemainder(data.name),
     };
   }
   abstract renderTemplate(): string;
@@ -92,8 +91,6 @@ export class EmailUtility extends GenericMail {
       const reminderTemp = this.templates[EmailType.REMINDER];
       return reminderTemp({
         name: this.data.name,
-        list: this.data.other.list as string,
-        url: `${this.domain}/tutor` as string,
       });
     }
   };

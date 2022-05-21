@@ -21,45 +21,52 @@ export class TaskSchadularsService {
       const { documents, referees, subjects, tutoringDetail } = await this.tutorsService.tutorStats(
         tutor.id,
       );
-
-      const tutorReminder: string[] = [];
-      if (referees.length === 0) {
-        tutorReminder.push('Referees Information');
-      }
-
-      if (subjects.length === 0) {
-        tutorReminder.push('Subjects Information');
-      }
-
       const { about, approach, availability, teaching_experience, year_of_experience } =
         tutoringDetail;
-      if (!about || !approach || !availability || !teaching_experience || !year_of_experience) {
-        tutorReminder.push('Tutoring Details Information');
+
+      let tutoRemainder: boolean;
+      if (
+        !referees ||
+        !subjects ||
+        !tutoringDetail ||
+        !about ||
+        !approach ||
+        !availability ||
+        !teaching_experience ||
+        !year_of_experience
+      ) {
+        tutoRemainder = true;
       }
+      // const tutorReminder: string[] = [];
+      // if (referees.length === 0) {
+      //   tutorReminder.push('Referees Information');
+      // }
+
+      // if (subjects.length === 0) {
+      //   tutorReminder.push('Subjects Information');
+      // }
 
       if (documents.length === 1) {
         const { id_card_back, id_card_front, criminal_record } = documents[0];
         if (!id_card_back || !id_card_front || !criminal_record) {
-          tutorReminder.push('Government Documents Information');
+          tutoRemainder = true;
         }
       }
-      if (tutorReminder.length > 0) {
-        let data = '';
-        tutorReminder.forEach((rem) => {
-          data += `<li>${rem}</li>`;
-        });
-
+      // if (tutorReminder.length > 0) {
+      //   let data = '';
+      //   tutorReminder.forEach((rem) => {
+      //     data += `<li>${rem}</li>`;
+      //   });
+      if (tutoRemainder) {
         await this.mailService.sendMail(
           new EmailUtility({
             email: userData.email,
             name: `${userData.first_name} ${userData.last_name}`,
             action: EmailType.REMINDER,
-            other: {
-              list: data as string,
-            },
           }),
         );
       }
+      // }
     });
     setTimeout(() => {
       tutorJob.start();

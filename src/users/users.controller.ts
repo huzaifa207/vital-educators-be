@@ -76,7 +76,10 @@ export class UsersController {
   @Patch()
   @Serializer(ReturnUserDto)
   update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+    const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
+    if (!email_approved) {
+      return { message: 'Email not confirmed' };
+    }
     return this.usersService.update(+id, updateUserDto);
   }
 
@@ -132,12 +135,7 @@ export class UsersController {
 
   @Post('/send')
   async sendEmail(@Body() body: { email: string; name: string; emailToken: string }) {
-    await this.usersService.sendEmail(
-      body.email,
-      body.name,
-      EmailType.CONFIRM_EMAIL,
-      body.emailToken,
-    );
+    await this.usersService.sendEmail(body.email, body.name, EmailType.REMINDER, body.emailToken);
   }
 
   @Post('/forgot-password')

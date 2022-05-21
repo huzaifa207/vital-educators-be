@@ -1,4 +1,4 @@
-export const emailRemainder = (name: string, list: string, url: string) => {
+export const emailRemainder = (name: string) => {
   return `
 
     <!DOCTYPE html>
@@ -6,7 +6,7 @@ export const emailRemainder = (name: string, list: string, url: string) => {
         <head>
         <meta charset="utf-8" />
         <meta http-equiv="x-ua-compatible" content="ie=edge" />
-        <title>Email Confirmation</title>
+        <title>Profile Update Reminder</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         
         <style type="text/css">
@@ -96,13 +96,11 @@ export const emailRemainder = (name: string, list: string, url: string) => {
         </head>
 
         <body style="background-color: #e9ecef">
-
         <!-- start body -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <!-- start logo -->
             <tr>
             <td align="center" bgcolor="#e9ecef">
-
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px">
                 <tr>
                     <td align="center" valign="top" style="padding: 36px 24px">
@@ -181,54 +179,12 @@ export const emailRemainder = (name: string, list: string, url: string) => {
                             line-height: 24px;
                             ">
                     <p style="margin: 0">
-                        Hi ${name}, We know you’re super busy but some of your important details are missing. Please add these details so that your profile shows in search.
+                        Hi ${name}, We know you’re super busy but we need more information to complete your profile. 
+                        Please update your profile. Otherwise, your profile will not show to student.
                     </p>
                     </td>
                 </tr>
                 <!-- end copy -->
-                <tr>
-                    <td align="left" bgcolor="#ffffff" style="
-                            padding: 24px;
-                        
-                            
-                            font-size: 16px;
-                            line-height: 24px;
-                            ">
-                    <p>Your remaining details are</p>
-                    <ul>
-                        ${list}
-                    </ul>
-                    </td>
-                </tr>
-
-                <!-- start button -->
-                <tr>
-                    <td align="left" bgcolor="#ffffff">
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                        <tr>
-                        <td align="center" bgcolor="#ffffff" style="padding: 12px">
-                            <table border="0" cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td align="center" bgcolor="#2A2462" style="border-radius: 6px">
-                                <a href=${url} target="_blank" style="
-                                            display: inline-block;
-                                            padding: 16px 36px;
-                                            font-family: 'Source Sans Pro', Helvetica, Arial,
-                                            sans-serif;
-                                            font-size: 16px;
-                                            color: #ffffff;
-                                            text-decoration: none;
-                                            border-radius: 6px;
-                                        ">Go to Account</a>
-                                </td>
-                            </tr>
-                            </table>
-                        </td>
-                        </tr>
-                    </table>
-                    </td>
-                </tr>
-                <!-- end button -->
 
                 <!-- start copy -->
                 <tr>
