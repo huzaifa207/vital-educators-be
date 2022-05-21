@@ -32,7 +32,6 @@ export class TokenService {
   async verify(token: string) {
     try {
       const { id, iat }: IJwt = await this.jwtService.verifyAsync(token);
-
       const whitelistToken = await this.prisma.whitelist.findFirst({
         where: {
           id,

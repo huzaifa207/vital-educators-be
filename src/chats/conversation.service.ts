@@ -25,12 +25,15 @@ export class ConversationService {
   constructor(private readonly prisma: PrismaService, private readonly userService: UsersService) {}
 
   async msgFromStudent(studentId: number, tutorId: number, msg: string) {
+    console.log('top', { studentId, tutorId, msg });
+
     const conversation = await this.prisma.conversation.findFirst({
       where: {
         AND: [{ studentId }, { tutorId }],
       },
     });
     if (!conversation) {
+      console.log({ studentId, tutorId, msg });
       await this.prisma.conversation.create({
         data: {
           studentId,
