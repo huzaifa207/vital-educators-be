@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
-import { UserDto } from './userDto';
 
 @Injectable()
 export class AppService {
   constructor(private taskSchadularsService: TaskSchadularsService) {}
 
-  async createUser(user: UserDto) {
+  async createUser(user: { email: string; password: string }) {
     try {
-      this.taskSchadularsService.emitt(user);
+      console.log('user', user);
+      // this.taskSchadularsService.emitt(user);
       return 'success';
     } catch (error) {
       console.log(error);

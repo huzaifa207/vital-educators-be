@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { MailService } from 'src/mail-service/mail.service';
+import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
+import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from './../prisma.service';
 
 export enum CHAT_STATUS {
   PENDING = 'PENDING',
-  ACCEPTED = 'ACCEPTED',
+  APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
   ERROR = 'ERROR',
 }
@@ -19,29 +23,57 @@ interface IConversation {
     profile_url: string;
   };
   message: TMessage[];
+  status: string;
 }
 
 @Injectable()
 export class ConversationService {
-  constructor(private readonly prisma: PrismaService, private readonly userService: UsersService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly userService: UsersService,
+    private mailService: MailService,
+    private taskSchadularsService: TaskSchadularsService,
+  ) {}
 
-  async msgFromStudent(studentId: number, tutorId: number, msg: string) {
-    console.log('top', { studentId, tutorId, msg });
-
+  async msgFromStudent(
+    studentId: number,
+    tutorId: number,
+    msg: string,
+    student: Prisma.UserCreateManyInput,
+  ) {
     const conversation = await this.prisma.conversation.findFirst({
       where: {
         AND: [{ studentId }, { tutorId }],
       },
     });
+
     if (!conversation) {
-      console.log({ studentId, tutorId, msg });
-      await this.prisma.conversation.create({
+      const { email: tutorEmail } = await this.userService.findOne(tutorId);
+
+      // SENGING EMAIL TO TUTOR FOR STUDENT FIRST TIME CHAT
+
+      await this.mailService.sendMail(
+        new EmailUtility({
+          name: `${student.first_name} ${student.last_name}`,
+          email: tutorEmail,
+          action: EmailType.FIRST_MESSAGE,
+          other: {
+            country: student.country,
+            profile_url: student.profile_url,
+          },
+        }),
+      );
+
+      const { id } = await this.prisma.conversation.create({
         data: {
           studentId,
           tutorId,
           status: CHAT_STATUS.PENDING,
         },
       });
+
+      (await this.taskSchadularsService.tutorReplySchedular(id, tutorId, student)).start();
+
       return {
         status: CHAT_STATUS.PENDING,
         data: await this.createChat({
@@ -71,9 +103,9 @@ export class ConversationService {
       };
     }
 
-    if (conversation.status === CHAT_STATUS.ACCEPTED) {
+    if (conversation.status === CHAT_STATUS.APPROVED) {
       return {
-        status: CHAT_STATUS.ACCEPTED,
+        status: CHAT_STATUS.APPROVED,
         data: await this.createChat({
           senderId: studentId,
           receiverId: tutorId,
@@ -96,12 +128,24 @@ export class ConversationService {
       };
     }
 
+    if (conversation && conversation.tutorReply === false) {
+      await this.prisma.conversation.update({
+        where: {
+          id: conversation.id,
+        },
+        data: {
+          tutorReply: true,
+        },
+      });
+      (await this.taskSchadularsService.tutorReplySchedular(conversation.id, tutorId)).stop();
+    }
+
     if (
-      conversation.status === CHAT_STATUS.ACCEPTED ||
+      conversation.status === CHAT_STATUS.APPROVED ||
       conversation.status === CHAT_STATUS.PENDING
     ) {
       return {
-        status: CHAT_STATUS.ACCEPTED,
+        status: CHAT_STATUS.APPROVED,
         data: await this.createChat({
           senderId: tutorId,
           receiverId: studentId,
@@ -131,6 +175,12 @@ export class ConversationService {
         conv = conversations[ind];
       } else {
         // create conv
+        const { status } = await this.prisma.conversation.findFirst({
+          where: {
+            AND: [{ studentId: clientId }, { tutorId: participantId }],
+          },
+        });
+
         const { first_name, last_name, email, profile_url } = await this.userService.findOne(
           participantId,
         );
@@ -143,6 +193,7 @@ export class ConversationService {
             profile_url,
           },
           message: [],
+          status,
         };
         conversations.push(conv);
       }

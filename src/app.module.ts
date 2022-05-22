@@ -14,6 +14,7 @@ import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { PrismaService } from './prisma.service';
 import { StudentsModule } from './students/students.module';
 import { TaskSchadularsModule } from './task-schadulars/task-schadulars.module';
 import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
@@ -50,6 +51,7 @@ import { UsersModule } from './users/users.module';
   providers: [
     AppService,
     TaskSchadularsService,
+    PrismaService,
     {
       provide: APP_INTERCEPTOR,
       useValue: new RavenInterceptor({

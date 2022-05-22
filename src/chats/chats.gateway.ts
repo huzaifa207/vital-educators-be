@@ -48,7 +48,6 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   async handleConnection(@ConnectedSocket() client: Socket) {
     const { from: id } = await this.verifyConnectedUser(client);
-
     const alreadyConnected = this.connectionTable.get(id);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
@@ -93,14 +92,19 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { msg, receiverId } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    const { from, validUser } = await this.verifyConnectedUser(client, 'STUDENT');
+    const { from, validUser, user } = await this.verifyConnectedUser(client, 'STUDENT');
 
     if (!validUser) {
       return { error: 'Enter Student Token' };
     }
 
-    const { status, data } = await this.conversationService.msgFromStudent(from, receiverId, msg);
-    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.ACCEPTED) {
+    const { status, data } = await this.conversationService.msgFromStudent(
+      from,
+      receiverId,
+      msg,
+      user,
+    );
+    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) {
       return this.broadCastMsg(receiverId, 'reveiveMsgFromStudent', {
         id: data.id,
         studentId: from,
@@ -131,7 +135,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     if (status === CHAT_STATUS.ERROR) {
       client.broadcast.to(client.id).emit('error', 'ERROR');
     }
-    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.ACCEPTED) {
+    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) {
       return this.broadCastMsg(studentId, 'reveiveMsgFromTutor', {
         id: data.id,
         tutorId: from,
@@ -159,8 +163,10 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         // if (_token) {
         //   client.handshake.headers['set-cookie'] = [`jwt=${_token}`];
         // }
-        const { role } = await this.userService.findOne(from);
-        return checkRole ? { validUser: checkRole === role, from } : { validUser: true, from };
+        const user = await this.userService.findOne(from);
+        return checkRole
+          ? { validUser: checkRole === user.role, from, user }
+          : { validUser: true, from };
       } catch (error) {
         console.log(error.message);
       }

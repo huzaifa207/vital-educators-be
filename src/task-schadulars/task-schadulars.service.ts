@@ -4,8 +4,8 @@ import { Prisma } from '@prisma/client';
 import { CronJob } from 'cron';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
+import { PrismaService } from 'src/prisma.service';
 import { TutorsService } from 'src/tutors/tutors.service';
-import { UserDto } from 'src/userDto';
 
 @Injectable()
 export class TaskSchadularsService {
@@ -13,6 +13,7 @@ export class TaskSchadularsService {
     private schedulerRegistry: SchedulerRegistry,
     private readonly tutorsService: TutorsService,
     private mailService: MailService,
+    private prisma: PrismaService,
   ) {}
   private readonly logger = new Logger('AppService');
   async newTutorSchedule(userData: Prisma.UserCreateManyInput, tutor: Prisma.TutorCreateManyInput) {
@@ -73,16 +74,42 @@ export class TaskSchadularsService {
     }, 60000);
   }
 
-  emitt(user: UserDto) {
-    this.userCreatedSchedular(user);
+  async tutorReplySchedular(convId: number, tutorId: number, student?: Prisma.UserCreateManyInput) {
+    const tutorReplyJob = new CronJob(CronExpression.EVERY_MINUTE, async () => {
+      const { email } = await this.prisma.user.findFirst({
+        where: { id: tutorId },
+      });
+
+      await this.mailService.sendMail(
+        new EmailUtility({
+          name: `${student.first_name} ${student.last_name}`,
+          email: email,
+          action: EmailType.TUTOR_REPLY,
+          other: {
+            country: student.country,
+            profile_url: student.profile_url,
+          },
+        }),
+      );
+    });
+    return {
+      start: () => {
+        this.schedulerRegistry.addCronJob(`${convId}`, tutorReplyJob);
+        tutorReplyJob.start();
+      },
+      stop: () => {
+        this.schedulerRegistry.deleteCronJob(`${convId}`);
+        tutorReplyJob.stop();
+      },
+    };
   }
 
-  userCreatedSchedular(user: UserDto) {
+  userCreatedSchedular(user: { name: string }) {
     const job = new CronJob(CronExpression.EVERY_5_SECONDS, () => {
       this.logger.warn(`time to run! ${user.name}`);
     });
 
-    this.schedulerRegistry.addCronJob(`${user.name}-${user.age}`, job);
+    this.schedulerRegistry.addCronJob(`${user.name}`, job);
     job.start();
   }
 }
