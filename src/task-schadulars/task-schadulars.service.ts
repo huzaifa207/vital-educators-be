@@ -75,7 +75,7 @@ export class TaskSchadularsService {
   }
 
   async tutorReplySchedular(convId: number, tutorId: number, student?: Prisma.UserCreateManyInput) {
-    const tutorReplyJob = new CronJob(CronExpression.EVERY_MINUTE, async () => {
+    const tutorReplyJob = new CronJob(CronExpression.EVERY_DAY_AT_10AM, async () => {
       const { email } = await this.prisma.user.findFirst({
         where: { id: tutorId },
       });

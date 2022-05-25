@@ -172,6 +172,9 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         .split(';')
         .map((v) => v.trim().split('='))
         .filter((v) => v[0] == 'jwt');
+      if (tokenPair.length === 0) {
+        return { validUser: false };
+      }
     } catch (error) {
       console.log('socket conenction error - ', error);
     }
