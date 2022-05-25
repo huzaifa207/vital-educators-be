@@ -227,4 +227,20 @@ export class ConversationService {
       console.error('save message error- ', error);
     }
   }
+
+  async seenMsg(chatId: number) {
+    try {
+      const { id } = await this.prisma.chats.update({
+        where: {
+          id: chatId,
+        },
+        data: {
+          seen: true,
+        },
+      });
+      return { seen: true, id };
+    } catch (error) {
+      console.error('seen message error- ', error);
+    }
+  }
 }

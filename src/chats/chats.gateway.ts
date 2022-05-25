@@ -147,6 +147,19 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
   }
 
+  @SubscribeMessage('seenMsg')
+  async seenMsg(
+    @MessageBody() { data: { msgId } }: { data: { msgId: number } },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { validUser } = await this.verifyConnectedUser(client);
+    if (!validUser) {
+      return { error: 'Enter Tutor Token' };
+    }
+    const { seen, id } = await this.conversationService.seenMsg(msgId);
+    return { data: { id, seen } };
+  }
+
   private async verifyConnectedUser(client: Socket, checkRole?: Role) {
     const { cookie } = client.handshake.headers;
     let token = '';
@@ -183,6 +196,5 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
       });
     }
     return { data: { messageId: data.id } };
-    // client.emit('sent', { id: data.id });
   }
 }
