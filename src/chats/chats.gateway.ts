@@ -163,6 +163,9 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   private async verifyConnectedUser(client: Socket, checkRole?: Role) {
     const { cookie } = client.handshake.headers;
     let token = '';
+    if (!cookie) {
+      return { validUser: false };
+    }
     const tokenPair = cookie
       .split(';')
       .map((v) => v.trim().split('='))
