@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
 import { Request, Response } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
@@ -89,7 +78,7 @@ export class UsersController {
   update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
     const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
     if (!email_approved) {
-      return new ForbiddenException('Email not confirmed');
+      return { error: 'Email not confirmed', status: 403 };
     }
     return this.usersService.update(+id, updateUserDto);
   }
