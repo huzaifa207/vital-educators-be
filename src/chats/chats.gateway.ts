@@ -161,15 +161,20 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   }
 
   private async verifyConnectedUser(client: Socket, checkRole?: Role) {
-    const { cookie } = client.handshake.headers;
     let token = '';
-    if (!cookie) {
-      return { validUser: false };
+    let tokenPair;
+    try {
+      const { cookie } = client.handshake.headers;
+      if (!cookie) {
+        return { validUser: false };
+      }
+      tokenPair = cookie
+        .split(';')
+        .map((v) => v.trim().split('='))
+        .filter((v) => v[0] == 'jwt');
+    } catch (error) {
+      console.log('socket conenction error - ', error);
     }
-    const tokenPair = cookie
-      .split(';')
-      .map((v) => v.trim().split('='))
-      .filter((v) => v[0] == 'jwt');
 
     if (tokenPair && tokenPair.length > 0) {
       token = tokenPair[0][1];
