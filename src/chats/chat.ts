@@ -11,4 +11,5 @@ export interface IChatReturn {
   msg: string;
   createdAt: Date;
   status: CHAT_STATUS;
+  seen: boolean;
 }

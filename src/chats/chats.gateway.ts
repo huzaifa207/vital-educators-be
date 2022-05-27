@@ -13,7 +13,7 @@ import { Role } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { TokenService } from 'src/token/token.service';
 import { UsersService } from 'src/users/users.service';
-import { IChat, IChatReturn } from './chat';
+import { IChat } from './chat';
 import { CHAT_STATUS, ConversationService } from './conversation.service';
 
 @WebSocketGateway({
@@ -115,7 +115,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
       (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) &&
       typeof data !== 'string'
     ) {
-      return this.broadCastMsg(receiverId, 'reveiveMsgFromStudent', {
+      this.broadCastMsg(receiverId, 'reveiveMsgFromStudent', {
         id: data.id,
         studentId: from,
         tutorId: receiverId,
@@ -123,6 +123,8 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         createdAt: data.createdAt,
         status,
       });
+      return { data: { messageId: data.id } };
+
       // return { error: 'PENDING' };
     }
 
@@ -150,7 +152,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
       (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) &&
       typeof data !== 'string'
     ) {
-      return this.broadCastMsg(studentId, 'reveiveMsgFromTutor', {
+      this.broadCastMsg(studentId, 'reveiveMsgFromTutor', {
         id: data.id,
         tutorId: from,
         studentId,
@@ -158,20 +160,25 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         createdAt: data.createdAt,
         status,
       });
+      return { data: { messageId: data.id } };
     }
   }
 
   @SubscribeMessage('seenMsg')
   async seenMsg(
-    @MessageBody() { data: { msgId } }: { data: { msgId: number } },
+    @MessageBody() { data: { msgIds } }: { data: { msgIds: number[] } },
     @ConnectedSocket() client: Socket,
   ) {
     const { validUser } = await this.verifyConnectedUser(client);
     if (!validUser) {
       return { error: 'Enter Tutor Token' };
     }
-    const { seen, id } = await this.conversationService.seenMsg(msgId);
-    return { data: { id, seen } };
+    const { data } = await this.conversationService.seenMsg(msgIds);
+
+    this.broadCastMsg(data[0].senderId, 'msgSeen', {
+      data,
+    });
+    return { data };
   }
 
   private async verifyConnectedUser(client: Socket, checkRole?: Role) {
@@ -213,13 +220,13 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
   }
 
-  private broadCastMsg(socketKey: number, eventName: string, data: IChatReturn) {
+  private broadCastMsg(socketKey: number, eventName: string, data: any) {
     const receriverId = this.connectionTable.get(socketKey);
     if (receriverId) {
       receriverId.forEach((id: string) => {
         this.server.to(id).emit(eventName, { ...data });
       });
     }
-    return { data: { messageId: data.id } };
+    // return { data: { messageId: data.id } };
   }
 }

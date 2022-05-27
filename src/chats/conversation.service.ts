@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Chats, Prisma } from '@prisma/client';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
@@ -255,17 +255,22 @@ export class ConversationService {
     }
   }
 
-  async seenMsg(chatId: number) {
+  async seenMsg(msgIds: number[]) {
     try {
-      const { id } = await this.prisma.chats.update({
-        where: {
-          id: chatId,
-        },
-        data: {
-          seen: true,
-        },
-      });
-      return { seen: true, id };
+      let data: Chats[];
+      for (const msgId of msgIds) {
+        const _data = await this.prisma.chats.update({
+          where: {
+            id: msgId,
+          },
+          data: {
+            seen: true,
+          },
+        });
+        data.push(_data);
+      }
+
+      return { data };
     } catch (error) {
       console.error('seen message error- ', error);
     }
