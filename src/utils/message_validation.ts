@@ -1,7 +1,8 @@
 /* eslint-disable */
 
-const Filter = require('bad-words');
-const filter = new Filter();
+// const Filter = require('bad-words');
+// const filter = new Filter();
+var profanity = require('profanity-util');
 
 /* eslint-enable */
 
@@ -10,8 +11,9 @@ function is_email_detect() {
 }
 
 function remove_bad_words(msg: string) {
-  return filter.clean(msg);
+  return profanity.purify(msg)[0];
 }
+
 function is_phone_detect() {
   return /^.*?\s*?[\+]?[(]?[0-9]{3,4}[)]?[-?\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}.*?$/im;
 }

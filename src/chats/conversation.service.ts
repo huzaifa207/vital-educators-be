@@ -14,7 +14,13 @@ export enum CHAT_STATUS {
   ERROR = 'ERROR',
 }
 
-type TMessage = { id: number; msg: string; createdAt: Date; sentBy: 'SELF' | 'PARTICIPIANT' };
+type TMessage = {
+  id: number;
+  msg: string;
+  createdAt: Date;
+  seen: boolean;
+  sentBy: 'SELF' | 'PARTICIPIANT';
+};
 interface IConversation {
   participantId: number;
   participantData: {
@@ -222,6 +228,7 @@ export class ConversationService {
         id: chatMessage.id,
         msg: chatMessage.message,
         createdAt: chatMessage.createdAt,
+        seen: chatMessage.seen,
         sentBy: chatMessage.senderId === clientId ? 'SELF' : 'PARTICIPIANT',
       });
     }

@@ -75,6 +75,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
      *        msgId:
      *        msg:"hello",
      *        sentBy:"self|other",
+     *        seen:false,
      *        createdAt:123
      *        }
      *      ]
