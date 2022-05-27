@@ -257,7 +257,7 @@ export class ConversationService {
 
   async seenMsg(msgIds: number[]) {
     try {
-      let data: Chats[];
+      const data: Chats[] = [];
       for (const msgId of msgIds) {
         const _data = await this.prisma.chats.update({
           where: {

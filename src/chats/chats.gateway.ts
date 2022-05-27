@@ -174,7 +174,6 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
       return { error: 'Enter Tutor Token' };
     }
     const { data } = await this.conversationService.seenMsg(msgIds);
-
     this.broadCastMsg(data[0].senderId, 'msgSeen', {
       data,
     });
@@ -227,6 +226,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         this.server.to(id).emit(eventName, { ...data });
       });
     }
+    console.log('broadCastMsg  data - ', data);
     // return { data: { messageId: data.id } };
   }
 }
