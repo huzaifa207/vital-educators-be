@@ -4,6 +4,7 @@ import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { UsersService } from 'src/users/users.service';
+import { is_valid_msg, remove_bad_words } from 'src/utils/message_validation';
 import { PrismaService } from './../prisma.service';
 
 export enum CHAT_STATUS {
@@ -41,6 +42,14 @@ export class ConversationService {
     msg: string,
     student: Prisma.UserCreateManyInput,
   ) {
+    const { error, valid } = is_valid_msg(msg);
+    if (!valid) {
+      return {
+        status: CHAT_STATUS.ERROR,
+        data: error,
+      };
+    }
+
     const conversation = await this.prisma.conversation.findFirst({
       where: {
         AND: [{ studentId }, { tutorId }],
@@ -99,7 +108,7 @@ export class ConversationService {
     if (conversation.status === CHAT_STATUS.REJECTED) {
       return {
         status: CHAT_STATUS.REJECTED,
-        data: null,
+        data: 'You are not allowed to chat with this tutor',
       };
     }
 
@@ -116,6 +125,14 @@ export class ConversationService {
   }
 
   async msgFromTutor(tutorId: number, studentId: number, message: string) {
+    // CHECK IF MESSAGE IS VALID {not contain email or mobile number}
+    const { error, valid } = is_valid_msg(message);
+    if (!valid) {
+      return {
+        status: CHAT_STATUS.ERROR,
+        data: error,
+      };
+    }
     const conversation = await this.prisma.conversation.findFirst({
       where: {
         AND: [{ tutorId }, { studentId }],
@@ -124,7 +141,7 @@ export class ConversationService {
     if (!conversation) {
       return {
         status: CHAT_STATUS.ERROR,
-        data: null,
+        data: "You can't send message to student before student start chat",
       };
     }
 
@@ -216,7 +233,7 @@ export class ConversationService {
     const newChat = {
       senderId: createChatDto.senderId,
       receiverId: createChatDto.receiverId,
-      message: createChatDto.message,
+      message: remove_bad_words(createChatDto.message),
     };
     try {
       const { id, createdAt } = await this.prisma.chats.create({

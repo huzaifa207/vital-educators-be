@@ -104,7 +104,16 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
       msg,
       user,
     );
-    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) {
+
+    if (status === CHAT_STATUS.ERROR) {
+      client.broadcast.to(client.id).emit('error', data);
+      return { error: data };
+    }
+
+    if (
+      (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) &&
+      typeof data !== 'string'
+    ) {
       return this.broadCastMsg(receiverId, 'reveiveMsgFromStudent', {
         id: data.id,
         studentId: from,
@@ -133,9 +142,13 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     const { data, status } = await this.conversationService.msgFromTutor(from, studentId, msg);
     if (status === CHAT_STATUS.ERROR) {
-      client.broadcast.to(client.id).emit('error', 'ERROR');
+      client.broadcast.to(client.id).emit('error', data);
+      return { error: data };
     }
-    if (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) {
+    if (
+      (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) &&
+      typeof data !== 'string'
+    ) {
       return this.broadCastMsg(studentId, 'reveiveMsgFromTutor', {
         id: data.id,
         tutorId: from,
