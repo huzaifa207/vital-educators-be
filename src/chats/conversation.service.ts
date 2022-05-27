@@ -194,7 +194,10 @@ export class ConversationService {
         // create conv
         const { status } = await this.prisma.conversation.findFirst({
           where: {
-            AND: [{ studentId: clientId }, { tutorId: participantId }],
+            AND: [
+              { OR: [{ studentId: clientId }, { studentId: participantId }] },
+              { OR: [{ tutorId: clientId }, { tutorId: participantId }] },
+            ],
           },
         });
 

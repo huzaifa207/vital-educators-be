@@ -1,4 +1,4 @@
-const socket = io('https://vital-educators.vercel.app', {
+const socket = io('https://localhost:3001', {
   transports: ['websocket'],
   methods: ['GET', 'POST'],
 
@@ -7,12 +7,12 @@ const socket = io('https://vital-educators.vercel.app', {
 
 function msgFromStudent() {
   const msg = document.getElementById('sendMsgFromStudent').value;
-  handleMessage({ event: 'sendMsgFromStudent', msg, id: 51 });
+  handleMessage({ event: 'sendMsgFromStudent', msg, id: 33 });
 }
 
 function msgFromTutor() {
   const msg = document.getElementById('sendMsgFromTutor').value;
-  handleMessage({ event: 'sendMsgFromTutor', msg, id: 50 });
+  handleMessage({ event: 'sendMsgFromTutor', msg, id: 31 });
 }
 
 const handleMessage = ({ event, msg, id }) => {

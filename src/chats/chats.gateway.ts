@@ -20,9 +20,9 @@ import { CHAT_STATUS, ConversationService } from './conversation.service';
   cors: {
     credentials: true,
     origin: [
+      'https://vital-educators.vercel.app',
       'https://localhost:5501',
       'https://localhost:3000',
-      'https://vital-educators.vercel.app',
     ],
   },
 })
