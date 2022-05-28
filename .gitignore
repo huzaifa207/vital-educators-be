@@ -18,6 +18,8 @@ documentation
 # OS
 .DS_Store
 
+# documentation
+
 # Tests
 /coverage
 /.nyc_output
