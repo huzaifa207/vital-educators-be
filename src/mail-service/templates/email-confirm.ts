@@ -1,4 +1,4 @@
-export const emailConfirm = (username: string, url: string) => {
+export const emailConfirm = (name: string, url: string) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -11,29 +11,13 @@ export const emailConfirm = (username: string, url: string) => {
           /**
       * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
       */
-          @media screen {
-            @font-face {
-              font-family: 'Source Sans Pro';
-              font-style: normal;
-              font-weight: 400;
-              src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'),
-                url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff)
-                  format('woff');
+          @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+          body{
+                font-family:'Poppins', sans-serif;
             }
-            @font-face {
-              font-family: 'Source Sans Pro';
-              font-style: normal;
-              font-weight: 700;
-              src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'),
-                url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff)
-                  format('woff');
+            p{
+                font-family:'Poppins', sans-serif;
             }
-          }
-          /**
-      * Avoid browser level font resizing.
-      * 1. Windows Mobile
-      * 2. iOS / OSX
-      */
           body,
           table,
           td,
@@ -82,7 +66,7 @@ export const emailConfirm = (username: string, url: string) => {
             border-collapse: collapse !important;
           }
           a {
-            color: #1a82e2;
+            color: #2A2462;
           }
           img {
             height: auto;
@@ -94,24 +78,7 @@ export const emailConfirm = (username: string, url: string) => {
         </style>
       </head>
       <body style="background-color: #e9ecef">
-        <!-- start preheader -->
-        <div
-          class="preheader"
-          style="
-            display: none;
-            max-width: 0;
-            max-height: 0;
-            overflow: hidden;
-            font-size: 1px;
-            line-height: 1px;
-            color: #fff;
-            opacity: 0;
-          "
-        >
-          A preheader is the short summary text that follows the subject line when
-          an email is viewed in the inbox.
-        </div>
-        <!-- end preheader -->
+    
 
         <!-- start body -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -139,15 +106,13 @@ export const emailConfirm = (username: string, url: string) => {
                     >
                       <img
                         src="https://vital-educators.vercel.app/logo-black.png"
-                        alt="Logo"
-                        border="0"
-                        width="80%"
+                        alt="Logo" border="0" width="30%" 
                         style="
-                          display: block;
-                          width: 80%;
-                          max-width: 80%;
-                          min-width: 120px;
-                        "
+                                display: block;
+                                width: 30%;
+                                max-width: 30%;
+                                min-width: 50px;
+                                "
                       />
                     </a>
                   </td>
@@ -270,7 +235,7 @@ export const emailConfirm = (username: string, url: string) => {
                     "
                   >
                     <p style="margin: 0">
-                      Hi ${username}, Tap the button below to confirm your email address. If you
+                      Hi ${name}, Tap the button below to confirm your email address. If you
                       didn't create an account on
                       <a href="https://vital-educators.vercel.app">VitalEducators</a>, you can safely
                       delete this email.
@@ -289,7 +254,7 @@ export const emailConfirm = (username: string, url: string) => {
                             <tr>
                               <td
                                 align="center"
-                                bgcolor="#1a82e2"
+                                bgcolor="#2A2462"
                                 style="border-radius: 6px"
                               >
                                 <a
@@ -356,8 +321,7 @@ export const emailConfirm = (username: string, url: string) => {
                     "
                   >
                     <p style="margin: 0">
-                      Cheers,<br />
-                      Paste
+                      VitalEducators Team
                     </p>
                   </td>
                 </tr>

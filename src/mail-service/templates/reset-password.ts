@@ -1,4 +1,4 @@
-export const passwordResetTemplate = (username: string, token: number) => {
+export const passwordResetTemplate = (name: string, token: number) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -11,29 +11,13 @@ export const passwordResetTemplate = (username: string, token: number) => {
           /**
       * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
       */
-          @media screen {
-            @font-face {
-              font-family: 'Source Sans Pro';
-              font-style: normal;
-              font-weight: 400;
-              src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'),
-                url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff)
-                  format('woff');
+          @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+          body{
+                font-family:'Poppins', sans-serif;
             }
-            @font-face {
-              font-family: 'Source Sans Pro';
-              font-style: normal;
-              font-weight: 700;
-              src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'),
-                url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff)
-                  format('woff');
+            p{
+                font-family:'Poppins', sans-serif;
             }
-          }
-          /**
-      * Avoid browser level font resizing.
-      * 1. Windows Mobile
-      * 2. iOS / OSX
-      */
           body,
           table,
           td,
@@ -82,7 +66,7 @@ export const passwordResetTemplate = (username: string, token: number) => {
             border-collapse: collapse !important;
           }
           a {
-            color: #1a82e2;
+            color: #2A2462;
           }
           img {
             height: auto;
@@ -108,8 +92,8 @@ export const passwordResetTemplate = (username: string, token: number) => {
             opacity: 0;
           "
         >
-          A preheader is the short summary text that follows the subject line when
-          an email is viewed in the inbox.
+          // A preheader is the short summary text that follows the subject line when
+          // an email is viewed in the inbox.
         </div>
         <!-- end preheader -->
 
@@ -139,15 +123,13 @@ export const passwordResetTemplate = (username: string, token: number) => {
                     >
                       <img
                         src="https://vital-educators.vercel.app/logo-black.png"
-                        alt="Logo"
-                        border="0"
-                        width="80%"
+                        alt="Logo" border="0" width="30%" 
                         style="
-                          display: block;
-                          width: 80%;
-                          max-width: 80%;
-                          min-width: 120px;
-                        "
+                                display: block;
+                                width: 30%;
+                                max-width: 30%;
+                                min-width: 50px;
+                                "
                       />
                     </a>
                   </td>
@@ -243,7 +225,7 @@ export const passwordResetTemplate = (username: string, token: number) => {
                     "
                   >
                     <p style="margin: 0;text-align:center">
-                      Hi ${username}, Use below OTP Code to reset your password
+                      Hi ${name}, Use below OTP Code to reset your password
                      
                     </p>
                   </td>
@@ -260,7 +242,7 @@ export const passwordResetTemplate = (username: string, token: number) => {
                             <tr>
                               <td
                                 align="center"
-                                bgcolor="#1a82e2"
+                                bgcolor="#2A2462"
                                 style="border-radius: 6px"
                               >
                                 
@@ -305,7 +287,7 @@ export const passwordResetTemplate = (username: string, token: number) => {
                     "
                   >
                     <p style="margin: 0">
-                      Cheers
+                    VitalEducators Team
                     </p>
                   </td>
                 </tr>

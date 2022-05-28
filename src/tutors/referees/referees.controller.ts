@@ -55,7 +55,7 @@ export class RefereesController {
     return this.refereesService.remove(+id, +tutorId);
   }
 
-  @Post('/add-review/:token')
+  @Post('/review/:token')
   async verify(
     @Param('token') token: string,
     @Body() refereesReviewsCreateInput: Prisma.RefereesReviewsCreateInput,

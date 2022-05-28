@@ -9,7 +9,7 @@ import { plainToInstance } from 'class-transformer';
 import { map, Observable } from 'rxjs';
 
 interface ClassConstructor {
-  new (...args: any[]): {};
+  new (...args: any[]): any;
 }
 
 export function Serializer(dto: ClassConstructor) {

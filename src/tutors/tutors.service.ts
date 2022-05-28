@@ -7,47 +7,95 @@ import { PrismaService } from './../prisma.service';
 export class TutorsService {
   constructor(private prisma: PrismaService) {}
 
-  // create(createTutorDto: Prisma.TutorCreateInput, userId: number) {
-  //   try {
-  //     return this.prisma.tutor.create({
-  //       data: {
-  //         ...createTutorDto,
-  //         user: { connect: { id: userId } },
-  //       },
-  //     });
-  //   } catch (error) {
-  //     throw new BadGatewayException('Tutor already exists');
-  //   }
-  // }
-
   async deActivateTutor(userId: number) {
-    const tutor = await this.findOne(userId);
+    const tutor = await this.findOneTutor(userId);
     tutor.deActivate = true;
-    await this.remove(tutor.id);
     return { message: 'Tutor deactivated' };
   }
 
-  update(userId: number, updateTutorDto: Prisma.TutorUpdateInput) {
+  updateTutor(userId: number, updateTutorDto: Prisma.TutorUpdateInput) {
     try {
       return this.prisma.tutor.update({
         where: { userId },
-        data: updateTutorDto,
+        data: {
+          crb_check: updateTutorDto.crb_check,
+          skype_id: updateTutorDto.skype_id,
+          deActivate: updateTutorDto.deActivate,
+        },
       });
     } catch (error) {
       throw new Exception('Tutor not found');
     }
   }
 
-  remove(id: number) {
-    return this.prisma.tutor.delete({ where: { id } });
-  }
-
-  async findOne(userId: number) {
+  async findOneTutor(userId: number) {
     try {
       const tutor = await this.prisma.tutor.findUnique({ where: { userId } });
       return tutor;
     } catch (err) {
       throw new NotFoundException('Tutor not found');
     }
+  }
+
+  async filterTutor(subject: string, postCode: number, skip: number) {
+    const tutors = await this.prisma.tutor.findMany({
+      where: {
+        AND: [
+          {
+            deActivate: false,
+          },
+          {
+            user: {
+              postal_code: String(postCode),
+              email_approved: true,
+            },
+          },
+          {
+            subjectOffers: {
+              some: {
+                title: subject,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            postal_code: true,
+            phone: true,
+            country: true,
+            profile_url: true,
+          },
+        },
+      },
+      skip,
+      take: 10,
+    });
+    return tutors;
+  }
+
+  async tutorStats(tutorId: number) {
+    return {
+      tutor: await this.findOneTutor(tutorId),
+      referees: await this.prisma.referees.findMany({
+        where: { tutorId },
+      }),
+
+      subjects: await this.prisma.subjectOffer.findMany({
+        where: { tutorId },
+      }),
+
+      documents: await this.prisma.documents.findMany({
+        where: { tutorId },
+      }),
+      tutoringDetail: await this.prisma.tutoringDetail.findUnique({
+        where: { tutorId },
+      }),
+    };
   }
 }

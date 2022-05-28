@@ -14,13 +14,11 @@ declare global {
 
 @Injectable()
 export class CurrentUserMiddleware implements NestMiddleware {
-  constructor(
-    private readonly userService: UsersService,
-    private tokenService: TokenService,
-  ) {}
+  constructor(private readonly userService: UsersService, private tokenService: TokenService) {}
   async use(req: Request, res: Response, next: NextFunction) {
     try {
       const jwt: string = req.cookies['jwt'];
+      console.log('JWT', jwt);
       const { id, token } = await this.tokenService.verify(jwt);
       if (token) {
         res.cookie('jwt', token, {

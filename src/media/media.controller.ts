@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { nanoid } from 'nanoid';
@@ -13,11 +8,11 @@ import { MediaService } from './media.service';
 export class MediaController {
   constructor(private mediaService: MediaService) {}
 
-  @Post('/image')
+  @Post('/')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads/images',
+        destination: './uploads/media',
         filename: (req, file, cb) => {
           const filename: string = nanoid(10);
           const extension: string = file.originalname.substring(
@@ -29,10 +24,38 @@ export class MediaController {
       }),
     }),
   )
-  uploadImage(@UploadedFile() file: Express.Multer.File): {
+  async uploadMedia(@UploadedFile() file: Express.Multer.File): Promise<{
+    id: number;
+  }> {
+    const id = await this.mediaService.uploadMedia(file);
+    return { id };
+  }
+
+  @Post('/image')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/media',
+        filename: (req, file, cb) => {
+          const filename: string = nanoid(10);
+          const extension: string = file.originalname.substring(
+            file.originalname.lastIndexOf('.'),
+            file.originalname.length,
+          );
+          cb(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<{
     imagePath: string;
-  } {
-    return { imagePath: file.filename };
+  }> {
+    return { imagePath: `${file.filename}` };
+  }
+
+  @Get('/:id')
+  async getMeida(@Param('id') id: number) {
+    return await this.mediaService.getMedia(id);
   }
 
   @Post('/docs')

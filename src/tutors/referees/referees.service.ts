@@ -18,7 +18,23 @@ export class RefereesService {
     tutorId: number,
     user: Prisma.UserCreateManyInput,
   ) {
-    // insert data in one to many relation in prisma
+    const isTutorWithEmailExist = await this.prisma.tutor.findMany({
+      where: { user: { email: createRefereeDto.email } },
+    });
+
+    if (isTutorWithEmailExist.length !== 1) {
+      throw new BadRequestException('Tutor with this email does not exist');
+    }
+
+    const refereeAlreadyExist = await this.prisma.referees.findMany({
+      where: {
+        email: createRefereeDto.email,
+      },
+    });
+    if (refereeAlreadyExist.length > 0) {
+      throw new BadRequestException('Referee Already Exist');
+    }
+
     const referee = await this.prisma.referees.create({
       data: {
         ...createRefereeDto,
@@ -33,25 +49,17 @@ export class RefereesService {
       },
     );
     try {
-      console.log({
-        email: referee.email,
-        username: `${user.first_name} ${user.last_name}`,
-        action: EmailType.REFEREE_REGISTER,
-        token,
-        other: { referee_name: `${referee.first_name} ${referee.last_name}` },
-      });
-      let email = await this.mailService.sendMail(
+      this.mailService.sendMail(
         new EmailUtility({
           email: referee.email,
-          username: `${user.first_name} ${user.last_name}`,
-          action: EmailType.REFEREE_REGISTER,
+          name: `${user.first_name} ${user.last_name}`,
+          action: EmailType.REFEREE_REVIEW,
           token,
           other: { referee_name: `${referee.first_name} ${referee.last_name}` },
         }),
       );
-      console.log(email);
     } catch (error) {
-      console.log(error);
+      throw new BadRequestException(error);
     }
 
     return referee;
@@ -97,7 +105,7 @@ export class RefereesService {
     }
   }
 
-  private async checkReferee(refereeId: number, tutorId: number): Promise<Boolean> {
+  private async checkReferee(refereeId: number, tutorId: number): Promise<boolean> {
     const referee = await this.prisma.referees.findUnique({
       where: { id: refereeId },
     });
@@ -114,6 +122,7 @@ export class RefereesService {
     let refereeId: number;
     try {
       const { id } = await this.jwtService.verify(token);
+      console.log('id');
       refereeId = id;
     } catch (error) {
       console.log('token error', error);

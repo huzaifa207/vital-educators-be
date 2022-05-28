@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable, NotAcceptableException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import {
+  BadRequestException,
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Prisma, Role } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
-import { Exception } from 'handlebars';
 import { nanoid } from 'nanoid';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
+import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
 import { promisify } from 'util';
@@ -18,20 +23,23 @@ export class UsersService {
     private mailService: MailService,
     private documentsService: DocumentsService,
     private tutoringDetailsService: TutoringDetailsService,
+    private taskSchadularsService: TaskSchadularsService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
-    const userAlreadyExists = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
-    });
+    const userAlreadyExists =
+      ((await this.prisma.user.findUnique({
+        where: { email: createUserDto.email },
+      })) &&
+        'Email aready exist') ||
+      '';
 
     if (userAlreadyExists) {
-      throw new NotAcceptableException('User already exists');
+      throw new NotAcceptableException(userAlreadyExists);
     }
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
-
     const newUser = await this.prisma.user.create({
       data: Object.assign(createUserDto, {
         password: hashPassowrd,
@@ -46,6 +54,9 @@ export class UsersService {
             user: { connect: { id: newUser.id } },
           },
         });
+        if (tutor) {
+          this.taskSchadularsService.newTutorSchedule(newUser, tutor);
+        }
         const doc = {
           id_card_back: '',
           id_card_front: '',
@@ -64,20 +75,34 @@ export class UsersService {
 
         await this.tutoringDetailsService.create(tutoringDetail, +tutor.id);
       } catch (error) {
-        throw new Exception("Couldn't create tutor");
+        throw new BadRequestException("Couldn't create tutor");
       }
     }
+    try {
+      this.sendEmail(
+        newUser.email,
+        `${newUser.first_name} ${newUser.last_name}`,
+        EmailType.CONFIRM_EMAIL,
+        newUser.email_token,
+      ).catch((err) => console.log(err));
+    } catch (error) {
+      console.error(error);
+    }
 
-    this.sendEmail(newUser.email, newUser.username, EmailType.CONFIRM_EMAIL, +emailToken);
     return newUser;
   }
 
-  async login(loginUserDto: { username: string; password: string }) {
+  async login({ email, password, role }: { email: string; password: string; role: Role }) {
     try {
-      let currentUser = await this.findUser(loginUserDto.username);
+      const _role = role ? role : Role.TUTOR;
+      const currentUser = await this.prisma.user.findFirst({
+        where: {
+          AND: [{ email }, { role: _role }],
+        },
+      });
 
       const [salt, storedHash] = currentUser.password.split('.');
-      const hash = (await scrypt(loginUserDto.password, salt, 16)) as Buffer;
+      const hash = (await scrypt(password, salt, 16)) as Buffer;
 
       if (storedHash !== hash.toString('hex')) {
         throw new BadRequestException('Invalid password');
@@ -89,14 +114,14 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
-  }
-
   async findOne(id: number) {
-    return await this.prisma.user.findUnique({
-      where: { id },
-    });
+    try {
+      return await this.prisma.user.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      throw new NotFoundException('User not found');
+    }
   }
 
   update(id: number, updateUserDto: Prisma.UserUpdateInput) {
@@ -104,11 +129,6 @@ export class UsersService {
       where: { id },
       data: updateUserDto,
     });
-  }
-
-  async remove(id: number) {
-    await this.prisma.user.delete({ where: { id } });
-    return 'User deleted';
   }
 
   async updatePassword(userId: number, currentPassword: string, newPassword: string) {
@@ -138,33 +158,38 @@ export class UsersService {
 
   async confirmEmail(emailToken: string) {
     try {
-      await this.prisma.user.update({
+      const user = await this.prisma.user.update({
         where: { email_token: emailToken },
         data: {
           email_token: null,
           email_approved: true,
         },
       });
-      return { approved: true };
+      return { approved: true, role: user.role };
     } catch (error) {
       return { approved: false };
     }
   }
 
-  async forgotPassword(username: string) {
+  async forgotPassword(email: string) {
     try {
-      let user = await this.findUser(username);
+      const user = await this.findUser(email);
 
       //generate 4 digit random number
       const token = Math.floor(1000 + Math.random() * 9000);
       await this.prisma.user.update({
         where: { id: user.id },
         data: {
-          password_reset_token: String(token),
+          password_reset_token: token,
         },
       });
 
-      await this.sendEmail(user.email, user.username, EmailType.RESET_PASSWORD, +token);
+      await this.sendEmail(
+        user.email,
+        `${user.first_name} ${user.last_name}`,
+        EmailType.RESET_PASSWORD,
+        token,
+      );
       return { success: true };
     } catch (error) {
       console.log(error);
@@ -172,10 +197,10 @@ export class UsersService {
     }
   }
 
-  async resetPassword(username: string, password: string, passwordToken: number) {
+  async resetPassword(email: string, password: string, passwordToken: number) {
     try {
-      let user = await this.findUser(username);
-      if (parseInt(user.password_reset_token) !== passwordToken) {
+      const user = await this.findUser(email);
+      if (user.password_reset_token !== passwordToken) {
         throw new BadRequestException('Invalid token');
       }
       const newHash = await this.passHashGenerator(password);
@@ -192,15 +217,12 @@ export class UsersService {
     }
   }
 
-  private async findUser(username: string) {
+  private async findUser(email: string) {
     try {
-      let user =
-        (await this.prisma.user.findUnique({
-          where: { email: username },
-        })) ||
-        (await this.prisma.user.findUnique({
-          where: { username: username },
-        }));
+      const user = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
       if (!user) {
         throw new BadRequestException('User not found');
       }
@@ -216,11 +238,27 @@ export class UsersService {
     return salt + '.' + hash.toString('hex');
   }
 
-  async sendEmail(email: string, username: string, action: EmailType, token?: number) {
-    await this.mailService.sendMail(new EmailUtility({ email, username, action, token }));
+  async sendEmail(email: string, name: string, action: EmailType, token: string | number) {
+    await this.mailService.sendMail(new EmailUtility({ email, name, action, token }));
+  }
+
+  // ------------ PERSONAL DEV SERVICES ------------
+
+  findAll() {
+    try {
+      console.log('first 22');
+      return this.prisma.user.findMany() || [];
+    } catch (error) {
+      throw new NotFoundException('Users not found', error.message);
+    }
   }
 
   deleteMany() {
     return this.prisma.user.deleteMany({});
+  }
+
+  async remove(id: number) {
+    await this.prisma.user.delete({ where: { id } });
+    return 'User deleted';
   }
 }

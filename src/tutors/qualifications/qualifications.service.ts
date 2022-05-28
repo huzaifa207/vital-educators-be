@@ -6,10 +6,7 @@ import { PrismaService } from 'src/prisma.service';
 export class QualificationsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createQualificationDto: Prisma.QualificationCreateInput,
-    userId: number,
-  ) {
+  async create(createQualificationDto: Prisma.QualificationCreateInput, userId: number) {
     try {
       return await this.prisma.qualification.create({
         data: {
@@ -21,7 +18,7 @@ export class QualificationsService {
       if (error instanceof Prisma.PrismaClientValidationError) {
         throw new BadRequestException('Please send a valid data');
       }
-      throw new BadRequestException('Tutor not found');
+      throw new BadRequestException(error.message);
     }
   }
 
@@ -31,7 +28,7 @@ export class QualificationsService {
         where: { tutor: { id: tutorId } },
       });
     } catch (error) {
-      throw new BadRequestException('Tutor not found');
+      throw new BadRequestException(error.message);
     }
   }
 
@@ -43,10 +40,7 @@ export class QualificationsService {
     }
   }
 
-  async update(
-    id: number,
-    updateQualificationDto: Prisma.QualificationUpdateInput,
-  ) {
+  async update(id: number, updateQualificationDto: Prisma.QualificationUpdateInput) {
     try {
       return await this.prisma.qualification.update({
         where: { id },

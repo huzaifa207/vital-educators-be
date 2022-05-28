@@ -6,8 +6,25 @@
     <title>Document</title>
   </head>
   <body>
-    <p id="msg">sp19-bcs-092</p>
-    <button onclick="handleMessage()">Submit</button>
+    <div>
+      <h1>Student</h1>
+      <button onclick="msgFromStudent()">Submit</button>
+      <input type="text" placeholder="Enter Message" id="sendMsgFromStudent" />
+      <div>
+        <p>Student Messages:</p>
+        <p id="receiveMsgFromTutor"></p>
+      </div>
+    </div>
+    <hr />
+    <div>
+      <h1>Tutor</h1>
+      <button onclick="msgFromTutor()">Submit</button>
+      <input type="text" placeholder="Enter Message" id="sendMsgFromTutor" />
+      <div>
+        <p>Tutor Messages:</p>
+        <p id="receiveMsgFromStudent"></p>
+      </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
     <script src="./student.js"></script>
   </body>

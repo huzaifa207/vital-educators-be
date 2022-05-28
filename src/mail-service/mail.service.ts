@@ -5,15 +5,18 @@ import { GenericMail } from './mail.utils';
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
-  private domain = 'http://vital-educator.herokuapp.com/user/';
 
-  async sendMail(mail: GenericMail) {
-    const { email, subject, renderTemplate } = mail;
-    await this.mailerService.sendMail({
-      to: email,
-      text: 'This is from VitalEducators',
-      subject: subject,
-      html: renderTemplate(),
-    });
+  async sendMail({ email, subject, renderTemplate }: GenericMail) {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        text: 'This is from VitalEducators',
+        subject: subject,
+        html: renderTemplate(),
+      });
+    } catch (error) {
+      console.log('email error - ', error);
+      // throw new HttpException(error.message, 500);
+    }
   }
 }

@@ -1,22 +1,11 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 import { TutoringDetailsService } from './tutoring-details.service';
 
 @Controller('tutoring-detail')
 export class TutoringDetailsController {
-  constructor(
-    private readonly tutoringDetailsService: TutoringDetailsService,
-  ) {}
+  constructor(private readonly tutoringDetailsService: TutoringDetailsService) {}
 
   @Post()
   create(

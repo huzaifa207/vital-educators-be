@@ -1,15 +1,15 @@
+import { CHAT_STATUS } from './conversation.service';
 export interface IChat {
+  receiverId: number;
   msg: string;
-  to: string;
-  from: string;
 }
-export class Chat {
-  constructor(public chatList: IChat[] = []) {}
 
-  public show(): IChat[] {
-    return this.chatList;
-  }
-  public add(chat: IChat) {
-    this.chatList.push({ msg: chat.msg, to: chat.to, from: chat.from });
-  }
+export interface IChatReturn {
+  id: number;
+  tutorId: number;
+  studentId: number;
+  msg: string;
+  createdAt: Date;
+  status: CHAT_STATUS;
+  seen: boolean;
 }

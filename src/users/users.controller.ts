@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { Request, Response } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
 import { EmailType } from 'src/mail-service/mail.utils';
@@ -11,7 +11,8 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly tokenService: TokenService, // private jwtService: JwtService,
+    // private jwtService: JwtService
+    private readonly tokenService: TokenService,
   ) {}
 
   @Post()
@@ -21,7 +22,7 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = await this.usersService.create(createUserDto);
-    const jwt = await this.tokenService.sign(user.id);
+    const jwt = await this.tokenService.generateNewToken(user.id);
 
     response.cookie('jwt', jwt, {
       httpOnly: true,
@@ -36,13 +37,14 @@ export class UsersController {
   async login(
     @Body()
     loginUserDto: {
-      username: string;
+      email: string;
       password: string;
+      role: Role;
     },
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = await this.usersService.login(loginUserDto);
-    const jwt = await this.tokenService.sign(user.id);
+    const jwt = await this.tokenService.generateNewToken(user.id);
     response.cookie('jwt', jwt, {
       httpOnly: true,
       secure: true,
@@ -64,26 +66,20 @@ export class UsersController {
     return { message: 'Logged out' };
   }
 
-  @Get('/findall')
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Delete('/all')
-  deleteMany() {
-    return this.usersService.deleteMany();
-  }
-
-  @Get(':id')
   @Serializer(ReturnUserDto)
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get('/all')
+  findAll() {
+    console.log('first 11');
+    return this.usersService.findAll();
   }
 
   @Patch()
   @Serializer(ReturnUserDto)
   update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+    const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
+    if (!email_approved) {
+      return { error: 'Email not confirmed', status: 403 };
+    }
     return this.usersService.update(+id, updateUserDto);
   }
 
@@ -104,16 +100,20 @@ export class UsersController {
     return success;
   }
 
-  @Delete()
-  async remove(@Req() request: Request) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return await this.usersService.remove(+id);
-  }
   @Get('/confirm-email/:token')
   async confirmEmail(@Param('token') token: string, @Res() res: Response) {
-    const user = await this.usersService.confirmEmail(token);
-    if (user.approved) {
-      res.header('Location', 'https://vital-educators.vercel.app/email-verified');
+    const { approved, role } = await this.usersService.confirmEmail(token);
+    let URL = '';
+    switch (role) {
+      case 'STUDENT':
+        URL = `https://vital-educators.vercel.app/student/email-verified`;
+        break;
+      case 'TUTOR':
+        URL = `https://vital-educators.vercel.app/tutor/email-verified`;
+        break;
+    }
+    if (approved) {
+      res.header('Location', URL);
       res.statusCode = 301;
       res.end();
     }
@@ -122,28 +122,31 @@ export class UsersController {
   @Serializer(ReturnUserDto)
   @Get()
   currentUser(@Req() request: Request) {
+    console.log('USER:');
+    console.log(request.currentUser);
     return request.currentUser as Prisma.UserCreateManyInput;
   }
 
+  @Get(':id')
+  @Serializer(ReturnUserDto)
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
+  }
+
   @Post('/send')
-  async sendEmail(@Body() body: { email: string; username: string; emailToken: string }) {
-    return await this.usersService.sendEmail(
-      body.email,
-      body.username,
-      EmailType.CONFIRM_EMAIL,
-      +body.emailToken,
-    );
+  async sendEmail(@Body() body: { email: string; name: string; emailToken: string }) {
+    await this.usersService.sendEmail(body.email, body.name, EmailType.REMINDER, body.emailToken);
   }
 
   @Post('/forgot-password')
-  async forgotPassword(@Body() body: { username: string }) {
-    return await this.usersService.forgotPassword(body.username);
+  async forgotPassword(@Body() body: { email: string }) {
+    return await this.usersService.forgotPassword(body.email);
   }
 
   @Post('/reset-password')
-  async resetPassword(@Body() body: { username: string; password: string; passwordToken: number }) {
+  async resetPassword(@Body() body: { email: string; password: string; passwordToken: number }) {
     const { id, success } = await this.usersService.resetPassword(
-      body.username,
+      body.email,
       body.password,
       body.passwordToken,
     );
@@ -151,5 +154,18 @@ export class UsersController {
       await this.tokenService.deleteAllTokens(id);
     }
     return success;
+  }
+
+  // ----------PORSONAL DEV ROUTES-----------
+
+  @Delete('/all')
+  deleteMany() {
+    return this.usersService.deleteMany();
+  }
+
+  @Delete()
+  async remove(@Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+    return await this.usersService.remove(+id);
   }
 }
