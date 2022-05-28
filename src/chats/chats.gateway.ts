@@ -16,6 +16,19 @@ import { UsersService } from 'src/users/users.service';
 import { IChat } from './chat';
 import { CHAT_STATUS, ConversationService } from './conversation.service';
 
+type IChatFromConversation = {
+  status: CHAT_STATUS;
+  data:
+    | string
+    | {
+        id: number;
+        createdAt: Date;
+        senderId: number;
+        receiverId: number;
+        message: any;
+      };
+};
+
 @WebSocketGateway({
   cors: {
     credentials: true,
@@ -159,6 +172,48 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         msg: data.message,
         createdAt: data.createdAt,
         status,
+      });
+      return { data: { messageId: data.id } };
+    }
+  }
+
+  @SubscribeMessage('sendMsg')
+  async sendMsg(
+    @MessageBody()
+    { data: { receiverId, msg, role } }: { data: { receiverId: number; msg: string; role: Role } },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { from, validUser, user } = await this.verifyConnectedUser(client, role);
+    if (!validUser) {
+      return { error: 'Enter Tutor Token' };
+    }
+    let chat: IChatFromConversation;
+    if (role === 'STUDENT') {
+      chat = await this.conversationService.msgFromStudent(from, receiverId, msg, user);
+    }
+
+    if (role === 'TUTOR') {
+      chat = await this.conversationService.msgFromTutor(from, receiverId, msg);
+    }
+    const { data, status } = chat;
+
+    if (chat.status === CHAT_STATUS.ERROR) {
+      client.broadcast.to(client.id).emit('error', chat.data);
+      return { error: data };
+    }
+
+    if (
+      (status === CHAT_STATUS.PENDING || status === CHAT_STATUS.APPROVED) &&
+      typeof data !== 'string'
+    ) {
+      const eventName = role === 'STUDENT' ? 'reveiveMsgFromStudent' : 'reveiveMsgFromTutor';
+      this.broadCastMsg(receiverId, eventName, {
+        id: data.id,
+        studentId: role === 'STUDENT' ? from : receiverId,
+        tutorId: role === 'TUTOR' ? from : receiverId,
+        msg: data.message,
+        createdAt: data.createdAt,
+        status: status,
       });
       return { data: { messageId: data.id } };
     }
