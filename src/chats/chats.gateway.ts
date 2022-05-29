@@ -60,8 +60,14 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @WebSocketServer() server: Server;
 
   async handleConnection(@ConnectedSocket() client: Socket) {
-    const { from: id } = await this.verifyConnectedUser(client);
-    const alreadyConnected = this.connectionTable.get(id);
+    const res = await this.verifyConnectedUser(client);
+    if (!res.validUser || !res.from) {
+      return { error: 'Enter Tutor Token' };
+    }
+
+    const { from: id } = res;
+
+    const alreadyConnected = this.connectionTable.get(res.from);
     if (alreadyConnected) {
       alreadyConnected.push(client.id);
     } else {
@@ -106,12 +112,12 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { msg, receiverId } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    const { from, validUser, user } = await this.verifyConnectedUser(client, 'STUDENT');
+    const res = await this.verifyConnectedUser(client, 'STUDENT');
 
-    if (!validUser) {
+    if (!res.validUser || !res.from) {
       return { error: 'Enter Student Token' };
     }
-
+    const { from, user } = res;
     const { status, data } = await this.conversationService.msgFromStudent(
       from,
       receiverId,
@@ -151,10 +157,12 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { receiverId: studentId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    const { from, validUser } = await this.verifyConnectedUser(client, 'TUTOR');
-    if (!validUser) {
-      return { error: 'Enter Tutor Token' };
+    const res = await this.verifyConnectedUser(client, 'STUDENT');
+
+    if (!res.validUser || !res.from) {
+      return { error: 'Enter Student Token' };
     }
+    const { from } = res;
 
     const { data, status } = await this.conversationService.msgFromTutor(from, studentId, msg);
     if (status === CHAT_STATUS.ERROR) {
@@ -183,10 +191,13 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     { data: { receiverId, msg, role } }: { data: { receiverId: number; msg: string; role: Role } },
     @ConnectedSocket() client: Socket,
   ) {
-    const { from, validUser, user } = await this.verifyConnectedUser(client, role);
-    if (!validUser) {
-      return { error: 'Enter Tutor Token' };
+    const res = await this.verifyConnectedUser(client, 'STUDENT');
+
+    if (!res.validUser || !res.from) {
+      return { error: 'Enter Student Token' };
     }
+    const { from, user } = res;
+
     let chat: IChatFromConversation;
     if (role === 'STUDENT') {
       chat = await this.conversationService.msgFromStudent(from, receiverId, msg, user);
@@ -224,9 +235,10 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { msgIds } }: { data: { msgIds: number[] } },
     @ConnectedSocket() client: Socket,
   ) {
-    const { validUser } = await this.verifyConnectedUser(client);
-    if (!validUser) {
-      return { error: 'Enter Tutor Token' };
+    const res = await this.verifyConnectedUser(client, 'STUDENT');
+
+    if (!res.validUser || !res.from) {
+      return { error: 'Enter Student Token' };
     }
     const { data } = await this.conversationService.seenMsg(msgIds);
     this.broadCastMsg(data[0].senderId, 'msgSeen', {
