@@ -26,7 +26,7 @@ function is_valid_msg(msg: string): { valid: boolean; error: string } {
     };
   }
 
-  if (is_phone_detect().test(remove_bad_words(msg))) {
+  if (is_phone_detect().test(msg)) {
     return {
       valid: false,
       error: 'Phone number is not allowed',
