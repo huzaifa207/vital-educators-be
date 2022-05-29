@@ -74,7 +74,6 @@ export class AppModule {
       .exclude(
         { path: 'user/login', method: RequestMethod.POST },
         { path: 'user', method: RequestMethod.POST },
-        { path: 'user', method: RequestMethod.PATCH },
         { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/forgot-password', method: RequestMethod.POST },
         { path: 'user/all', method: RequestMethod.DELETE },
