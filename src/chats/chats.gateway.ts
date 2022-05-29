@@ -281,7 +281,6 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         this.server.to(id).emit(eventName, { ...data });
       });
     }
-    console.log('broadCastMsg  data - ', data);
     // return { data: { messageId: data.id } };
   }
 }
