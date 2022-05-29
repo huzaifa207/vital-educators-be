@@ -157,10 +157,10 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @MessageBody() { data: { receiverId: studentId, msg } }: { data: IChat },
     @ConnectedSocket() client: Socket,
   ) {
-    const res = await this.verifyConnectedUser(client, 'STUDENT');
+    const res = await this.verifyConnectedUser(client, 'TUTOR');
 
     if (!res.validUser || !res.from) {
-      return { error: 'Enter Student Token' };
+      return { error: 'Enter TUTOR Token' };
     }
     const { from } = res;
 
