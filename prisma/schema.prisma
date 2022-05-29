@@ -42,10 +42,9 @@ model whitelist {
 }
 
 model Student {
-  id          Int    @id @default(autoincrement())
-  profile_pic String
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int    @unique
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
 }
 
 model Conversation {

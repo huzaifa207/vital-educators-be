@@ -5,19 +5,19 @@ import { PrismaService } from 'src/prisma.service';
 export class StudentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  createStudentProfile(userId: number, profile: string) {
-    try {
-      const newStudentProfile = this.prisma.student.create({
-        data: {
-          profile_pic: profile,
-          user: { connect: { id: userId } },
-        },
-      });
-      return newStudentProfile;
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
+  // createStudentProfile(userId: number, profile: string) {
+  //   try {
+  //     const newStudentProfile = this.prisma.student.create({
+  //       data: {
+  //         profile_pic: profile,
+  //         user: { connect: { id: userId } },
+  //       },
+  //     });
+  //     return newStudentProfile;
+  //   } catch (error) {
+  //     throw new BadRequestException(error);
+  //   }
+  // }
 
   async findByUserId(userId: number) {
     try {
