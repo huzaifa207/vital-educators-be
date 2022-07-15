@@ -80,7 +80,6 @@ export class UsersController {
   @Serializer(ReturnUserDto)
   @Get('/all')
   findAll() {
-    console.log('first 11');
     return this.usersService.findAll();
   }
 
