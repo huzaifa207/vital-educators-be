@@ -37,7 +37,7 @@ export class TutorsService {
     }
   }
 
-  async filterTutor(subject: string, postCode: number, skip: number) {
+  async filterTutor(subject: string, postCode: number, graduationLevel: string, skip: number) {
     const tutors = await this.prisma.tutor.findMany({
       where: {
         AND: [
@@ -47,7 +47,7 @@ export class TutorsService {
           {
             user: {
               postal_code: String(postCode),
-              email_approved: true,
+              // email_approved: true,
             },
           },
           {
@@ -57,9 +57,17 @@ export class TutorsService {
               },
             },
           },
+          {
+            qualification: {
+              some: {
+                level: graduationLevel,
+              },
+            },
+          },
         ],
       },
-      include: {
+      select: {
+        skype_id: true,
         user: {
           select: {
             id: true,
@@ -72,7 +80,16 @@ export class TutorsService {
             profile_url: true,
           },
         },
+        qualification: {
+          select: {
+            degree_title: true,
+            institute: true,
+            level: true,
+          },
+        },
+        tutoringDetail: true,
       },
+
       skip,
       take: 10,
     });

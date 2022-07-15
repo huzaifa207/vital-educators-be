@@ -238,7 +238,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     const res = await this.verifyConnectedUser(client);
 
     if (!res.validUser || !res.from) {
-      return { error: 'Enter Student Token' };
+      return { error: 'User not verified' };
     }
     const { data } = await this.conversationService.seenMsg(msgIds);
     this.broadCastMsg(data[0].senderId, 'msgSeen', {

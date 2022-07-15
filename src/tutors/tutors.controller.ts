@@ -31,8 +31,19 @@ export class TutorsController {
 
   @Get('filter')
   async getFilteredTutor(
-    @Query() { subject, postCode, skip }: { subject: string; postCode: number; skip: number },
+    @Query()
+    {
+      subject,
+      postCode,
+      graduationLevel,
+      skip,
+    }: {
+      subject: string;
+      postCode: number;
+      graduationLevel: string;
+      skip: number;
+    },
   ) {
-    return await this.tutorsService.filterTutor(subject, postCode, skip);
+    return await this.tutorsService.filterTutor(subject, postCode, graduationLevel, skip);
   }
 }
