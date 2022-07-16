@@ -94,9 +94,9 @@ export class TutorsService {
         skip,
         take: 10,
       });
-      return tutors;
+      return tutors || [];
     } catch (error) {
-      throw new Exception('Tutor not found');
+      throw new Exception('No tutors found');
     }
   }
 
