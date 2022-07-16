@@ -38,62 +38,66 @@ export class TutorsService {
   }
 
   async filterTutor(subject: string, postCode: number, graduationLevel: string, skip: number) {
-    const tutors = await this.prisma.tutor.findMany({
-      where: {
-        AND: [
-          {
-            deActivate: false,
-          },
-          {
-            user: {
-              postal_code: String(postCode),
-              // email_approved: true,
+    try {
+      const tutors = await this.prisma.tutor.findMany({
+        where: {
+          AND: [
+            {
+              deActivate: false,
             },
-          },
-          {
-            subjectOffers: {
-              some: {
-                title: subject,
+            {
+              user: {
+                postal_code: String(postCode),
+                // email_approved: true,
               },
             },
-          },
-          {
-            qualification: {
-              some: {
-                level: graduationLevel,
+            {
+              subjectOffers: {
+                some: {
+                  title: subject,
+                },
               },
             },
-          },
-        ],
-      },
-      select: {
-        skype_id: true,
-        user: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            email: true,
-            postal_code: true,
-            phone: true,
-            country: true,
-            profile_url: true,
-          },
+            {
+              qualification: {
+                some: {
+                  level: graduationLevel,
+                },
+              },
+            },
+          ],
         },
-        qualification: {
-          select: {
-            degree_title: true,
-            institute: true,
-            level: true,
+        select: {
+          skype_id: true,
+          user: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              email: true,
+              postal_code: true,
+              phone: true,
+              country: true,
+              profile_url: true,
+            },
           },
+          qualification: {
+            select: {
+              degree_title: true,
+              institute: true,
+              level: true,
+            },
+          },
+          tutoringDetail: true,
         },
-        tutoringDetail: true,
-      },
 
-      skip,
-      take: 10,
-    });
-    return tutors;
+        skip,
+        take: 10,
+      });
+      return tutors;
+    } catch (error) {
+      throw new Exception('Tutor not found');
+    }
   }
 
   async tutorStats(tutorId: number) {
