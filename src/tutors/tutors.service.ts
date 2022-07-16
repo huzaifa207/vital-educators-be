@@ -38,6 +38,9 @@ export class TutorsService {
   }
 
   async filterTutor(subject: string, postCode: number, graduationLevel: string, skip: number) {
+    const levels: Array<
+      'a_level' | 'casual_learner' | 'primary' | 'secondary' | 'gsce' | 'higher_education'
+    > = ['a_level', 'casual_learner', 'primary', 'secondary', 'gsce', 'higher_education'];
     try {
       const tutors = await this.prisma.tutor.findMany({
         where: {
@@ -55,13 +58,11 @@ export class TutorsService {
               subjectOffers: {
                 some: {
                   title: subject,
-                },
-              },
-            },
-            {
-              qualification: {
-                some: {
-                  level: graduationLevel,
+                  AND: [
+                    {
+                      [levels[graduationLevel]]: { gt: 0 },
+                    },
+                  ],
                 },
               },
             },
