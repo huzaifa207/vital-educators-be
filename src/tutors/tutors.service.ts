@@ -95,6 +95,7 @@ export class TutorsService {
               phone: true,
               country: true,
               profile_url: true,
+              address_1: true,
             },
           },
           qualification: {
@@ -102,6 +103,7 @@ export class TutorsService {
               degree_title: true,
               institute: true,
               level: true,
+              year_of_completion: true,
             },
           },
           tutoringDetail: true,
