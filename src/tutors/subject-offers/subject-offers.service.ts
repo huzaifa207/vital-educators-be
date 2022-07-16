@@ -16,6 +16,7 @@ export class SubjectOffersService {
       return await this.prisma.subjectOffer.create({
         data: {
           ...createSubjectOfferDto,
+          title: createSubjectOfferDto.title.toLowerCase(),
           tutor: { connect: { id: tutorId } },
         },
       });

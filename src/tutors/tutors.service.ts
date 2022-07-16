@@ -3,6 +3,13 @@ import { Prisma } from '@prisma/client';
 import { Exception } from 'handlebars';
 import { PrismaService } from './../prisma.service';
 
+type GraduationLevel =
+  | 'a_level'
+  | 'casual_learner'
+  | 'primary'
+  | 'secondary'
+  | 'gsce'
+  | 'higher_education';
 @Injectable()
 export class TutorsService {
   constructor(private prisma: PrismaService) {}
@@ -38,10 +45,18 @@ export class TutorsService {
   }
 
   async filterTutor(subject: string, postCode: number, graduationLevel: string, skip: number) {
-    const levels: Array<
-      'a_level' | 'casual_learner' | 'primary' | 'secondary' | 'gsce' | 'higher_education'
-    > = ['a_level', 'casual_learner', 'primary', 'secondary', 'gsce', 'higher_education'];
+    const levels: Array<GraduationLevel> = [
+      'a_level',
+      'casual_learner',
+      'primary',
+      'secondary',
+      'gsce',
+      'higher_education',
+    ];
     try {
+      const graduation_level = levels.includes(graduationLevel as GraduationLevel)
+        ? graduationLevel
+        : null;
       const tutors = await this.prisma.tutor.findMany({
         where: {
           AND: [
@@ -57,10 +72,10 @@ export class TutorsService {
             {
               subjectOffers: {
                 some: {
-                  title: subject,
+                  title: subject.toLowerCase(),
                   AND: [
                     {
-                      [levels[graduationLevel]]: { gt: 0 },
+                      [graduation_level]: { gt: 0 },
                     },
                   ],
                 },
@@ -97,7 +112,8 @@ export class TutorsService {
       });
       return tutors;
     } catch (error) {
-      throw new Exception('No tutors found');
+      console.log(error);
+      throw new NotFoundException('tutors not found');
     }
   }
 
