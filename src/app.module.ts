@@ -80,6 +80,7 @@ export class AppModule {
         { path: 'user/all', method: RequestMethod.GET },
         { path: 'user/send', method: RequestMethod.POST },
         { path: 'user/reset-password', method: RequestMethod.POST },
+        { path: 'tutor/filter', method: RequestMethod.GET },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
