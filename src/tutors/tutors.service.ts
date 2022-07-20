@@ -92,7 +92,7 @@ export class TutorsService {
           return {
             id: subject.id,
             title: subject.title,
-            level: levels.filter((l) => {
+            level: levels.map((l) => {
               if(subject[l] > 0){
                 return {
                   title:l,
