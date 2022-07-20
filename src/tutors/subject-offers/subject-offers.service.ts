@@ -60,6 +60,7 @@ export class SubjectOffersService {
           },
           data: {
             ...updateSubjectOfferDto,
+            title: updateSubjectOfferDto.title.toString().toLowerCase(),
           },
         });
       }
