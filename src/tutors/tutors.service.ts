@@ -45,6 +45,15 @@ export class TutorsService {
   }
 
   async getTutorProfile(userId: number) {
+    const levels: Array<GraduationLevel> = [
+      'a_level',
+      'casual_learner',
+      'primary',
+      'secondary',
+      'gsce',
+      'higher_education',
+    ];
+
     try {
       const user = await this.prisma.user.findFirst({
         where: { id: userId, role: 'TUTOR' },
@@ -61,6 +70,7 @@ export class TutorsService {
       const tutor = await this.prisma.tutor.findUnique({
         where: { id: user.tutor.id },
         include: {
+          subjectOffers: true,
           qualification: true,
           tutoringDetail: true,
         },
@@ -77,6 +87,18 @@ export class TutorsService {
           id: tutor.id,
           crb_check: tutor.crb_check,
           skype_id: tutor.skype_id,
+        },
+        subjects: {
+          subjects: tutor.subjectOffers.map((subject) => {
+            return {
+              id: subject.id,
+              title: subject.title,
+              level: levels.filter((l) => subject[l] > 0),
+              online: subject.online,
+              online_discount: subject.online,
+              first_free_lesson: subject.first_free_lesson,
+            };
+          }),
         },
         qualification: tutor.qualification,
         tutoringDetail: tutor.tutoringDetail,
