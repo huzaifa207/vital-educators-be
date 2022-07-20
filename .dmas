@@ -1,0 +1,250 @@
+[33mcommit 0fd227113376f166f3104134691a7785631755db[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Muhammad Husnain <54207663+husnain129@users.noreply.github.com>
+Date:   Wed Jul 20 10:32:37 2022 +0000
+
+    refactor response
+
+[33mcommit c4d5a80365db3d9ca535c918b2eb81ef63e610ad[m
+Author: Muhammad Husnain <54207663+husnain129@users.noreply.github.com>
+Date:   Wed Jul 20 10:28:36 2022 +0000
+
+    response: update tutor profile response <subject:level>
+
+[33mcommit 12d1e372d8b41eb55deeb649aef792ab5b79f96a[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Wed Jul 20 14:45:32 2022 +0500
+
+    response: update tutor profile response <subjects>
+
+[33mcommit dbd05a59d1f9e23369af5eef9f0ae85bca26f8ec[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Wed Jul 20 14:36:13 2022 +0500
+
+    response: update tutor profile rensponse data
+
+[33mcommit 9f6eee184187195318faa07e85de3454395e8c85[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Wed Jul 20 14:06:14 2022 +0500
+
+    fix: tutor profile error handling
+
+[33mcommit 19d837805ea686d96f34c090fff7780a9b1d947e[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Wed Jul 20 13:37:53 2022 +0500
+
+    fix: tutor route middleware
+
+[33mcommit f6b15f71b0bcaac37a834f56e8c3a79f6d6e9d7a[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Wed Jul 20 13:22:04 2022 +0500
+
+    fix: params in tutor profile
+
+[33mcommit 0391376375828e699b30d04fc22f4943565c3d29[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Wed Jul 20 13:18:26 2022 +0500
+
+    endpoint: Add tutor profile endpoint for public pages
+
+[33mcommit 1cb9b06099b75672b4ac33f3c8ff60b21e3a2b83[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Sat Jul 16 18:56:15 2022 +0500
+
+    update: return data of tutor filter
+
+[33mcommit 0f3c4f00efe61a6b18129a9a9c6a7ccca7e8fd71[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Sat Jul 16 18:08:49 2022 +0500
+
+    fix: Errors in filtering tutor && graduation level checking
+
+[33mcommit d973ebc9429c53b4a343cba75bc0211d71eadac8[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Sat Jul 16 17:37:21 2022 +0500
+
+    logic: Update qualification condition in tutor filtering
+
+[33mcommit 9589969a12e25867caea7b9571339bf759104ba7[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Sat Jul 16 16:44:16 2022 +0500
+
+    update
+
+[33mcommit 63535bd19f703ec703a4a364b3ca0d6f9b4b728b[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Sat Jul 16 15:27:41 2022 +0500
+
+    update: tutor filter response
+
+[33mcommit c0c6fca6fc0356ad58c9ae6d795a9b0f961de067[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Sat Jul 16 15:26:02 2022 +0500
+
+    update: tutor filter responce && errors
+
+[33mcommit fb06edfa8a410534bf386f8721b293d9799e2294[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Sat Jul 16 15:22:41 2022 +0500
+
+    fix: update middleware for route tutor/filter
+
+[33mcommit 31515a2d4e13d6fc819711c27e8bb25e9b3f3c4a[m
+Merge: ee5e504 2b4c45d
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Fri Jul 15 20:48:15 2022 +0500
+
+    Merge branch 'main' of https://github.com/husnain129/vital-educator-prisma
+
+[33mcommit ee5e50435003d1cd40f40b102179a448f24228ab[m
+Author: Muhammad Husnain <mlhlk1212@gmail.com>
+Date:   Fri Jul 15 20:47:29 2022 +0500
+
+    refactor: tutor filteration return and logic
+
+[33mcommit 2b4c45d68e8025184e560f29ed45a682e983457b[m
+Author: Muhammad Husnain <54207663+husnain129@users.noreply.github.com>
+Date:   Mon May 30 15:14:31 2022 +0000
+
+    update
+
+[33mcommit 0a34dd6289605860a1c992802c3534bc03490a8d[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 18:11:02 2022 +0500
+
+    update seenMsg
+
+[33mcommit 60696b53d4b707c47330aeca3daf0211bb310e46[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 17:43:57 2022 +0500
+
+    update user update error
+
+[33mcommit cab3cab7505d85bbf6aa654408250904f9b89dde[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 17:31:32 2022 +0500
+
+    update user patch
+
+[33mcommit b3398f06a806b0c2381d25c2a6a8565bde0326e7[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 17:10:27 2022 +0500
+
+    update tutor event
+
+[33mcommit 9491c2e750078c4dc17efb05a4698878cd77b09e[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 16:49:14 2022 +0500
+
+    update exceptions
+
+[33mcommit 51c86ead31ab7ae624bf11f1755aacb8cc0908b3[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 16:34:12 2022 +0500
+
+    remove logs
+
+[33mcommit 9e7e508b5c2711d96b59fccbf9fe1c2f6622ec54[m
+Merge: 5602b37 d9fdd4f
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 14:04:16 2022 +0500
+
+    Merge branch 'main' of https://github.com/husnain129/vital-educator-prisma
+
+[33mcommit 5602b372dacea314f4d9e63a6670f0060ca7f449[m
+Merge: bed4a8e d030201
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 14:00:31 2022 +0500
+
+    Merge branch 'dev' of https://github.com/husnain129/vital-educator-prisma
+
+[33mcommit bed4a8e3c9657e1b3de2e5f985957572d2c2d105[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 13:59:31 2022 +0500
+
+    update curse words validatoin
+
+[33mcommit d9fdd4f34ed6a0c06dfcea964ed3f34195153a90[m
+Merge: 9b2f290 d030201
+Author: Muhammad Husnain <54207663+husnain129@users.noreply.github.com>
+Date:   Sun May 29 02:19:59 2022 +0500
+
+    Merge pull request #1 from husnain129/dev
+    
+    Dev
+
+[33mcommit d03020123712b18e21b78c21f0982160eb269cbd[m
+Merge: 615753b 9b2f290
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 02:17:54 2022 +0500
+
+    Merge branch 'main' of https://github.com/husnain129/vital-educator-prisma into dev
+
+[33mcommit 9b2f290abaf9fee3e1b81453858b492bb337a52c[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sun May 29 02:14:50 2022 +0500
+
+    add sendMsg event
+
+[33mcommit e747e70132ca76be1f12e18442e910ac5c962446[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sat May 28 02:08:19 2022 +0500
+
+    update chatSeen
+
+[33mcommit 1d783ceb03847d87c48dc7dd1735607f5879c91c[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sat May 28 01:19:27 2022 +0500
+
+    add msg seen by receiver event
+
+[33mcommit 30d2a004e31542128b5d0bba820a463b724450e2[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Sat May 28 00:35:44 2022 +0500
+
+    update bad words validation
+
+[33mcommit c06f008a078e43a084667683ec4fd14ac9281cd6[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Fri May 27 13:35:29 2022 +0500
+
+    update conversation:197
+
+[33mcommit 3fda652c2714769fde75079f549c1cc0a95f3157[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Fri May 27 13:05:18 2022 +0500
+
+    add msg validation
+
+[33mcommit cfcda48e4d09d515d5aecaa8a0f2a2e44a99bc1e[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Thu May 26 00:35:20 2022 +0500
+
+    update token in chat_gateway and first_message schedule
+
+[33mcommit da028f8895f3a96838bf1e3809690b0f55422388[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Wed May 25 21:02:03 2022 +0500
+
+    update chat gateway
+
+[33mcommit 8571a107f2989e1223cd998c7da7cd223278d794[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Wed May 25 19:16:46 2022 +0500
+
+    update cookie error
+
+[33mcommit 366e6f7774b63bbb0c281e5c9b43563ce7ac5ba3[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Wed May 25 19:10:20 2022 +0500
+
+    update profile
+
+[33mcommit 4283303b87c8392de20d67e34cae5f7ca5093bea[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:   Wed May 25 19:00:56 2022 +0500
+
+    update profile exception
+
+[33mcommit 3175b152f9a7ff30ca8278fcf53fbc42da817a94[m
+Author: Muhammad Husnain <54207663+m-h9@users.noreply.github.com>
+Date:  

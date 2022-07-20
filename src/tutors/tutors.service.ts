@@ -98,8 +98,10 @@ export class TutorsService {
                   title:l,
                   price:subject[l]
                 }
+              }else{
+                return null
               }
-            }),
+            }).filter(e=> e !== null),
             online: subject.online,
             online_discount: subject.online,
             first_free_lesson: subject.first_free_lesson,
