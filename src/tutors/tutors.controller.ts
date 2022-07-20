@@ -29,6 +29,12 @@ export class TutorsController {
     return this.tutorsService.deActivateTutor(+id);
   }
 
+  @Get('profile')
+  async getTutorProfile(@Req() request: Request) {
+    const user = request.currentUser as Prisma.UserCreateManyInput;
+    return await this.tutorsService.getTutorProfile(user);
+  }
+
   @Get('filter')
   async getFilteredTutor(
     @Query()

@@ -44,6 +44,32 @@ export class TutorsService {
     }
   }
 
+  async getTutorProfile(user: Prisma.UserCreateManyInput) {
+    const tutor = await this.prisma.tutor.findUnique({
+      where: { userId: user.id },
+      include: {
+        qualification: true,
+        tutoringDetail: true,
+      },
+    });
+    return {
+      user: {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        postal_code: user.postal_code,
+        profile_url: user.profile_url,
+      },
+      tutor: {
+        id: tutor.id,
+        crb_check: tutor.crb_check,
+        skype_id: tutor.skype_id,
+      },
+      qualification: tutor.qualification,
+      tutoringDetail: tutor.tutoringDetail,
+    };
+  }
+
   async filterTutor(subject: string, postCode: number, graduationLevel: string, skip: number) {
     const levels: Array<GraduationLevel> = [
       'a_level',
