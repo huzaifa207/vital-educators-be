@@ -45,30 +45,47 @@ export class TutorsService {
   }
 
   async getTutorProfile(userId: number) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    const tutor = await this.prisma.tutor.findUnique({
-      where: { userId: user.id },
-      include: {
-        qualification: true,
-        tutoringDetail: true,
-      },
-    });
-    return {
-      user: {
-        id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        postal_code: user.postal_code,
-        profile_url: user.profile_url,
-      },
-      tutor: {
-        id: tutor.id,
-        crb_check: tutor.crb_check,
-        skype_id: tutor.skype_id,
-      },
-      qualification: tutor.qualification,
-      tutoringDetail: tutor.tutoringDetail,
-    };
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: { id: userId, role: 'TUTOR' },
+        include: {
+          tutor: {
+            select: { id: true },
+          },
+        },
+      });
+      if (!user) {
+        throw new NotFoundException('Tutor not found');
+      }
+
+      const tutor = await this.prisma.tutor.findUnique({
+        where: { id: user.tutor.id },
+        include: {
+          qualification: true,
+          tutoringDetail: true,
+        },
+      });
+      return {
+        user: {
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          postal_code: user.postal_code,
+          profile_url: user.profile_url,
+        },
+        tutor: {
+          id: tutor.id,
+          crb_check: tutor.crb_check,
+          skype_id: tutor.skype_id,
+        },
+        qualification: tutor.qualification,
+        tutoringDetail: tutor.tutoringDetail,
+      };
+    } catch (error) {
+      if (error.message === 'Tutor not found') {
+        throw new NotFoundException('Tutor not found');
+      }
+    }
   }
 
   async filterTutor(subject: string, postCode: number, graduationLevel: string, skip: number) {

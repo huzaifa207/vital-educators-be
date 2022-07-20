@@ -30,8 +30,8 @@ export class TutorsController {
   }
 
   @Get('profile/:id')
-  async getTutorProfile(@Param() { id }: { id: number }) {
-    return await this.tutorsService.getTutorProfile(id);
+  async getTutorProfile(@Param() { id }: { id: string }) {
+    return await this.tutorsService.getTutorProfile(parseInt(id));
   }
 
   @Get('filter')
