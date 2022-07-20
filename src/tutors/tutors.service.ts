@@ -88,18 +88,16 @@ export class TutorsService {
           crb_check: tutor.crb_check,
           skype_id: tutor.skype_id,
         },
-        subjects: {
-          subjects: tutor.subjectOffers.map((subject) => {
-            return {
-              id: subject.id,
-              title: subject.title,
-              level: levels.filter((l) => subject[l] > 0),
-              online: subject.online,
-              online_discount: subject.online,
-              first_free_lesson: subject.first_free_lesson,
-            };
-          }),
-        },
+        subjects: tutor.subjectOffers.map((subject) => {
+          return {
+            id: subject.id,
+            title: subject.title,
+            level: levels.filter((l) => subject[l] > 0),
+            online: subject.online,
+            online_discount: subject.online,
+            first_free_lesson: subject.first_free_lesson,
+          };
+        }),
         qualification: tutor.qualification,
         tutoringDetail: tutor.tutoringDetail,
       };
