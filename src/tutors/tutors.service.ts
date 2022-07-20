@@ -44,7 +44,8 @@ export class TutorsService {
     }
   }
 
-  async getTutorProfile(user: Prisma.UserCreateManyInput) {
+  async getTutorProfile(userId: number) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
     const tutor = await this.prisma.tutor.findUnique({
       where: { userId: user.id },
       include: {
