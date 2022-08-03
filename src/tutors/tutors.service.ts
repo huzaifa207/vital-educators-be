@@ -92,16 +92,18 @@ export class TutorsService {
           return {
             id: subject.id,
             title: subject.title,
-            level: levels.map((l) => {
-              if(subject[l] > 0){
-                return {
-                  title:l,
-                  price:subject[l]
+            level: levels
+              .map((l) => {
+                if (subject[l] > 0) {
+                  return {
+                    title: l,
+                    price: subject[l],
+                  };
+                } else {
+                  return null;
                 }
-              }else{
-                return null
-              }
-            }).filter(e=> e !== null),
+              })
+              .filter((e) => e !== null),
             online: subject.online,
             online_discount: subject.online,
             first_free_lesson: subject.first_free_lesson,
