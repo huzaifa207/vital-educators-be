@@ -20,7 +20,7 @@ import { EmailType } from 'src/mail-service/mail.utils';
 import { TokenService } from 'src/token/token.service';
 import { ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
-
+import { BadRequestException } from '@nestjs/common';
 @Controller('user')
 export class UsersController {
   constructor(
@@ -85,9 +85,22 @@ export class UsersController {
   findAll(
     @Query('offset', new DefaultValuePipe('0')) queryOffset?: string,
     @Query('limit', new DefaultValuePipe('15')) queryLimit?: string,
+    @Query('role', new DefaultValuePipe('ALL')) queryRole?: 'ALL' | 'ADMIN' | 'TUTOR' | 'STUDENT',
   ) {
     let offset = 0;
     let limit = 15;
+    let role: typeof queryRole = 'ALL';
+
+    if (queryRole) {
+      queryRole = queryRole.toUpperCase() as typeof queryRole;
+
+      if (['ALL', 'ADMIN', 'TUTOR', 'STUDENT'].includes(queryRole)) {
+        role = queryRole;
+      } else
+        throw new BadRequestException(
+          'query param "role" must be one of ALL | ADMIN | TUTOR | STUDENT',
+        );
+    }
     if (queryOffset) {
       try {
         offset = parseInt(queryOffset);
@@ -102,7 +115,7 @@ export class UsersController {
         console.warn('Parsing failed for "limit"', offset);
       }
     }
-    return this.usersService.findAll(offset, limit);
+    return this.usersService.findAll({ offset, limit, role });
   }
 
   @Patch()

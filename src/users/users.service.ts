@@ -244,13 +244,27 @@ export class UsersService {
 
   // ------------ PERSONAL DEV SERVICES ------------
 
-  findAll(offset = 0, limit = 15) {
+  findAll(
+    queryOptions: {
+      offset?: number;
+      limit?: number;
+      role?: 'ALL' | 'ADMIN' | 'TUTOR' | 'STUDENT';
+    } = {
+      offset: 0,
+      limit: undefined,
+      role: undefined,
+    },
+  ) {
     try {
       // console.log('first 22');
       return (
         this.prisma.user.findMany({
-          skip: offset,
-          take: limit,
+          skip: queryOptions.offset,
+          take: queryOptions.limit,
+
+          ...(!queryOptions.role || queryOptions.role == 'ALL'
+            ? {}
+            : { where: { role: queryOptions.role } }),
         }) || []
       );
     } catch (error) {
