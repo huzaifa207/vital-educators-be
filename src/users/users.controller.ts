@@ -1,12 +1,15 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   ForbiddenException,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -79,8 +82,27 @@ export class UsersController {
 
   @Serializer(ReturnUserDto)
   @Get('/all')
-  findAll() {
-    return this.usersService.findAll();
+  findAll(
+    @Query('offset', new DefaultValuePipe('0')) queryOffset?: string,
+    @Query('limit', new DefaultValuePipe('15')) queryLimit?: string,
+  ) {
+    let offset = 0;
+    let limit = 15;
+    if (queryOffset) {
+      try {
+        offset = parseInt(queryOffset);
+      } catch (er) {
+        console.warn('Parsing failed for "offset"', offset);
+      }
+    }
+    if (queryLimit) {
+      try {
+        limit = parseInt(queryLimit);
+      } catch (er) {
+        console.warn('Parsing failed for "limit"', offset);
+      }
+    }
+    return this.usersService.findAll(offset, limit);
   }
 
   @Patch()

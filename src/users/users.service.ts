@@ -244,12 +244,17 @@ export class UsersService {
 
   // ------------ PERSONAL DEV SERVICES ------------
 
-  findAll() {
+  findAll(offset = 0, limit = 15) {
     try {
-      console.log('first 22');
-      return this.prisma.user.findMany() || [];
+      // console.log('first 22');
+      return (
+        this.prisma.user.findMany({
+          skip: offset,
+          take: limit,
+        }) || []
+      );
     } catch (error) {
-      throw new NotFoundException('Users not found', error.message);
+      throw new NotFoundException('Querying users failed with error', error.message);
     }
   }
 
