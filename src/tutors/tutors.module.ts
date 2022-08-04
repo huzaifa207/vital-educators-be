@@ -31,7 +31,7 @@ import { TutorsService } from './tutors.service';
     DocumentsController,
   ],
   providers: [PrismaService, TutorsService],
-  exports: [TutorsService],
+  exports: [PrismaService, TutorsService],
 })
 export class TutorsModule {
   configure(consumer: MiddlewareConsumer) {

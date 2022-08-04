@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { Exception } from 'handlebars';
+import { Prisma, User } from '@prisma/client';
+import { DeleteKeys, PickKeys } from 'src/utils/helpers';
 import { PrismaService } from './../prisma.service';
 
 type GraduationLevel =
@@ -10,6 +10,12 @@ type GraduationLevel =
   | 'secondary'
   | 'gsce'
   | 'higher_education';
+
+interface TutorProfileQueryOptions {
+  userIncludedFields?: (keyof User)[];
+  userExcludedFields?: (keyof User)[];
+}
+
 @Injectable()
 export class TutorsService {
   constructor(private prisma: PrismaService) {}
@@ -31,7 +37,7 @@ export class TutorsService {
         },
       });
     } catch (error) {
-      throw new Exception('Tutor not found');
+      throw new NotFoundException('Tutor not found');
     }
   }
 
@@ -44,7 +50,13 @@ export class TutorsService {
     }
   }
 
-  async getTutorProfile(userId: number) {
+  async getTutorProfile(
+    userId: number,
+    options: TutorProfileQueryOptions = {
+      userIncludedFields: undefined,
+      userExcludedFields: undefined,
+    },
+  ) {
     const levels: Array<GraduationLevel> = [
       'a_level',
       'casual_learner',
@@ -75,14 +87,14 @@ export class TutorsService {
           tutoringDetail: true,
         },
       });
+      let pickedFields: Record<string, any> = Object.assign({}, user);
+      if (options && options.userIncludedFields)
+        pickedFields = PickKeys(user, options.userIncludedFields);
+      if (options && options.userExcludedFields)
+        pickedFields = DeleteKeys(user, options.userExcludedFields);
+
       return {
-        user: {
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          postal_code: user.postal_code,
-          profile_url: user.profile_url,
-        },
+        user: pickedFields,
         tutor: {
           id: tutor.id,
           crb_check: tutor.crb_check,

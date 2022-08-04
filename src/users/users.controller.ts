@@ -43,6 +43,7 @@ export class UsersController {
       secure: true,
       sameSite: 'none',
     });
+
     return user;
   }
 

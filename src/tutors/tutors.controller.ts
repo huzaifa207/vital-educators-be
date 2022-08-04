@@ -12,6 +12,7 @@ export class TutorsController {
   @Get()
   findOneTutor(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
+
     return this.tutorsService.findOneTutor(+id);
   }
 
@@ -31,7 +32,9 @@ export class TutorsController {
 
   @Get('profile/:id')
   async getTutorProfile(@Param() { id }: { id: string }) {
-    return await this.tutorsService.getTutorProfile(parseInt(id));
+    return await this.tutorsService.getTutorProfile(parseInt(id), {
+      userIncludedFields: ['id', 'first_name', 'last_name', 'profile_url', 'postal_code'],
+    });
   }
 
   @Get('filter')

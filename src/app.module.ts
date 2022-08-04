@@ -6,6 +6,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { RavenInterceptor } from 'nest-raven';
 import { join } from 'path';
 import { ENV } from 'src/settings';
+import { AdminController } from './admin/admin.controller';
+import { AdminMoudle } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatsModule } from './chats/chats.module';
@@ -46,6 +48,7 @@ import { UsersModule } from './users/users.module';
     TokenModule,
     TaskSchadularsModule,
     StudentsModule,
+    AdminMoudle,
   ],
   controllers: [AppController],
   providers: [
@@ -89,6 +92,9 @@ export class AppModule {
         { path: '/', method: RequestMethod.POST },
         { path: 'media', method: RequestMethod.POST },
         { path: 'media/:id', method: RequestMethod.GET },
+        { path: 'admin', method: RequestMethod.GET },
+        { path: 'admin/tutor/:id', method: RequestMethod.GET },
+        'admin/(.*)', //in-dev
       )
       .forRoutes(
         UsersController,
@@ -99,6 +105,7 @@ export class AppModule {
         SubjectOffersController,
         MediaController,
         DocumentsController,
+        AdminController,
       );
   }
 }
