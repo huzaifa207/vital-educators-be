@@ -99,6 +99,11 @@ export class TutorsService {
           id: tutor.id,
           crb_check: tutor.crb_check,
           skype_id: tutor.skype_id,
+          is_account_approved: tutor.is_account_approved,
+          is_profile_pic_approved: tutor.is_profile_pic_approved,
+          is_government_document_approved: tutor.is_government_document_approved,
+          is_qualification_document_approved: tutor.is_qualification_document_approved,
+          is_referee_approved: tutor.is_referee_approved,
         },
         subjects: tutor.subjectOffers.map((subject) => {
           return {
