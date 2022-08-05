@@ -30,6 +30,8 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
+import { AlertsModule } from './alerts/alerts.module';
+import { NotificationModule } from './notifications/notifications.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -49,6 +51,8 @@ import { UsersModule } from './users/users.module';
     TaskSchadularsModule,
     StudentsModule,
     AdminMoudle,
+    AlertsModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [
