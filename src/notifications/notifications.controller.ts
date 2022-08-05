@@ -101,6 +101,7 @@ export class NotificationController {
   @Post('/global')
   async createNewGlobal(@Body() body: CreateGlobalNotificationDTO) {
     try {
+      body.role = body.role.toUpperCase() as NotificationRole;
       return {
         id: (
           await this.notificationService.create({
