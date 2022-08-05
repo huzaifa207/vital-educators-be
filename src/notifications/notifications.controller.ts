@@ -9,13 +9,16 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { NotificationRole, NotificationTargetType, Prisma } from '@prisma/client';
+import { Request } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
 import {
   CreateUserNotificationDTO,
   CreateGlobalNotificationDTO,
-  NotificationResponseDTO,
+  GlobalNotificationResponseDTO,
+  UserNotificationResponseDTO,
 } from './notifications.dto';
 import { NotificationService } from './notifications.service';
 
@@ -49,7 +52,7 @@ export class NotificationController {
     }
   }
 
-  @Serializer(NotificationResponseDTO)
+  @Serializer(GlobalNotificationResponseDTO)
   @Get('/global')
   async getAllGlobal(
     @Query('role') queryRole: string,
@@ -72,6 +75,7 @@ export class NotificationController {
       offset: queryOffset,
       limit: queryLimit,
     });
+
     return {
       length: res.length,
       offset: queryOffset,
@@ -79,14 +83,33 @@ export class NotificationController {
       notifications: res,
     };
   }
-  @Serializer(NotificationResponseDTO)
+  @Serializer(UserNotificationResponseDTO)
   @Get('/user/:userId')
-  async getAllUser(
+  async getAllUserNotifs(
     @Param('userId', new ParseIntPipe()) userId: number,
     @Query('offset', new DefaultValuePipe('0'), new ParseIntPipe()) queryOffset?: number,
     @Query('limit', new DefaultValuePipe('15'), new ParseIntPipe()) queryLimit?: number,
   ) {
     const res = await this.notificationService.getUser(userId, {
+      offset: queryOffset,
+      limit: queryLimit,
+    });
+    return {
+      length: res.length,
+      offset: queryOffset,
+      limit: queryLimit,
+      notifications: res,
+    };
+  }
+  @Serializer(UserNotificationResponseDTO)
+  @Get('/user')
+  async getCurrentUserNotifs(
+    @Req() req: Request,
+    @Query('offset', new DefaultValuePipe('0'), new ParseIntPipe()) queryOffset?: number,
+    @Query('limit', new DefaultValuePipe('15'), new ParseIntPipe()) queryLimit?: number,
+  ) {
+    const user = req.currentUser as any;
+    const res = await this.notificationService.getUser(user.id, {
       offset: queryOffset,
       limit: queryLimit,
     });

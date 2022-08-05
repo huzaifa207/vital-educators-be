@@ -24,7 +24,7 @@ export class CreateGlobalNotificationDTO {
   role: NotificationRole;
 }
 
-class ReturnNotificationDTO {
+class ReturnUserNotificationDTO {
   @Expose()
   id: number;
 
@@ -37,6 +37,11 @@ class ReturnNotificationDTO {
   @Expose()
   createdAt: string;
 }
+
+class ReturnGlobalNotificationDTO extends ReturnUserNotificationDTO {
+  @Expose()
+  role: string;
+}
 class PaginationDTO {
   @Expose()
   limit: number;
@@ -45,8 +50,13 @@ class PaginationDTO {
   @Expose()
   length: number;
 }
-export class NotificationResponseDTO extends PaginationDTO {
+export class UserNotificationResponseDTO extends PaginationDTO {
   @Expose()
-  @Type(() => ReturnNotificationDTO)
-  notifications: Array<ReturnNotificationDTO>;
+  @Type(() => ReturnUserNotificationDTO)
+  notifications: Array<ReturnUserNotificationDTO>;
+}
+export class GlobalNotificationResponseDTO extends PaginationDTO {
+  @Expose()
+  @Type(() => ReturnGlobalNotificationDTO)
+  notifications: Array<ReturnGlobalNotificationDTO>;
 }

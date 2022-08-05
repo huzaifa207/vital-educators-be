@@ -32,6 +32,7 @@ import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { NotificationModule } from './notifications/notifications.module';
+import { NotificationController } from './notifications/notifications.controller';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -97,6 +98,10 @@ export class AppModule {
         { path: '/', method: RequestMethod.POST },
         { path: 'media', method: RequestMethod.POST },
         { path: 'media/:id', method: RequestMethod.GET },
+        'notifications/user/(.+)',
+        'notifications',
+        'notifications/global',
+        { path: 'notifications/:notificationId', method: RequestMethod.DELETE },
 
         'admin/(.*)', //in-dev for now
       )
@@ -110,6 +115,7 @@ export class AppModule {
         MediaController,
         DocumentsController,
         AdminController,
+        NotificationController,
       );
   }
 }
