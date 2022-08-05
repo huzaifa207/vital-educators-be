@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { ApprovalStatus, Prisma, User } from '@prisma/client';
 import { DeleteKeys, PickKeys } from 'src/utils/helpers';
+import { PaginationOptions } from 'src/utils/types';
 import { PrismaService } from './../prisma.service';
 
 type GraduationLevel =
@@ -20,6 +21,25 @@ interface TutorProfileQueryOptions {
 export class TutorsService {
   constructor(private prisma: PrismaService) {}
 
+  async pendingTutors(
+    options: Partial<PaginationOptions> = {
+      limit: undefined,
+      offset: 0,
+    },
+  ) {
+    const tutors = await this.prisma.tutor.findMany({
+      skip: options.offset,
+      take: options.limit,
+      where: {
+        is_account_approved: ApprovalStatus.PENDING,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return tutors;
+  }
   async deActivateTutor(userId: number) {
     const tutor = await this.findOneTutor(userId);
     tutor.deActivate = true;

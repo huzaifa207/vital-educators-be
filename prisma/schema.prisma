@@ -178,6 +178,7 @@ model Notification {
   targetType  NotificationTargetType
   target      User?                  @relation(fields: [targetId], references: [id])
   targetId    Int?
+  role        NotificationRole?
   createdAt   DateTime?              @default(now())
   updatedAt   DateTime?              @default(now())
 }
@@ -185,6 +186,12 @@ model Notification {
 enum NotificationTargetType {
   GLOBAL
   USER
+}
+
+enum NotificationRole {
+  STUDENT
+  TUTOR
+  ALL
 }
 
 enum Role {

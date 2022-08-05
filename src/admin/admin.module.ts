@@ -4,10 +4,11 @@ import { RefereesModule } from 'src/tutors/referees/referees.module';
 import { RefereesService } from 'src/tutors/referees/referees.service';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { AdminController } from './admin.controller';
+import { AdminService } from './admin.service';
 
 @Module({
   imports: [RefereesModule],
   controllers: [AdminController],
-  providers: [PrismaService, TutorsService],
+  providers: [PrismaService, TutorsService, AdminService],
 })
 export class AdminMoudle {}

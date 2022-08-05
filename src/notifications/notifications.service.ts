@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { Alert, Prisma, Notification, NotificationTargetType } from '@prisma/client';
-
-interface PaginationOptions {
-  offset: number;
-  limit: number;
-}
+import {
+  Alert,
+  Prisma,
+  Notification,
+  NotificationTargetType,
+  NotificationRole,
+} from '@prisma/client';
+import { PaginationOptions } from 'src/utils/types';
 
 @Injectable()
 export class NotificationService {
@@ -14,6 +16,11 @@ export class NotificationService {
   create(data: Prisma.NotificationCreateInput): Promise<Notification> {
     return this.prismaService.notification.create({
       data,
+    });
+  }
+  async deleteOne(notifId: number): Promise<Notification> {
+    return await this.prismaService.notification.delete({
+      where: { id: notifId },
     });
   }
   getAll(
@@ -28,6 +35,7 @@ export class NotificationService {
     });
   }
   getGlobal(
+    role: NotificationRole | undefined,
     options: Partial<PaginationOptions> = {
       limit: undefined,
       offset: 0,
@@ -38,6 +46,7 @@ export class NotificationService {
       take: options.limit,
       where: {
         targetType: NotificationTargetType.GLOBAL,
+        role,
       },
     });
   }

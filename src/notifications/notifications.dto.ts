@@ -1,7 +1,8 @@
-import { Exclude, Expose, Type } from 'class-transformer';
-import { IsNumber, IsString, MinLength } from 'class-validator';
+import { NotificationRole, NotificationTargetType } from '@prisma/client';
+import { Expose, Type } from 'class-transformer';
+import { IsIn, IsString, MinLength } from 'class-validator';
 
-export class CreateNotificationDTO {
+export class CreateUserNotificationDTO {
   @IsString()
   @MinLength(3)
   title: string;
@@ -10,7 +11,23 @@ export class CreateNotificationDTO {
   description: string;
 }
 
+export class CreateGlobalNotificationDTO {
+  @IsString()
+  @MinLength(3)
+  title: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  @IsIn(Object.values(NotificationRole))
+  role: NotificationRole;
+}
+
 class ReturnNotificationDTO {
+  @Expose()
+  id: number;
+
   @Expose()
   title: string;
 

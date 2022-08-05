@@ -89,6 +89,7 @@ export class AppModule {
         { path: 'user/reset-password', method: RequestMethod.POST },
         { path: 'tutor/filter', method: RequestMethod.GET },
         { path: 'tutor/profile/:id', method: RequestMethod.GET },
+        { path: 'tutor/pending', method: RequestMethod.GET },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
@@ -96,9 +97,8 @@ export class AppModule {
         { path: '/', method: RequestMethod.POST },
         { path: 'media', method: RequestMethod.POST },
         { path: 'media/:id', method: RequestMethod.GET },
-        { path: 'admin', method: RequestMethod.GET },
-        { path: 'admin/tutor/:id', method: RequestMethod.GET },
-        'admin/(.*)', //in-dev
+
+        'admin/(.*)', //in-dev for now
       )
       .forRoutes(
         UsersController,
