@@ -5,6 +5,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Patch,
@@ -21,6 +22,7 @@ import { TokenService } from 'src/token/token.service';
 import { ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
 import { BadRequestException } from '@nestjs/common';
+import { AlertsService } from 'src/alerts/alerts.service';
 @Controller('user')
 export class UsersController {
   constructor(
@@ -121,13 +123,18 @@ export class UsersController {
 
   @Patch()
   @Serializer(ReturnUserDto)
-  update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
+  async update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
     const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
 
     if (!email_approved) {
       throw new ForbiddenException('Email not confirmed');
     }
-    return this.usersService.update(+id, updateUserDto);
+    try {
+      return await this.usersService.update(+id, updateUserDto);
+    } catch (er) {
+      console.warn(er);
+      throw new InternalServerErrorException();
+    }
   }
 
   @Patch('/updatePassword')

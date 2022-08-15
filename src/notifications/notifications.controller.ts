@@ -83,6 +83,24 @@ export class NotificationController {
       notifications: res,
     };
   }
+  @Serializer(GlobalNotificationResponseDTO)
+  @Get('/archived')
+  async getAllArchvied(
+    @Query('offset', new DefaultValuePipe('0'), new ParseIntPipe()) queryOffset?: number,
+    @Query('limit', new DefaultValuePipe('15'), new ParseIntPipe()) queryLimit?: number,
+  ) {
+    const res = await this.notificationService.getArchived({
+      offset: queryOffset,
+      limit: queryLimit,
+    });
+
+    return {
+      length: res.length,
+      offset: queryOffset,
+      limit: queryLimit,
+      notifications: res,
+    };
+  }
   @Serializer(UserNotificationResponseDTO)
   @Get('/user/:userId')
   async getAllUserNotifs(

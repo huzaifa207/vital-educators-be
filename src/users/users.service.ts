@@ -7,6 +7,7 @@ import {
 import { Prisma, Role } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
 import { nanoid } from 'nanoid';
+import { AlertsService } from 'src/alerts/alerts.service';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
@@ -24,6 +25,7 @@ export class UsersService {
     private documentsService: DocumentsService,
     private tutoringDetailsService: TutoringDetailsService,
     private taskSchadularsService: TaskSchadularsService,
+    private alertService: AlertsService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
@@ -124,11 +126,17 @@ export class UsersService {
     }
   }
 
-  update(id: number, updateUserDto: Prisma.UserUpdateInput) {
-    return this.prisma.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
+  async update(id: number, updateUserDto: Prisma.UserUpdateInput) {
+    try {
+      const r = await this.prisma.user.update({
+        where: { id },
+        data: updateUserDto,
+      });
+      this.alertService.dispatchTutorProfileUpdated(id);
+      return r;
+    } catch (er) {
+      throw er;
+    }
   }
 
   async updatePassword(userId: number, currentPassword: string, newPassword: string) {

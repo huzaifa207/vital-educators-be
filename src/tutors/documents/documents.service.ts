@@ -1,11 +1,17 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Exception } from 'handlebars';
+import { AlertsService } from 'src/alerts/alerts.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class DocumentsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private alertService: AlertsService) {}
   async create(createDocumentDto: Prisma.DocumentsCreateInput, tutorId: number) {
     try {
       const document = await this.prisma.documents.create({
@@ -14,9 +20,11 @@ export class DocumentsService {
           tutor: { connect: { id: tutorId } },
         },
       });
+      this.alertService.dispatchDocAdded(tutorId, document.id);
       return document;
     } catch (error) {
-      throw new ConflictException('Document already exists');
+      console.log(error);
+      throw new InternalServerErrorException('Failed to create document');
     }
   }
 

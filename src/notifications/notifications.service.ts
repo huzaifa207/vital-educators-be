@@ -19,8 +19,9 @@ export class NotificationService {
     });
   }
   async deleteOne(notifId: number): Promise<Notification> {
-    return await this.prismaService.notification.delete({
+    return await this.prismaService.notification.update({
       where: { id: notifId },
+      data: { isArchived: true },
     });
   }
   getAll(
@@ -32,6 +33,19 @@ export class NotificationService {
     return this.prismaService.notification.findMany({
       skip: options.offset,
       take: options.limit,
+      where: { isArchived: false },
+    });
+  }
+  getArchived(
+    options: Partial<PaginationOptions> = {
+      limit: undefined,
+      offset: 0,
+    },
+  ): Promise<Notification[]> {
+    return this.prismaService.notification.findMany({
+      skip: options.offset,
+      take: options.limit,
+      where: { isArchived: true },
     });
   }
   getGlobal(
@@ -47,6 +61,7 @@ export class NotificationService {
       where: {
         targetType: NotificationTargetType.GLOBAL,
         role,
+        isArchived: false,
       },
     });
   }
@@ -63,6 +78,7 @@ export class NotificationService {
       where: {
         targetType: NotificationTargetType.USER,
         targetId: userId,
+        isArchived: false,
       },
     });
   }

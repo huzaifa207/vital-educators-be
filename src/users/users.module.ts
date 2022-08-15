@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { AlertsService } from 'src/alerts/alerts.service';
 import { MailModule } from 'src/mail-service/mail.module';
 import { PrismaService } from 'src/prisma.service';
 import { ENV } from 'src/settings';
@@ -22,6 +23,7 @@ import { UsersService } from 'src/users/users.service';
   ],
   controllers: [UsersController],
   providers: [
+    AlertsService,
     TutorsService,
     UsersService,
     PrismaService,

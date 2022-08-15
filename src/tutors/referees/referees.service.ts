@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
+import { AlertsService } from 'src/alerts/alerts.service';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { PrismaService } from 'src/prisma.service';
@@ -11,6 +12,7 @@ export class RefereesService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private alertService: AlertsService,
   ) {}
 
   async create(
@@ -61,7 +63,7 @@ export class RefereesService {
     } catch (error) {
       throw new BadRequestException(error);
     }
-
+    this.alertService.dispatchRefereeAdded(tutorId, id);
     return referee;
   }
 
@@ -137,6 +139,14 @@ export class RefereesService {
       });
       if (!review) {
         throw new ForbiddenException('Please Enter Valid Data');
+      }
+      try {
+        const r = await this.prisma.referees.findUnique({ where: { id: refereeId } });
+        if (r) {
+          this.alertService.dispatchRefereeLeftReview(r.tutorId, refereeId);
+        }
+      } catch (er) {
+        console.warn(er);
       }
       return 'Review Added successfully';
     } catch (error) {

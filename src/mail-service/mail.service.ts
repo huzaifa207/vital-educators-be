@@ -19,4 +19,27 @@ export class MailService {
       // throw new HttpException(error.message, 500);
     }
   }
+  async sendMailSimple({
+    email,
+    text,
+    subject,
+    emailContent,
+  }: {
+    email: string;
+    text: string;
+    subject: string;
+    emailContent: string;
+  }) {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        text: text,
+        subject: subject,
+        html: emailContent,
+      });
+    } catch (error) {
+      console.log('email error - ', error);
+      // throw new HttpException(error.message, 500);
+    }
+  }
 }
