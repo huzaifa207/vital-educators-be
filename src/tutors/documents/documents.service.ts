@@ -20,7 +20,7 @@ export class DocumentsService {
           tutor: { connect: { id: tutorId } },
         },
       });
-      this.alertService.dispatchDocAdded(tutorId, document.id);
+
       return document;
     } catch (error) {
       console.log(error);
@@ -38,12 +38,14 @@ export class DocumentsService {
     }
   }
 
-  update(tutorId: number, updateDocumentDto: Prisma.DocumentsUpdateInput) {
+  async update(tutorId: number, updateDocumentDto: Prisma.DocumentsUpdateInput) {
     try {
-      return this.prisma.documents.update({
+      const t = await this.prisma.documents.update({
         where: { tutorId },
         data: updateDocumentDto,
       });
+      this.alertService.dispatchDocUpdated(tutorId);
+      return t;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientValidationError) {
         throw new BadRequestException('Please send a valid data');

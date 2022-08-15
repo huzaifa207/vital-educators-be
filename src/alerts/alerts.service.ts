@@ -65,11 +65,11 @@ export class AlertsService {
       console.warn(er);
     }
   }
-  async dispatchDocAdded(tutorId: number, docId: number) {
+  async dispatchDocUpdated(tutorId: number) {
     try {
       await this.create({
-        description: 'Tutor added a new official doc',
-        actionURL: `/?event=doc_added&tutorId=${tutorId}&docId=${docId}`,
+        description: 'Tutor updated their official doscs',
+        actionURL: `/?event=doc_added&tutorId=${tutorId}`,
       });
     } catch (er) {
       console.warn(er);
