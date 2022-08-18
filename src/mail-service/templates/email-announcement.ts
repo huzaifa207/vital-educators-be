@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+export const emailAnnouncement = (title: string, description: string) => {
+  return `<!DOCTYPE html>
   <html>
     <head>
       <meta charset="utf-8" />
@@ -348,4 +349,5 @@
       </table>
       <!-- end body -->
     </body>
-  </html>
+  </html>`;
+};

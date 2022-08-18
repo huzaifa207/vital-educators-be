@@ -15,6 +15,7 @@ import { NotificationRole, NotificationTargetType, Prisma } from '@prisma/client
 import { Request } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
 import { MailService } from 'src/mail-service/mail.service';
+import { emailAnnouncement } from 'src/mail-service/templates/email-announcement';
 import { emailNotification } from 'src/mail-service/templates/email-notification';
 import { UsersService } from 'src/users/users.service';
 import {
@@ -161,9 +162,9 @@ export class NotificationController {
           try {
             this.mailService.sendMailSimple({
               email: user.email,
-              text: "You've a new notification",
-              subject: 'New Notification',
-              emailContent: emailNotification(body.title, body.description),
+              text: 'New Announcement from Admin',
+              subject: 'New Announcement',
+              emailContent: emailAnnouncement(body.title, body.description),
             });
           } catch (er) {
             console.warn(er);
