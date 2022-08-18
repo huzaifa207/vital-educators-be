@@ -14,6 +14,9 @@ import {
 import { NotificationRole, NotificationTargetType, Prisma } from '@prisma/client';
 import { Request } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
+import { MailService } from 'src/mail-service/mail.service';
+import { emailNotification } from 'src/mail-service/templates/email-notification';
+import { UsersService } from 'src/users/users.service';
 import {
   CreateUserNotificationDTO,
   CreateGlobalNotificationDTO,
@@ -24,7 +27,11 @@ import { NotificationService } from './notifications.service';
 
 @Controller('notifications')
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly mailService: MailService,
+    private readonly userService: UsersService,
+  ) {}
 
   @Get()
   async getAll(
@@ -143,13 +150,31 @@ export class NotificationController {
   async createNewGlobal(@Body() body: CreateGlobalNotificationDTO) {
     try {
       body.role = body.role.toUpperCase() as NotificationRole;
+      const notif = await this.notificationService.create({
+        ...body,
+        targetType: NotificationTargetType.GLOBAL,
+      });
+
+      try {
+        const users = await this.userService.findAll({ role: body.role });
+        for (const user of users) {
+          try {
+            this.mailService.sendMailSimple({
+              email: user.email,
+              text: "You've a new notification",
+              subject: 'New Notification',
+              emailContent: emailNotification(body.title, body.description),
+            });
+          } catch (er) {
+            console.warn(er);
+          }
+        }
+      } catch (er) {
+        console.warn(er);
+      }
+
       return {
-        id: (
-          await this.notificationService.create({
-            ...body,
-            targetType: NotificationTargetType.GLOBAL,
-          })
-        ).id,
+        id: notif.id,
       };
     } catch (er) {
       console.warn(er);
@@ -162,14 +187,27 @@ export class NotificationController {
     @Body() body: CreateUserNotificationDTO,
   ) {
     try {
+      const notif = await this.notificationService.create({
+        ...body,
+        targetType: NotificationTargetType.USER,
+        target: { connect: { id: userId } },
+      });
+
+      try {
+        const user = await this.userService.findOne(userId);
+        if (user) {
+          this.mailService.sendMailSimple({
+            email: user.email,
+            text: "You've a new notification",
+            subject: 'New Notification',
+            emailContent: emailNotification(body.title, body.description),
+          });
+        }
+      } catch (er) {
+        console.warn(er);
+      }
       return {
-        id: (
-          await this.notificationService.create({
-            ...body,
-            targetType: NotificationTargetType.USER,
-            target: { connect: { id: userId } },
-          })
-        ).id,
+        id: notif.id,
       };
     } catch (er) {
       console.warn(er);

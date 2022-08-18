@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+export const emailNotification = (title: string, description: string) => {
+  return `<!DOCTYPE html>
   <html>
     <head>
       <meta charset="utf-8" />
@@ -178,21 +179,7 @@
                     border-top: 3px solid #d4dadf;
                   "
                 >
-                  <a
-                    style="
-                      margin: 0;
-                      font-size: 32px;
-                      font-weight: 700;
-                      letter-spacing: -1px;
-                      line-height: 48px;
-                      text-align: center;
-                      text-decoration: none;
-                      text-style: none;
-                    "
-                    href=${url}
-                  >
-                    Confirm Your Email Address
-                  </a>
+                  
                 </td>
               </tr>
             </table>
@@ -258,22 +245,7 @@
                               bgcolor="#2A2462"
                               style="border-radius: 6px"
                             >
-                              <a
-                                href=${url}
-                                target="_blank"
-                                style="
-                                  display: inline-block;
-                                  padding: 8px 12px;
-                                  font-family: 'Source Sans Pro', Helvetica, Arial,
-                                    sans-serif;
-                                  font-size: 16px;
-                                  font-weight:500;
-                                  color: #ffffff;
-                                  text-decoration: none;
-                                  border-radius: 2px;
-                                "
-                                >More Info</a
-                              >
+                            
                             </td>
                           </tr>
                         </table>
@@ -296,15 +268,7 @@
                     line-height: 24px;
                   "
                 >
-                  <p style="margin: 0">
-                    If that doesn't work, copy and paste the following link in
-                    your browser:
-                  </p>
-                  <p style="margin: 0">
-                    <a href=${url} target="_blank"
-                      >${url}</a
-                    >
-                  </p>
+                 
                 </td>
               </tr>
               <!-- end copy -->
@@ -384,4 +348,5 @@
       </table>
       <!-- end body -->
     </body>
-  </html>
+  </html>`;
+};
