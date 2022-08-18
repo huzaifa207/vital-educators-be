@@ -8,5 +8,5 @@ export const ENV = {
   EMAIL_PORT: parseInt(process.env.EMAIL_PORT),
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
-  FRONTEND_URL: process.env.FRONTEND_URL || `https://vital-educators.vercel.app/`,
+  FRONTEND_URL: process.env.FRONTEND_URL || `https://vital-educators.vercel.app`,
 };

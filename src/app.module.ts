@@ -101,6 +101,7 @@ export class AppModule {
         'notifications/user/(.+)',
         'notifications',
         'notifications/global',
+        'notifications/archived',
         { path: 'notifications/:notificationId', method: RequestMethod.DELETE },
 
         'admin/(.*)', //in-dev for now

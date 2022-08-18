@@ -24,7 +24,7 @@ export class AlertsService {
     try {
       this.mailService.sendMailSimple({
         email: 'mlhlk1212@gmail.com',
-        emailContent: emailAlert(data.description, ENV['FRONTEND_URL']),
+        emailContent: emailAlert(data.description, data.actionURL),
         subject: 'New Admin Alert',
         text: data.description.slice(0, 30) + '...',
       });
@@ -49,7 +49,7 @@ export class AlertsService {
     try {
       await this.create({
         description: 'Tutor just updated their profile',
-        actionURL: `/?event=profile_updated&tutorId=${tutorId}`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#profile`,
       });
     } catch (er) {
       console.warn(er);
@@ -59,7 +59,7 @@ export class AlertsService {
     try {
       await this.create({
         description: 'Tutor added a new referee',
-        actionURL: `/?event=referee_added&tutorId=${tutorId}&refereeId=${refereeId}`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#referees`,
       });
     } catch (er) {
       console.warn(er);
@@ -69,7 +69,7 @@ export class AlertsService {
     try {
       await this.create({
         description: 'Tutor updated their official doscs',
-        actionURL: `/?event=doc_added&tutorId=${tutorId}`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#documents`,
       });
     } catch (er) {
       console.warn(er);
@@ -79,7 +79,7 @@ export class AlertsService {
     try {
       await this.create({
         description: 'Referee left a review',
-        actionURL: `/?event=referee_left_review&tutorId=${tutorId}&docId=${refereeId}`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#referees`,
       });
     } catch (er) {
       console.warn(er);
