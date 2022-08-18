@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { FlaggedMessagesModule } from 'src/flagged-messages/flagged-messages.module';
+import { FlaggedMessagesService } from 'src/flagged-messages/flagged-messages.service';
 import { MailModule } from 'src/mail-service/mail.module';
 import { PrismaService } from 'src/prisma.service';
 import { ENV } from 'src/settings';
@@ -19,6 +21,7 @@ import { ConversationService } from './conversation.service';
     UsersModule,
     MailModule,
     TaskSchadularsModule,
+    FlaggedMessagesModule,
   ],
   providers: [ChatsGateway, ConversationService, TokenService, PrismaService],
 })

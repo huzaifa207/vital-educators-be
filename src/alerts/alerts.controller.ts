@@ -12,7 +12,7 @@ export class AlertsController {
   ) {
     const res = await this.alertsService.getAll({ offset: queryOffset, limit: queryLimit });
     return {
-      length: await res.length,
+      length: res.length,
       offset: queryOffset,
       limit: queryLimit,
       alerts: res,

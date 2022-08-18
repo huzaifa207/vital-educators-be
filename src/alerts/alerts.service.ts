@@ -17,8 +17,8 @@ export class AlertsService {
     private readonly mailService: MailService,
   ) {}
 
-  create(data: Prisma.AlertCreateInput): Promise<Alert> {
-    const r = this.prismaService.alert.create({
+  async create(data: Prisma.AlertCreateInput): Promise<Alert> {
+    const r = await this.prismaService.alert.create({
       data,
     });
     try {

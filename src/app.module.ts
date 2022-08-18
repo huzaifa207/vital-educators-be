@@ -33,6 +33,7 @@ import { UsersModule } from './users/users.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { NotificationModule } from './notifications/notifications.module';
 import { NotificationController } from './notifications/notifications.controller';
+import { FlaggedMessagesModule } from './flagged-messages/flagged-messages.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -54,6 +55,7 @@ import { NotificationController } from './notifications/notifications.controller
     AdminMoudle,
     AlertsModule,
     NotificationModule,
+    FlaggedMessagesModule,
   ],
   controllers: [AppController],
   providers: [

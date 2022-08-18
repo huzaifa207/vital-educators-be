@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Chats, Prisma } from '@prisma/client';
+import { FlaggedMessagesService } from 'src/flagged-messages/flagged-messages.service';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
@@ -39,6 +40,7 @@ export class ConversationService {
     private readonly prisma: PrismaService,
     private readonly userService: UsersService,
     private mailService: MailService,
+    private flaggedMessagesService: FlaggedMessagesService,
     private taskSchadularsService: TaskSchadularsService,
   ) {}
 
@@ -50,6 +52,7 @@ export class ConversationService {
   ) {
     const { error, valid } = is_valid_msg(msg);
     if (!valid) {
+      this.flaggedMessagesService.create(studentId, tutorId, msg);
       return {
         status: CHAT_STATUS.ERROR,
         data: error,
@@ -134,6 +137,7 @@ export class ConversationService {
     // CHECK IF MESSAGE IS VALID {not contain email or mobile number}
     const { error, valid } = is_valid_msg(message);
     if (!valid) {
+      this.flaggedMessagesService.create(tutorId, studentId, message);
       return {
         status: CHAT_STATUS.ERROR,
         data: error,

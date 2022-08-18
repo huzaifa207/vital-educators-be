@@ -51,9 +51,7 @@ export class TutorsService {
       return this.prisma.tutor.update({
         where: { userId },
         data: {
-          crb_check: updateTutorDto.crb_check,
-          skype_id: updateTutorDto.skype_id,
-          deActivate: updateTutorDto.deActivate,
+          ...updateTutorDto,
         },
       });
     } catch (error) {

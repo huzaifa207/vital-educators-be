@@ -11,30 +11,31 @@ datasource db {
 }
 
 model User {
-  id                       Int             @id @default(autoincrement())
+  id                       Int              @id @default(autoincrement())
   first_name               String
   last_name                String
-  email                    String          @unique
+  email                    String           @unique
   password                 String
-  profile_url              String          @default("")
+  profile_url              String           @default("")
   address_1                String
-  address_2                String          @default("")
+  address_2                String           @default("")
   phone                    String?
   country                  String
   postal_code              String
-  search_visibility        Boolean?        @default(false)
-  promotion_vital_educator Boolean?        @default(false)
-  promotion_third_parties  Boolean?        @default(false)
-  email_approved           Boolean?        @default(false)
-  email_token              String?         @unique
-  password_reset_token     Int?            @unique
-  createdAt                DateTime?       @default(now())
-  updatedAt                DateTime?       @updatedAt
-  role                     Role            @default(STUDENT)
+  search_visibility        Boolean?         @default(false)
+  promotion_vital_educator Boolean?         @default(false)
+  promotion_third_parties  Boolean?         @default(false)
+  email_approved           Boolean?         @default(false)
+  email_token              String?          @unique
+  password_reset_token     Int?             @unique
+  createdAt                DateTime?        @default(now())
+  updatedAt                DateTime?        @updatedAt
+  role                     Role             @default(STUDENT)
   tutor                    Tutor?
   student                  Student?
   notifications            Notification[]
-  FlagedMessage            FlagedMessage[]
+  flaggedMessagesReceived  FlaggedMessage[] @relation("SentTo")
+  flaggedMessagesSent      FlaggedMessage[] @relation("SentBy")
 }
 
 model whitelist {
@@ -60,14 +61,13 @@ model Conversation {
 }
 
 model Chats {
-  id            Int             @id @default(autoincrement())
-  message       String
-  senderId      Int
-  receiverId    Int
-  seen          Boolean         @default(false)
-  createdAt     DateTime?       @default(now())
-  updatedAt     DateTime?       @updatedAt
-  FlagedMessage FlagedMessage[]
+  id         Int       @id @default(autoincrement())
+  message    String
+  senderId   Int
+  receiverId Int
+  seen       Boolean   @default(false)
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 }
 
 model Tutor {
@@ -187,12 +187,15 @@ model Notification {
   isArchived  Boolean?               @default(false)
 }
 
-model FlagedMessage {
-  id          Int   @id @default(autoincrement())
-  message     Chats @relation(fields: [messageId], references: [id])
-  messageId   Int
-  flaggedBy   User  @relation(fields: [flaggedById], references: [id])
-  flaggedById Int
+model FlaggedMessage {
+  id      Int    @id @default(autoincrement())
+  message String
+
+  sentBy   User @relation(name: "SentBy", fields: [sentById], references: [id])
+  sentById Int
+
+  sentTo   User @relation(name: "SentTo", fields: [sentToId], references: [id])
+  sentToId Int
 
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @default(now())
