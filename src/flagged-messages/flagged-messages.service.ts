@@ -50,12 +50,40 @@ export class FlaggedMessagesService {
       where: {
         isArchived: false,
       },
+      include: {
+        sentBy: {
+          select: {
+            id: true,
+            profile_url: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+        sentTo: {
+          select: {
+            id: true,
+            profile_url: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+      },
     });
   }
   async delete(messageId: number): Promise<void> {
     await this.prismaService.flaggedMessage.delete({
       where: {
         id: messageId,
+      },
+    });
+  }
+  async count(): Promise<number> {
+    return await this.prismaService.flaggedMessage.count();
+  }
+  async countBy(sentById: number): Promise<number> {
+    return await this.prismaService.flaggedMessage.count({
+      where: {
+        sentById: sentById,
       },
     });
   }

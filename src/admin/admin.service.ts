@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from '@prisma/client';
+import { FlaggedMessagesService } from 'src/flagged-messages/flagged-messages.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -17,10 +18,11 @@ export class AdminService {
         role: Role.STUDENT,
       },
     });
+    const flaggedMessagesCount = await this.prisma.flaggedMessage.count();
     return {
       tutorsCount,
       studentsCount,
-      flaggedMessagesCount: 0,
+      flaggedMessagesCount: flaggedMessagesCount,
     };
   }
 }
