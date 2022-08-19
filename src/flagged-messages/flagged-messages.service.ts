@@ -99,6 +99,24 @@ export class FlaggedMessagesService {
       where: {
         isArchived: true,
       },
+      include: {
+        sentBy: {
+          select: {
+            id: true,
+            profile_url: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+        sentTo: {
+          select: {
+            id: true,
+            profile_url: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+      },
     });
   }
 }
