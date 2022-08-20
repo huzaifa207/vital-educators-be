@@ -71,10 +71,9 @@ export class FlaggedMessagesService {
     });
   }
   async delete(messageId: number): Promise<void> {
-    await this.prismaService.flaggedMessage.delete({
-      where: {
-        id: messageId,
-      },
+    await this.prismaService.flaggedMessage.update({
+      where: { id: messageId },
+      data: { isArchived: true },
     });
   }
   async count(): Promise<number> {
