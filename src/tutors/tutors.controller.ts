@@ -3,6 +3,7 @@ import { ParseIntPipe } from '@nestjs/common';
 import { Body, Controller, Delete, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
+import { AdminGuard } from 'src/guards/admin.guard';
 import { TutorGuard } from 'src/guards/tutor.guard';
 import { DeleteKeys } from 'src/utils/helpers';
 import { UpdateTutorDto } from './dto/update-tutor.dto';
@@ -12,6 +13,7 @@ import { TutorsService } from './tutors.service';
 export class TutorsController {
   constructor(private readonly tutorsService: TutorsService) {}
 
+  @UseGuards(AdminGuard)
   @Get('pending')
   async pendingTutors(
     @Query('offset', new DefaultValuePipe('0'), new ParseIntPipe()) offset?: number,

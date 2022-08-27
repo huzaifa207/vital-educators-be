@@ -1,10 +1,21 @@
-import { Body, Controller, DefaultValuePipe, Get, ParseIntPipe, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  ParseIntPipe,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { AdminGuard } from 'src/guards/admin.guard';
 import { CreateAlertDTO } from './alerts.dto';
 import { AlertsService } from './alerts.service';
 
 @Controller('alerts')
 export class AlertsController {
   constructor(private readonly alertsService: AlertsService) {}
+  @UseGuards(AdminGuard)
   @Get()
   async getAll(
     @Query('offset', new DefaultValuePipe('0'), new ParseIntPipe()) queryOffset?: number,
@@ -18,7 +29,7 @@ export class AlertsController {
       alerts: res,
     };
   }
-
+  @UseGuards(AdminGuard)
   @Post()
   async createNew(@Body() body: CreateAlertDTO) {
     return { id: (await this.alertsService.create(body)).id };
