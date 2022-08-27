@@ -34,6 +34,7 @@ import { AlertsModule } from './alerts/alerts.module';
 import { NotificationModule } from './notifications/notifications.module';
 import { NotificationController } from './notifications/notifications.controller';
 import { FlaggedMessagesModule } from './flagged-messages/flagged-messages.module';
+import { AlertsController } from './alerts/alerts.controller';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -100,13 +101,13 @@ export class AppModule {
         { path: '/', method: RequestMethod.POST },
         { path: 'media', method: RequestMethod.POST },
         { path: 'media/:id', method: RequestMethod.GET },
-        'notifications/user/(.+)',
-        'notifications',
-        'notifications/global',
-        'notifications/archived',
-        { path: 'notifications/:notificationId', method: RequestMethod.DELETE },
+        // 'notifications/user/(.+)',
+        // 'notifications',
+        // 'notifications/global',
+        // 'notifications/archived',
+        // { path: 'notifications/:notificationId', method: RequestMethod.DELETE },
 
-        'admin/(.*)', //in-dev for now
+        // 'admin/(.*)', //in-dev for now
       )
       .forRoutes(
         UsersController,
@@ -119,6 +120,7 @@ export class AppModule {
         DocumentsController,
         AdminController,
         NotificationController,
+        AlertsController,
       );
   }
 }
