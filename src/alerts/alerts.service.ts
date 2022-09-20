@@ -23,7 +23,7 @@ export class AlertsService {
     });
     try {
       this.mailService.sendMailSimple({
-        email: 'mlhlk1212@gmail.com',
+        email: 'vitaleducator@gmail.com',
         emailContent: emailAlert(data.description, data.actionURL),
         subject: 'New Admin Alert',
         text: data.description.slice(0, 30) + '...',
