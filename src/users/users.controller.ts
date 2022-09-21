@@ -119,7 +119,7 @@ export class UsersController {
       }
     }
     return {
-      users: this.usersService.findAll({ offset, limit, role }),
+      users: await this.usersService.findAll({ offset, limit, role }),
       total: await this.usersService.getCount(role),
     };
   }
