@@ -34,6 +34,7 @@ model User {
   tutor                    Tutor?
   student                  Student?
   notifications            Notification[]
+  block_status             Boolean          @default(false)
   flaggedMessagesReceived  FlaggedMessage[] @relation("SentTo")
   flaggedMessagesSent      FlaggedMessage[] @relation("SentBy")
 }

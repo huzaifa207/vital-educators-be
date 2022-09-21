@@ -200,6 +200,11 @@ export class UsersController {
     return await this.usersService.forgotPassword(body.email);
   }
 
+  @Post(':id/block-status')
+  async updateBlockStatus(@Param('id') id: string, @Body() body: { status: boolean }) {
+    return await this.usersService.updateBlockStatus(parseInt(id), body.status);
+  }
+
   @Post('/reset-password')
   async resetPassword(@Body() body: { email: string; password: string; passwordToken: number }) {
     const { id, success } = await this.usersService.resetPassword(
