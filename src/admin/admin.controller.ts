@@ -16,6 +16,9 @@ import { RefereesService } from 'src/tutors/referees/referees.service';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { AdminService } from './admin.service';
 import { AdminGuard } from 'src/guards/admin.guard';
+import { QualificationsService } from 'src/tutors/qualifications/qualifications.service';
+import { SubjectOffersModule } from 'src/tutors/subject-offers/subject-offers.module';
+import { SubjectOffersService } from 'src/tutors/subject-offers/subject-offers.service';
 
 @Controller('/admin')
 export class AdminController {
@@ -23,6 +26,8 @@ export class AdminController {
     private readonly tutorService: TutorsService,
     private readonly refereeService: RefereesService,
     private readonly adminService: AdminService,
+    private readonly qualificationService: QualificationsService,
+    private readonly subjectsService: SubjectOffersService,
   ) {}
   @UseGuards(AdminGuard)
   @Get('tutor/:tutorId')
@@ -34,6 +39,8 @@ export class AdminController {
     return {
       ...tutorDetails,
       referees: await this.refereeService.findAll(tutorId),
+      qualifications: await this.qualificationService.findAll(tutorId),
+      subjects: await this.subjectsService.findAll(tutorId),
     };
   }
   @UseGuards(AdminGuard)

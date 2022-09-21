@@ -19,7 +19,7 @@ export class MediaController {
             file.originalname.lastIndexOf('.'),
             file.originalname.length,
           );
-          cb(null, `${filename}${extension}`);
+          cb(null, `${filename}.${extension}`);
         },
       }),
     }),
@@ -38,11 +38,12 @@ export class MediaController {
         destination: './uploads/media',
         filename: (req, file, cb) => {
           const filename: string = nanoid(10);
+
           const extension: string = file.originalname.substring(
             file.originalname.lastIndexOf('.'),
             file.originalname.length,
           );
-          cb(null, `${filename}${extension}`);
+          cb(null, `${filename}.${extension}`);
         },
       }),
     }),
@@ -69,7 +70,7 @@ export class MediaController {
             file.originalname.lastIndexOf('.'),
             file.originalname.length,
           );
-          cb(null, `${filename}${extension}`);
+          cb(null, `${filename}.${extension}`);
         },
       }),
     }),
