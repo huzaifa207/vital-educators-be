@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 
 export class ReturnUserDto {
   @Expose()
@@ -55,6 +55,7 @@ export class ReturnUserDto {
 
 export class AllUsersDTO {
   @Expose()
+  @Type(() => ReturnUserDto)
   users: ReturnUserDto[];
   @Expose()
   total: number;
