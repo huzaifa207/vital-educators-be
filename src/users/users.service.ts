@@ -252,6 +252,14 @@ export class UsersService {
 
   // ------------ PERSONAL DEV SERVICES ------------
 
+  getCount(role?: 'ALL' | 'ADMIN' | 'TUTOR' | 'STUDENT') {
+    const where: Prisma.UserWhereInput = {};
+    if (role != 'ALL') where.role = role;
+    return this.prisma.user.count({
+      where,
+    });
+  }
+
   findAll(
     queryOptions: {
       offset?: number;

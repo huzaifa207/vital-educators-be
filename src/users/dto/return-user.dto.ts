@@ -52,3 +52,10 @@ export class ReturnUserDto {
   @Expose()
   updated_at: Date;
 }
+
+export class AllUsersDTO {
+  @Expose()
+  users: ReturnUserDto[];
+  @Expose()
+  total: number;
+}

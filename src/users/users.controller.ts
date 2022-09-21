@@ -19,7 +19,7 @@ import { Request, Response } from 'express';
 import { Serializer } from 'src/interceptors/serialized.interceptor';
 import { EmailType } from 'src/mail-service/mail.utils';
 import { TokenService } from 'src/token/token.service';
-import { ReturnUserDto } from './dto/return-user.dto';
+import { AllUsersDTO, ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
 import { BadRequestException } from '@nestjs/common';
 import { AlertsService } from 'src/alerts/alerts.service';
@@ -83,9 +83,9 @@ export class UsersController {
     return { message: 'Logged out' };
   }
 
-  @Serializer(ReturnUserDto)
+  @Serializer(AllUsersDTO)
   @Get('/all')
-  findAll(
+  async findAll(
     @Query('offset', new DefaultValuePipe('0')) queryOffset?: string,
     @Query('limit', new DefaultValuePipe('15')) queryLimit?: string,
     @Query('role', new DefaultValuePipe('ALL')) queryRole?: 'ALL' | 'ADMIN' | 'TUTOR' | 'STUDENT',
@@ -118,7 +118,10 @@ export class UsersController {
         console.warn('Parsing failed for "limit"', offset);
       }
     }
-    return this.usersService.findAll({ offset, limit, role });
+    return {
+      users: this.usersService.findAll({ offset, limit, role }),
+      total: await this.usersService.getCount(role),
+    };
   }
 
   @Patch()
