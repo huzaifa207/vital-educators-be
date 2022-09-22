@@ -109,6 +109,9 @@ export class UsersService {
       if (storedHash !== hash.toString('hex')) {
         throw new BadRequestException('Invalid password');
       }
+      if (currentUser.block_status == false) {
+        throw new BadRequestException('This account has been blocked.');
+      }
 
       return currentUser;
     } catch (error) {
