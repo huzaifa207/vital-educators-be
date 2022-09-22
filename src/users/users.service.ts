@@ -103,6 +103,9 @@ export class UsersService {
           AND: [{ email }, { role: _role }],
         },
       });
+      if (!currentUser) {
+        throw new BadRequestException('Invalid credentials');
+      }
 
       const [salt, storedHash] = currentUser.password.split('.');
       const hash = (await scrypt(password, salt, 16)) as Buffer;
