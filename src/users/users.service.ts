@@ -97,6 +97,7 @@ export class UsersService {
   async login({ email, password, role }: { email: string; password: string; role: Role }) {
     try {
       const _role = role ? role : Role.TUTOR;
+
       const currentUser = await this.prisma.user.findFirst({
         where: {
           AND: [{ email }, { role: _role }],
@@ -107,15 +108,15 @@ export class UsersService {
       const hash = (await scrypt(password, salt, 16)) as Buffer;
 
       if (storedHash !== hash.toString('hex')) {
-        throw new BadRequestException('Invalid password');
+        throw new BadRequestException('Invalid credentials');
       }
       if (currentUser.block_status == true) {
         throw new BadRequestException('This account has been blocked.');
       }
 
       return currentUser;
-    } catch (error) {
-      throw new BadRequestException('Invalid credentials');
+    } catch (er) {
+      throw er;
     }
   }
 
