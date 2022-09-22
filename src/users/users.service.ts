@@ -140,9 +140,9 @@ export class UsersService {
   }
 
   async updateBlockStatus(id: number, status: boolean) {
-    // return this.update(id, {
-    //   block_status: status,
-    // });
+    return this.update(id, {
+      block_status: status,
+    });
   }
 
   async updatePassword(userId: number, currentPassword: string, newPassword: string) {
