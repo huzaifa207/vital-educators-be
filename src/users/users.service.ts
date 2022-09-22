@@ -279,8 +279,10 @@ export class UsersService {
       offset?: number;
       limit?: number;
       role?: 'ALL' | 'ADMIN' | 'TUTOR' | 'STUDENT';
+      status?: 'ALL' | 'BLOCKED' | 'UNBLOCKED';
     } = {
       offset: 0,
+      status: 'ALL',
       limit: undefined,
       role: undefined,
     },
@@ -295,6 +297,9 @@ export class UsersService {
           ...(!queryOptions.role || queryOptions.role == 'ALL'
             ? {}
             : { where: { role: queryOptions.role } }),
+          ...(!queryOptions.status || queryOptions.status == 'ALL'
+            ? {}
+            : { where: { block_status: queryOptions.status == 'BLOCKED' ? true : false } }),
         }) || []
       );
     } catch (error) {

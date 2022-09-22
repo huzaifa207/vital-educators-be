@@ -176,6 +176,7 @@ export class TutorsService {
             {
               user: {
                 postal_code: String(postCode),
+                block_status: false,
                 // email_approved: true,
               },
             },

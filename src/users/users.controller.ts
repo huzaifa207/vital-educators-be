@@ -89,11 +89,12 @@ export class UsersController {
     @Query('offset', new DefaultValuePipe('0')) queryOffset?: string,
     @Query('limit', new DefaultValuePipe('15')) queryLimit?: string,
     @Query('role', new DefaultValuePipe('ALL')) queryRole?: 'ALL' | 'ADMIN' | 'TUTOR' | 'STUDENT',
+    @Query('status', new DefaultValuePipe('ALL')) queryStatus?: 'BLOCKED' | 'UNBLOCKED' | 'ALL',
   ) {
     let offset = 0;
     let limit = 15;
     let role: typeof queryRole = 'ALL';
-
+    let status: typeof queryStatus = 'ALL';
     if (queryRole) {
       queryRole = queryRole.toUpperCase() as typeof queryRole;
 
@@ -102,6 +103,14 @@ export class UsersController {
       } else
         throw new BadRequestException(
           'query param "role" must be one of ALL | ADMIN | TUTOR | STUDENT',
+        );
+    }
+    if (queryStatus) {
+      queryStatus = queryStatus.toUpperCase() as typeof queryStatus;
+      if (['ALL', 'UNBLOCKED', 'BLOCKED'].includes(queryStatus)) status = queryStatus;
+      else
+        throw new BadRequestException(
+          'query param "status" must be one of ALL | BLOCKED | UNBLOCKED',
         );
     }
     if (queryOffset) {
@@ -119,7 +128,7 @@ export class UsersController {
       }
     }
     return {
-      users: await this.usersService.findAll({ offset, limit, role }),
+      users: await this.usersService.findAll({ offset, limit, role, status }),
       total: await this.usersService.getCount(role),
     };
   }
