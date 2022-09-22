@@ -294,12 +294,14 @@ export class UsersService {
           skip: queryOptions.offset,
           take: queryOptions.limit,
 
-          ...(!queryOptions.role || queryOptions.role == 'ALL'
-            ? {}
-            : { where: { role: queryOptions.role } }),
-          ...(!queryOptions.status || queryOptions.status == 'ALL'
-            ? {}
-            : { where: { block_status: queryOptions.status == 'BLOCKED' ? true : false } }),
+          where: {
+            ...(!queryOptions.role || queryOptions.role == 'ALL'
+              ? {}
+              : { role: queryOptions.role }),
+            ...(!queryOptions.status || queryOptions.status == 'ALL'
+              ? {}
+              : { block_status: queryOptions.status == 'BLOCKED' ? true : false }),
+          },
         }) || []
       );
     } catch (error) {
