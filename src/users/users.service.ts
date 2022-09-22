@@ -116,6 +116,7 @@ export class UsersService {
 
       return currentUser;
     } catch (er) {
+      console.warn(er);
       throw er;
     }
   }
