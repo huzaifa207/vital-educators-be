@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { TokenService } from 'src/token/token.service';
@@ -30,12 +30,17 @@ export class CurrentUserMiddleware implements NestMiddleware {
 
       if (id) {
         const user = await this.userService.findOne(id);
+        if (user.block_status) {
+          throw new Error('user is suspended');
+        }
         req.currentUser = user;
       }
       next();
     } catch (error) {
       console.log('error - ', error);
-      throw new NotFoundException('User not found');
+      if ((error as Error).message == 'user is suspended') {
+        throw new ForbiddenException('user is suspended');
+      } else throw new NotFoundException('User not found');
     }
   }
 }
