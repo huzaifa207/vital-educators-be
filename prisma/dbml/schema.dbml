@@ -1,0 +1,255 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  first_name String [not null]
+  last_name String [not null]
+  email String [unique, not null]
+  password String [not null]
+  profile_url String [not null, default: '']
+  address_1 String [not null]
+  address_2 String [not null, default: '']
+  phone String
+  country String [not null]
+  postal_code String [not null]
+  search_visibility Boolean [default: false]
+  promotion_vital_educator Boolean [default: false]
+  promotion_third_parties Boolean [default: false]
+  email_approved Boolean [default: false]
+  email_token String [unique]
+  password_reset_token Int [unique]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  role Role [not null, default: 'STUDENT']
+  tutor Tutor
+  student Student
+  notifications Notification [not null]
+  block_status Boolean [not null, default: false]
+  flaggedMessagesReceived FlaggedMessage [not null]
+  flaggedMessagesSent FlaggedMessage [not null]
+}
+
+Table whitelist {
+  id Int [not null]
+  token String [pk, unique]
+  createdAt DateTime [default: `now()`]
+}
+
+Table Student {
+  id Int [pk, increment]
+  user User [not null]
+  userId Int [unique, not null]
+}
+
+Table Conversation {
+  id Int [pk, increment]
+  status String [not null]
+  tutorId Int [not null]
+  studentId Int [not null]
+  tutorReply Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+Table Chats {
+  id Int [pk, increment]
+  message String [not null]
+  senderId Int [not null]
+  receiverId Int [not null]
+  seen Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+Table Tutor {
+  id Int [pk, increment]
+  crb_check Boolean [not null, default: false]
+  skype_id String [not null, default: '']
+  deActivate Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  user User [not null]
+  userId Int [unique, not null]
+  referees Referees [not null]
+  qualification Qualification [not null]
+  tutoringDetail TutoringDetail
+  subjectOffers SubjectOffer [not null]
+  documents Documents
+  is_account_approved ApprovalStatus [not null, default: 'PENDING']
+  is_profile_pic_approved ApprovalStatus [not null, default: 'NOT_ADDED']
+  is_government_document_approved ApprovalStatus [not null, default: 'NOT_ADDED']
+  is_qualification_document_approved ApprovalStatus [not null, default: 'NOT_ADDED']
+  is_referee_approved ApprovalStatus [not null, default: 'NOT_ADDED']
+}
+
+Table Referees {
+  id Int [pk, increment]
+  first_name String [not null]
+  last_name String [not null]
+  email String [unique, not null]
+  phone String [not null]
+  relation RelationType [not null, default: 'OTHER']
+  tutor Tutor [not null]
+  tutorId Int [not null]
+  RefereesReviews RefereesReviews
+}
+
+Table RefereesReviews {
+  referees Referees [not null]
+  refereeId Int [unique, not null]
+  reliability_rating Int [not null]
+  trust_rating Int [not null]
+  professionalism_rating Int [not null]
+  description String [not null]
+}
+
+Table Qualification {
+  id Int [pk, increment]
+  degree_title String [not null]
+  level String [not null]
+  institute String [not null]
+  year_of_completion Int [not null]
+  document String [not null]
+  tutor Tutor [not null]
+  tutorId Int [not null]
+}
+
+Table TutoringDetail {
+  id Int [pk, increment]
+  about String [not null]
+  year_of_experience Int [not null]
+  teaching_experience String [not null]
+  approach String [not null]
+  availability String[] [not null]
+  tutor Tutor [not null]
+  tutorId Int [unique, not null]
+}
+
+Table SubjectOffer {
+  id Int [pk, increment]
+  title String [not null]
+  primary Int [not null, default: 0]
+  secondary Int [not null, default: 0]
+  gsce Int [not null, default: 0]
+  higher_education Int [not null, default: 0]
+  casual_learner Int [not null, default: 0]
+  a_level Int [not null, default: 0]
+  online_discount Int [not null, default: 0]
+  first_free_lesson Boolean [not null, default: false]
+  in_person Boolean [not null, default: true]
+  online Boolean [not null, default: true]
+  tutor Tutor [not null]
+  tutorId Int [not null]
+}
+
+Table Documents {
+  id Int [pk, increment]
+  id_card_front String [not null]
+  id_card_back String [not null]
+  criminal_record String [not null]
+  tutor Tutor [not null]
+  tutorId Int [unique, not null]
+}
+
+Table Media {
+  id Int [pk, increment]
+  url String [not null]
+  type String [not null]
+}
+
+Table Alert {
+  id Int [pk, increment]
+  description String [not null]
+  actionURL String [not null]
+  createdAt DateTime [default: `now()`]
+  isArchived Boolean [default: false]
+}
+
+Table Notification {
+  id Int [pk, increment]
+  title String [not null]
+  description String [not null]
+  targetType NotificationTargetType [not null]
+  target User
+  targetId Int
+  role NotificationRole
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime [default: `now()`]
+  isArchived Boolean [default: false]
+}
+
+Table FlaggedMessage {
+  id Int [pk, increment]
+  message String [not null]
+  sentBy User [not null]
+  sentById Int [not null]
+  sentTo User [not null]
+  sentToId Int [not null]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime [default: `now()`]
+  isArchived Boolean [default: false]
+}
+
+Enum NotificationTargetType {
+  GLOBAL
+  USER
+}
+
+Enum NotificationRole {
+  STUDENT
+  TUTOR
+  ALL
+}
+
+Enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+
+Enum RelationType {
+  FRIEND
+  TEACHER
+  COLLEAGE
+  CLIENT
+  EMPLOYER
+  OTHER
+}
+
+Enum Availability {
+  WEEKENDS
+  WEEKDAYS
+  EVENING
+  MORNINIG
+}
+
+Enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NOT_ADDED
+}
+
+Ref: Student.userId - User.id [delete: Cascade]
+
+Ref: Tutor.userId - User.id [delete: Cascade]
+
+Ref: Referees.tutorId > Tutor.id [delete: Cascade]
+
+Ref: RefereesReviews.refereeId - Referees.id [delete: Cascade]
+
+Ref: Qualification.tutorId > Tutor.id [delete: Cascade]
+
+Ref: TutoringDetail.tutorId - Tutor.id [delete: Cascade]
+
+Ref: SubjectOffer.tutorId > Tutor.id [delete: Cascade]
+
+Ref: Documents.tutorId - Tutor.id [delete: Cascade]
+
+Ref: Notification.targetId > User.id
+
+Ref: FlaggedMessage.sentById > User.id
+
+Ref: FlaggedMessage.sentToId > User.id

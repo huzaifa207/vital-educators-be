@@ -46,9 +46,21 @@ export class TutorsController {
 
   @UseGuards(TutorGuard)
   @Patch()
-  update(@Body() updateTutorDto: UpdateTutorDto, @Req() request: Request) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return this.tutorsService.updateTutor(+id, updateTutorDto);
+  update(@Body() updateTutorDto: Partial<Prisma.TutorUpdateInput>, @Req() request: Request) {
+    const $ = updateTutorDto;
+
+    const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
+    const newAccountStatus =
+      $.is_government_document_approved == 'ADDED' &&
+      $.is_profile_pic_approved == 'ADDED' &&
+      $.is_qualification_document_approved == 'ADDED' &&
+      $.is_referee_approved == 'ADDED' &&
+      email_approved == true;
+
+    return this.tutorsService.updateTutor(+id, {
+      ...updateTutorDto,
+      is_account_approved: newAccountStatus ? 'APPROVED' : 'PENDING',
+    });
   }
 
   @UseGuards(TutorGuard)
