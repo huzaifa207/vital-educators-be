@@ -210,8 +210,11 @@ export class UsersController {
   }
 
   @Post('/:id/block-status')
-  async updateBlockStatus(@Param('id') id: string, @Body() body: { status: boolean }) {
-    return await this.usersService.updateBlockStatus(parseInt(id), body.status);
+  async updateBlockStatus(
+    @Param('id') id: string,
+    @Body() body: { status: boolean; reason: string },
+  ) {
+    return await this.usersService.updateBlockStatus(parseInt(id), body.status, body.reason);
   }
 
   @Post('/reset-password')

@@ -189,7 +189,7 @@ export class UsersService {
 
     return this.update(id, {
       block_status: status,
-      block_reason: reason,
+      block_reason: status == true ? reason : '',
     });
   }
 
