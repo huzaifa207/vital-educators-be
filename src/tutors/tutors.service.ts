@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApprovalStatus, Prisma, User } from '@prisma/client';
 import { DeleteKeys, PickKeys } from 'src/utils/helpers';
 import { PaginationOptions } from 'src/utils/types';
-import { PrismaService } from './../prisma.service';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 
 type GraduationLevel =
   | 'a_level'

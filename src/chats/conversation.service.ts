@@ -6,7 +6,7 @@ import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { UsersService } from 'src/users/users.service';
 import { is_valid_msg, remove_bad_words } from 'src/utils/message_validation';
-import { PrismaService } from './../prisma.service';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 
 export enum CHAT_STATUS {
   PENDING = 'PENDING',

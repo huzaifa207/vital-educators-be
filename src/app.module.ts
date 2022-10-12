@@ -16,7 +16,6 @@ import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
-import { PrismaService } from './prisma.service';
 import { StudentsModule } from './students/students.module';
 import { TaskSchadularsModule } from './task-schadulars/task-schadulars.module';
 import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
@@ -35,6 +34,7 @@ import { NotificationModule } from './notifications/notifications.module';
 import { NotificationController } from './notifications/notifications.controller';
 import { FlaggedMessagesModule } from './flagged-messages/flagged-messages.module';
 import { AlertsController } from './alerts/alerts.controller';
+import { PrismaModule } from './prisma-module/prisma.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -44,6 +44,7 @@ import { AlertsController } from './alerts/alerts.controller';
     JwtModule.register({
       secret: ENV.JWT_SECRET,
     }),
+    PrismaModule,
     EventEmitterModule.forRoot(),
     TutorsModule,
     MailModule,
@@ -62,7 +63,7 @@ import { AlertsController } from './alerts/alerts.controller';
   providers: [
     AppService,
     TaskSchadularsService,
-    PrismaService,
+
     {
       provide: APP_INTERCEPTOR,
       useValue: new RavenInterceptor({

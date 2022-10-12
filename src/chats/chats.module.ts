@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { FlaggedMessagesModule } from 'src/flagged-messages/flagged-messages.module';
 import { FlaggedMessagesService } from 'src/flagged-messages/flagged-messages.service';
 import { MailModule } from 'src/mail-service/mail.module';
-import { PrismaService } from 'src/prisma.service';
 import { ENV } from 'src/settings';
 import { TaskSchadularsModule } from 'src/task-schadulars/task-schadulars.module';
 import { TokenModule } from 'src/token/token.module';
@@ -23,6 +22,6 @@ import { ConversationService } from './conversation.service';
     TaskSchadularsModule,
     FlaggedMessagesModule,
   ],
-  providers: [ChatsGateway, ConversationService, TokenService, PrismaService],
+  providers: [ChatsGateway, ConversationService, TokenService],
 })
 export class ChatsModule {}

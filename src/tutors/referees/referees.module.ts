@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { AlertsService } from 'src/alerts/alerts.service';
 import { MailModule } from 'src/mail-service/mail.module';
 import { MailService } from 'src/mail-service/mail.service';
-import { PrismaService } from 'src/prisma.service';
 import { ENV } from 'src/settings';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
@@ -16,7 +15,7 @@ import { RefereesService } from './referees.service';
     MailModule,
   ],
   controllers: [RefereesController],
-  providers: [PrismaService, RefereesService, MailService, AlertsService],
+  providers: [RefereesService, MailService, AlertsService],
   exports: [RefereesService],
 })
 export class RefereesModule {}

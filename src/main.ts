@@ -8,6 +8,7 @@ import { NextFunction, Request, Response } from 'express';
 import { join } from 'path';
 import { AppModule } from 'src/app.module';
 import { ENV } from 'src/settings';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 const cookieSession = require('cookie-session');
 
 async function bootstrap() {
@@ -38,6 +39,8 @@ async function bootstrap() {
   Sentry.init({
     dsn: ENV['SENTRY_DSN'],
   });
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   await app.listen(ENV['PORT'], () => console.log(`Server running on port ${ENV['PORT']}`));
 }

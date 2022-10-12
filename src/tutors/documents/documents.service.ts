@@ -7,7 +7,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { Exception } from 'handlebars';
 import { AlertsService } from 'src/alerts/alerts.service';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 
 @Injectable()
 export class DocumentsService {

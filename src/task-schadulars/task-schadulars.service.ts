@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { CronJob } from 'cron';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 import { TutorsService } from 'src/tutors/tutors.service';
 
 @Injectable()

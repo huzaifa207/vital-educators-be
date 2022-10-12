@@ -16,7 +16,7 @@ import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.servi
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
 import { promisify } from 'util';
-import { PrismaService } from './../prisma.service';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 const scrypt = promisify(_script);
 
 @Injectable()

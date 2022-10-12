@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 import { Chats, FlaggedMessage, Prisma } from '@prisma/client';
 import { MailService } from 'src/mail-service/mail.service';
 import { emailAlert } from 'src/mail-service/templates/email-alert';

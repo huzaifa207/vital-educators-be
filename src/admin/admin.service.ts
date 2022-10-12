@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { FlaggedMessagesService } from 'src/flagged-messages/flagged-messages.service';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 
 @Injectable()
 export class AdminService {

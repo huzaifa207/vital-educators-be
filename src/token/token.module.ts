@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma.service';
 import { ENV } from 'src/settings';
 import { TokenService } from './token.service';
 
@@ -10,7 +9,7 @@ import { TokenService } from './token.service';
       secret: ENV['JWT_SECRET'],
     }),
   ],
-  providers: [TokenService, PrismaService],
+  providers: [TokenService],
   exports: [TokenService],
 })
 export class TokenModule {}

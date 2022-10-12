@@ -1,12 +1,11 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
 import { CurrentStudentMiddleware } from './middleware/current-student.middleware';
 import { StudentsController } from './students.controller';
 import { StudentsService } from './students.service';
 
 @Module({
   controllers: [StudentsController],
-  providers: [StudentsService, PrismaService],
+  providers: [StudentsService],
 })
 export class StudentsModule {
   configure(consumer: MiddlewareConsumer) {

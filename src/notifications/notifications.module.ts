@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AlertsService } from 'src/alerts/alerts.service';
 import { MailService } from 'src/mail-service/mail.service';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaModule } from 'src/prisma-module/prisma.module';
+
 import { TaskSchadularsModule } from 'src/task-schadulars/task-schadulars.module';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
@@ -12,8 +13,8 @@ import { NotificationController } from './notifications.controller';
 import { NotificationService } from './notifications.service';
 
 @Module({
-  imports: [UsersModule],
+  imports: [UsersModule, PrismaModule],
   controllers: [NotificationController],
-  providers: [PrismaService, NotificationService, MailService],
+  providers: [NotificationService, MailService],
 })
 export class NotificationModule {}

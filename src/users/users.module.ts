@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AlertsService } from 'src/alerts/alerts.service';
 import { MailModule } from 'src/mail-service/mail.module';
-import { PrismaService } from 'src/prisma.service';
 import { ENV } from 'src/settings';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { TokenModule } from 'src/token/token.module';
@@ -26,7 +25,6 @@ import { UsersService } from 'src/users/users.service';
     AlertsService,
     TutorsService,
     UsersService,
-    PrismaService,
     TokenService,
     DocumentsService,
     TutoringDetailsService,
