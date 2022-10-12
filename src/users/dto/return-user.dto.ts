@@ -50,6 +50,8 @@ export class ReturnUserDto {
   created_at: Date;
   @Expose()
   block_status: boolean;
+  @Expose()
+  block_reason: string;
 
   @Expose()
   updated_at: Date;

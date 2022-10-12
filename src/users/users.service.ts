@@ -10,6 +10,8 @@ import { nanoid } from 'nanoid';
 import { AlertsService } from 'src/alerts/alerts.service';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
+import { emailRecovered } from 'src/mail-service/templates/email-recovered';
+import { emailSuspended } from 'src/mail-service/templates/email-suspended';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
@@ -147,9 +149,47 @@ export class UsersService {
     }
   }
 
-  async updateBlockStatus(id: number, status: boolean) {
+  async updateBlockStatus(id: number, status: boolean, reason = '') {
+    const user = await this.findOne(id);
+    if (!user) return;
+    if (user.block_status == status) return; // nothing to update
+
+    if (status == true) {
+      try {
+        this.mailService.sendMailSimple({
+          email: user.email,
+          emailContent: emailSuspended(
+            reason || 'Reason is not specified',
+            `https://vital-educators.vercel.app/?from=account-suspended&role=` + user.role,
+          ),
+          subject: 'Account Suspended',
+          text: `Your VitalEducators account has been suspended.`,
+        });
+      } catch (er) {
+        console.warn(er);
+      }
+    } else {
+      let url =
+        user.role == 'STUDENT'
+          ? `https://vital-educators.vercel.app/student/login`
+          : `https://vital-educators.vercel.app/tutor/login`;
+      url = url + '?from=account-recovered';
+
+      try {
+        this.mailService.sendMailSimple({
+          email: user.email,
+          emailContent: emailRecovered(url),
+          subject: 'Account Recovered',
+          text: `Your VitalEducators account has been recovered.`,
+        });
+      } catch (er) {
+        console.warn(er);
+      }
+    }
+
     return this.update(id, {
       block_status: status,
+      block_reason: reason,
     });
   }
 

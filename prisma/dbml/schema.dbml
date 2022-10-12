@@ -27,6 +27,7 @@ Table User {
   student Student
   notifications Notification [not null]
   block_status Boolean [not null, default: false]
+  block_reason String [default: '']
   flaggedMessagesReceived FlaggedMessage [not null]
   flaggedMessagesSent FlaggedMessage [not null]
 }
