@@ -99,12 +99,13 @@ export class UsersService {
   async login({ email, password, role }: { email: string; password: string; role: Role }) {
     try {
       const _role = role ? role : Role.TUTOR;
-
+      console.log('email = ', email);
       const currentUser = await this.prisma.user.findFirst({
         where: {
           AND: [{ email }, { role: _role }],
         },
       });
+      console.log('currentUser = ', currentUser);
       if (!currentUser) {
         throw new BadRequestException('Invalid credentials');
       }

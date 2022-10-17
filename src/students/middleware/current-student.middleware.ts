@@ -17,6 +17,7 @@ export class CurrentStudentMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.currentUser as Prisma.UserCreateManyInput;
+      console.log('user = ', user);
       const student = await this.studentsService.findByUserId(user.id);
       if (!student) {
         throw new NotFoundException('Student not found');

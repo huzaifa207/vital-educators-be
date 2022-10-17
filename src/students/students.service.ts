@@ -41,14 +41,17 @@ export class StudentsService {
           createdAt: 'desc',
         },
       });
-
       const chats = await Promise.all(
         conversations.map(async (conversation) => {
           return await this.prisma.chats.findMany({
             where: {
               OR: [
-                { senderId: studentId, receiverId: conversation.tutorId },
-                { senderId: conversation.tutorId, receiverId: studentId },
+                {
+                  AND: [{ senderId: conversation.studentId }, { receiverId: conversation.tutorId }],
+                },
+                {
+                  AND: [{ senderId: conversation.tutorId }, { receiverId: conversation.studentId }],
+                },
               ],
             },
             take: 1,
@@ -60,8 +63,10 @@ export class StudentsService {
       );
       const chatWithTutor = await Promise.all(
         chats.flat().map(async (c) => ({
-          ...c,
-          tutor: await this.prisma.user.findMany({
+          message: c.message,
+          seen: c.seen,
+          createdAt: c.createdAt,
+          tutor: await this.prisma.user.findFirst({
             where: {
               OR: [
                 { id: c.senderId, role: 'TUTOR' },
@@ -69,18 +74,10 @@ export class StudentsService {
               ],
             },
             select: {
+              id: true,
               first_name: true,
               last_name: true,
-              address_1: true,
-              address_2: true,
-              country: true,
-              email: true,
-              tutor: {
-                select: {
-                  subjectOffers: true,
-                  qualification: true,
-                },
-              },
+              profile_url: true,
             },
           }),
         })),

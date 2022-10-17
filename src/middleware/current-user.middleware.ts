@@ -18,7 +18,6 @@ export class CurrentUserMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     try {
       const jwt: string = req.cookies['jwt'];
-      console.log('JWT', jwt);
       const { id, token } = await this.tokenService.verify(jwt);
       if (token) {
         res.cookie('jwt', token, {

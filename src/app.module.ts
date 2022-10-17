@@ -22,6 +22,7 @@ import { CurrentUserMiddleware } from './middleware/current-user.middleware';
 import { NotificationController } from './notifications/notifications.controller';
 import { NotificationModule } from './notifications/notifications.module';
 import { PrismaModule } from './prisma-module/prisma.module';
+import { StudentsController } from './students/students.controller';
 import { StudentsModule } from './students/students.module';
 import { TaskSchadularsModule } from './task-schadulars/task-schadulars.module';
 import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
@@ -123,6 +124,7 @@ export class AppModule {
         AdminController,
         NotificationController,
         AlertsController,
+        StudentsController,
       );
   }
 }

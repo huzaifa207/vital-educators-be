@@ -58,6 +58,7 @@ export class UsersController {
     },
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log(loginUserDto);
     const user = await this.usersService.login(loginUserDto);
     const jwt = await this.tokenService.generateNewToken(user.id);
     response.cookie('jwt', jwt, {
