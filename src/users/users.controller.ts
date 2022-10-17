@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   DefaultValuePipe,
@@ -7,7 +8,6 @@ import {
   Get,
   InternalServerErrorException,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -21,8 +21,6 @@ import { EmailType } from 'src/mail-service/mail.utils';
 import { TokenService } from 'src/token/token.service';
 import { AllUsersDTO, ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
-import { BadRequestException } from '@nestjs/common';
-import { AlertsService } from 'src/alerts/alerts.service';
 @Controller('user')
 export class UsersController {
   constructor(

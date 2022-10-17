@@ -19,4 +19,10 @@ export class StudentsController {
   findByUserId(@Req() req: Request) {
     return this.studentsService.findByUserId((req.currentUser as Prisma.UserCreateManyInput).id);
   }
+
+  @Get('/chat-tutors')
+  findChatTutors(@Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+    return this.studentsService.findChatTutors(Number(id));
+  }
 }

@@ -12,11 +12,11 @@ import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { emailRecovered } from 'src/mail-service/templates/email-recovered';
 import { emailSuspended } from 'src/mail-service/templates/email-suspended';
+import { PrismaService } from 'src/prisma-module/prisma.service';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
 import { promisify } from 'util';
-import { PrismaService } from 'src/prisma-module/prisma.service';
 const scrypt = promisify(_script);
 
 @Injectable()

@@ -11,7 +11,10 @@ export class StudentsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CurrentStudentMiddleware)
-      .exclude({ path: 'student/:id', method: RequestMethod.GET })
+      .exclude(
+        { path: 'students/chat-tutors', method: RequestMethod.GET },
+        { path: 'student/:id', method: RequestMethod.GET },
+      )
       .forRoutes(StudentsController);
   }
 }

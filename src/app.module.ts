@@ -8,14 +8,20 @@ import { join } from 'path';
 import { ENV } from 'src/settings';
 import { AdminController } from './admin/admin.controller';
 import { AdminMoudle } from './admin/admin.module';
+import { AlertsController } from './alerts/alerts.controller';
+import { AlertsModule } from './alerts/alerts.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatsModule } from './chats/chats.module';
 import { CloudinaryModule } from './cloudinay/cloudinay.module';
+import { FlaggedMessagesModule } from './flagged-messages/flagged-messages.module';
 import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
 import { MediaModule } from './media/media.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
+import { NotificationController } from './notifications/notifications.controller';
+import { NotificationModule } from './notifications/notifications.module';
+import { PrismaModule } from './prisma-module/prisma.module';
 import { StudentsModule } from './students/students.module';
 import { TaskSchadularsModule } from './task-schadulars/task-schadulars.module';
 import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
@@ -29,12 +35,6 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { AlertsModule } from './alerts/alerts.module';
-import { NotificationModule } from './notifications/notifications.module';
-import { NotificationController } from './notifications/notifications.controller';
-import { FlaggedMessagesModule } from './flagged-messages/flagged-messages.module';
-import { AlertsController } from './alerts/alerts.controller';
-import { PrismaModule } from './prisma-module/prisma.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -102,6 +102,7 @@ export class AppModule {
         { path: '/', method: RequestMethod.POST },
         { path: 'media', method: RequestMethod.POST },
         { path: 'media/:id', method: RequestMethod.GET },
+
         // 'notifications/user/(.+)',
         // 'notifications',
         // 'notifications/global',
