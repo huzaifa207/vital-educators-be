@@ -3,15 +3,21 @@ require('dotenv').config();
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as Sentry from '@sentry/node';
+// import { config } from 'aws-sdk';
 import * as cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
 import { join } from 'path';
 import { AppModule } from 'src/app.module';
-import { ENV } from 'src/settings';
 import { PrismaService } from 'src/prisma-module/prisma.service';
+import { ENV } from 'src/settings';
 const cookieSession = require('cookie-session');
-
 async function bootstrap() {
+  // config.update({
+  //   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  //   region: process.env.AWS_REGION,
+  // });
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('etag', 'strong');
 

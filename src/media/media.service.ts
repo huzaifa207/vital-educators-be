@@ -28,13 +28,13 @@ export class MediaService {
     }
 
     const url = `${baseUrl}/docs/${file.filename}`;
-    const media = await this.prisma.media.create({
-      data: {
-        url: url,
-        type: extension,
-      },
-    });
-    return media.id;
+    // const media = await this.prisma.media.create({
+    //   data: {
+    //     url: url,
+    //     type: extension,
+    //   },
+    // });
+    return '1';
   }
 
   async getMedia(id: number) {

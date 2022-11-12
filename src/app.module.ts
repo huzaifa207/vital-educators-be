@@ -103,6 +103,8 @@ export class AppModule {
         { path: '/', method: RequestMethod.POST },
         { path: 'media', method: RequestMethod.POST },
         { path: 'media/:id', method: RequestMethod.GET },
+        { path: 'file', method: RequestMethod.POST },
+        { path: 'file/:key', method: RequestMethod.DELETE },
 
         // 'notifications/user/(.+)',
         // 'notifications',

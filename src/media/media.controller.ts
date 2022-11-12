@@ -28,7 +28,7 @@ export class MediaController {
     id: number;
   }> {
     const id = await this.mediaService.uploadMedia(file);
-    return { id };
+    return { id: 12 };
   }
 
   @Post('/image')
