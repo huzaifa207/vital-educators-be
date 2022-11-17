@@ -1,5 +1,5 @@
 export const ENV = {
-  PORT: process.env.PORT || 3000,
+  PORT: process.env.PORT || 5002,
   NODE_ENV: process.env.NODE_ENV || 'development',
   SENTRY_DSN: process.env.SENTRY_DSN,
   JWT_SECRET: process.env.JWT_SECRET,
