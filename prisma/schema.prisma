@@ -5,8 +5,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -40,6 +38,8 @@ model User {
   block_reason             String?          @default("")
   flaggedMessagesReceived  FlaggedMessage[] @relation("SentTo")
   flaggedMessagesSent      FlaggedMessage[] @relation("SentBy")
+  subscription             Subscription?
+  subscriptionId           Int?             @unique
 }
 
 model whitelist {
@@ -93,6 +93,38 @@ model Tutor {
   is_government_document_approved    ApprovalStatus  @default(NOT_ADDED)
   is_qualification_document_approved ApprovalStatus  @default(NOT_ADDED)
   is_referee_approved                ApprovalStatus  @default(NOT_ADDED)
+}
+
+enum StripePlan {
+  BASE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Subscription {
+  id Int @id @default(autoincrement())
+
+  customerId           String
+  plan                 StripePlan         @default(BASE)
+  subscriptionId       String
+  status               SubscriptionStatus @default(INACTIVE)
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               Int                @unique
+  paymentMethodId      String             @default("")
+  last4                String             @default("")
+  brand                String             @default("")
+  exp_month            Int                @default(0)
+  exp_year             Int                @default(0)
+  last_attempt_success Boolean            @default(true)
+  started              Int                @default(0)
+  end                  Int                @default(0)
+  cancelled            Boolean            @default(false)
+  // client_secret: string
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now())
 }
 
 model Referees {

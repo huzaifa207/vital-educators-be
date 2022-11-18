@@ -13,6 +13,7 @@ import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { emailRecovered } from 'src/mail-service/templates/email-recovered';
 import { emailSuspended } from 'src/mail-service/templates/email-suspended';
 import { PrismaService } from 'src/prisma-module/prisma.service';
+import { StripeService } from 'src/stripe/stripe.service';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
@@ -28,6 +29,7 @@ export class UsersService {
     private tutoringDetailsService: TutoringDetailsService,
     private taskSchadularsService: TaskSchadularsService,
     private alertService: AlertsService,
+    private stripeService: StripeService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {

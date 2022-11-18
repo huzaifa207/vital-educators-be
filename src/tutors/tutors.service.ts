@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApprovalStatus, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma-module/prisma.service';
+import { StripeService } from 'src/stripe/stripe.service';
+import { UsersService } from 'src/users/users.service';
 import { DeleteKeys, PickKeys } from 'src/utils/helpers';
 import { PaginationOptions } from 'src/utils/types';
 
@@ -19,7 +21,11 @@ interface TutorProfileQueryOptions {
 
 @Injectable()
 export class TutorsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private userService: UsersService,
+    private stripeService: StripeService,
+  ) {}
 
   async pendingTutors(
     options: Partial<PaginationOptions> = {
@@ -59,12 +65,45 @@ export class TutorsService {
     }
   }
 
+  async createSubscriptionRecord(userId: number) {
+    try {
+      const user = await this.userService.findOne(userId);
+
+      const customer = await this.stripeService.getStripe().customers.create({
+        email: user.email,
+        name: user.first_name + ' ' + user.last_name,
+      });
+      return await this.prisma.subscription.create({
+        data: {
+          customerId: customer.id,
+          subscriptionId: '',
+          user: { connect: { id: userId } },
+        },
+      });
+    } catch (er) {
+      console.log('Failed to create stripe customer');
+      console.warn(er);
+      throw new Error('Failed to create customer record');
+    }
+  }
   async findOneTutor(userId: number) {
     try {
       const tutor = await this.prisma.tutor.findUnique({ where: { userId } });
       return tutor;
     } catch (err) {
       throw new NotFoundException('Tutor not found');
+    }
+  }
+
+  async getSubscription(userId: number) {
+    try {
+      let subscription = await this.prisma.subscription.findUnique({ where: { userId } });
+      if (!subscription) {
+        subscription = await this.createSubscriptionRecord(userId);
+      }
+      return subscription;
+    } catch (err) {
+      throw new NotFoundException('Subscription record not found');
     }
   }
 

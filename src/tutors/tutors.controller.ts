@@ -44,6 +44,13 @@ export class TutorsController {
     return this.tutorsService.findOneTutor(+id);
   }
 
+  @Get('/subscription-details')
+  getSubscriptionDetails(@Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+
+    return this.tutorsService.getSubscription(+id);
+  }
+
   @UseGuards(TutorGuard)
   @Patch()
   update(@Body() updateTutorDto: Partial<Prisma.TutorUpdateInput>, @Req() request: Request) {

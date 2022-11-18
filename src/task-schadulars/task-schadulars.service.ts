@@ -11,7 +11,7 @@ import { TutorsService } from 'src/tutors/tutors.service';
 export class TaskSchadularsService {
   constructor(
     private schedulerRegistry: SchedulerRegistry,
-    private readonly tutorsService: TutorsService,
+    private tutorsService: TutorsService,
     private mailService: MailService,
     private prisma: PrismaService,
   ) {}

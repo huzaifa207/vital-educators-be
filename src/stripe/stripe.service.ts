@@ -24,6 +24,9 @@ export class StripeService {
       },
     );
   }
+  getStripe() {
+    return this.stripe;
+  }
   async createSubscription() {
     const customerId = 'cus_MnmJ5PEdMfapAz';
     const priceId = 'price_1M4AZAFR1WytI4FHLmDFOwCz';
