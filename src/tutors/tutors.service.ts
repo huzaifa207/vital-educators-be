@@ -78,6 +78,7 @@ export class TutorsService {
         email: user.email,
         name: user.first_name + ' ' + user.last_name,
       });
+      console.log('Created customer:', customer.id);
       return await this.prisma.subscription.create({
         data: {
           customerId: customer.id,
