@@ -23,7 +23,7 @@ interface TutorProfileQueryOptions {
 export class TutorsService {
   constructor(
     private prisma: PrismaService,
-    private userService: UsersService,
+    // private userService: UsersService,
     private stripeService: StripeService,
   ) {}
 
@@ -65,9 +65,14 @@ export class TutorsService {
     }
   }
 
+  async createSubscription(userId: number) {
+    const customerId = (await this.getSubscription(userId)).customerId;
+    return this.stripeService.createSubscription(customerId);
+  }
+
   async createSubscriptionRecord(userId: number) {
     try {
-      const user = await this.userService.findOne(userId);
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
       const customer = await this.stripeService.getStripe().customers.create({
         email: user.email,
@@ -99,6 +104,7 @@ export class TutorsService {
     try {
       let subscription = await this.prisma.subscription.findUnique({ where: { userId } });
       if (!subscription) {
+        console.log('Created new sub');
         subscription = await this.createSubscriptionRecord(userId);
       }
       return subscription;

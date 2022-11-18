@@ -1,4 +1,4 @@
-import { DefaultValuePipe } from '@nestjs/common';
+import { DefaultValuePipe, InternalServerErrorException, Post } from '@nestjs/common';
 import { ParseIntPipe } from '@nestjs/common';
 import { Body, Controller, Delete, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -75,6 +75,19 @@ export class TutorsController {
   deActivateTutor(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.tutorsService.deActivateTutor(+id);
+  }
+
+  // @UseGuards(TutorGuard)
+  @Post('create-subscription')
+  async createSubscription(@Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+
+    try {
+      return await this.tutorsService.createSubscription(id);
+    } catch (er) {
+      console.warn(er);
+      return new InternalServerErrorException();
+    }
   }
 
   @Get('profile/:id')

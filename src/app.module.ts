@@ -65,7 +65,6 @@ import { UsersModule } from './users/users.module';
   controllers: [AppController],
   providers: [
     AppService,
-    TaskSchadularsService,
 
     {
       provide: APP_INTERCEPTOR,

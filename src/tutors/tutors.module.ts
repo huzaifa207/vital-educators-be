@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
-import { UsersModule } from 'src/users/users.module';
-import { UsersService } from 'src/users/users.service';
+import { MailModule } from 'src/mail-service/mail.module';
+import { StripeModule } from 'src/stripe/stripe.module';
+import { StripeService } from 'src/stripe/stripe.service';
 import { DocumentsController } from './documents/documents.controller';
 import { DocumentsModule } from './documents/documents.module';
 import { CurrentTutorMiddleware } from './middleware/current-tutor.middleware';
@@ -23,7 +23,8 @@ import { TutorsService } from './tutors.service';
     TutoringDetailsModule,
     SubjectOffersModule,
     DocumentsModule,
-    // UsersModule,
+    StripeModule,
+    MailModule,
   ],
   controllers: [
     TutorsController,
@@ -33,7 +34,7 @@ import { TutorsService } from './tutors.service';
     SubjectOffersController,
     DocumentsController,
   ],
-  providers: [TutorsService],
+  providers: [TutorsService, StripeService],
   exports: [TutorsService],
 })
 export class TutorsModule {

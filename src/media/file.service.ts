@@ -30,7 +30,7 @@ export class FileService {
             data: {
               url: file.location,
               key: file.key,
-              type: file.originalname.split('.')[1],
+              type: file.mimeType.split('/')[1],
             },
           });
           resolve(file.location);
