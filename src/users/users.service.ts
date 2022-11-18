@@ -17,6 +17,7 @@ import { StripeService } from 'src/stripe/stripe.service';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
+import { TutorsService } from 'src/tutors/tutors.service';
 import { promisify } from 'util';
 const scrypt = promisify(_script);
 
@@ -29,6 +30,7 @@ export class UsersService {
     private tutoringDetailsService: TutoringDetailsService,
     private taskSchadularsService: TaskSchadularsService,
     private alertService: AlertsService,
+    private tutorsService: TutorsService,
     private stripeService: StripeService,
   ) {}
 
@@ -78,6 +80,13 @@ export class UsersService {
           approach: '',
           availability: '',
         } as Prisma.TutoringDetailCreateInput;
+
+        try {
+          await this.tutorsService.createSubscriptionRecord(newUser.id);
+        } catch (er) {
+          console.warn(er);
+          console.log('Failed to create subs record');
+        }
 
         await this.tutoringDetailsService.create(tutoringDetail, +tutor.id);
       } catch (error) {

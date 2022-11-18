@@ -77,7 +77,7 @@ export class TutorsController {
     return this.tutorsService.deActivateTutor(+id);
   }
 
-  // @UseGuards(TutorGuard)
+  // @UseGuards(TuctorGuard)
   @Post('create-subscription')
   async createSubscription(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
