@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res } from '@nestjs/common';
+import { Controller, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { TutorsService } from 'src/tutors/tutors.service';
@@ -21,13 +21,20 @@ export class StripeController {
   ) {}
 
   @Post('/webhook')
-  async handleWebhook(@Req() req: Request, @Res({ passthrough: false }) res: Response) {
+  async handleWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Res({ passthrough: false }) res: Response,
+  ) {
     let event;
 
     try {
       event = this.stripeService
         .getStripe()
-        .webhooks.constructEvent(req.body, req.headers['stripe-signature'] as any, webhook_secret);
+        .webhooks.constructEvent(
+          req.rawBody,
+          req.headers['stripe-signature'] as any,
+          webhook_secret,
+        );
     } catch (er) {
       console.warn(er);
       res.status(400).json({ oK: false });
@@ -43,8 +50,10 @@ export class StripeController {
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
         try {
+          console.log(dataObject);
           const subId = dataObject.id;
           const customerId = dataObject.customer;
+          const pmId = dataObject.default_payment_method;
           const start = dataObject.current_period_start;
           const end = dataObject.current_period_end;
           // const planId = dataObject.plan.id;
@@ -52,7 +61,13 @@ export class StripeController {
           const subStatus: Stripe.Subscription['status'] = dataObject.status;
           const cancelled = dataObject.cancel_at_period_end;
 
-          console.log('SUB ID:' + subId, 'customerId:' + customerId);
+          console.log(
+            'SUB ID:' + subId,
+            'customerId:' + customerId,
+            'status: ' + subStatus,
+            'cancel at end:',
+            cancelled,
+          );
 
           const sub = await this.tutorService.getSubscriptionByCustomerId(customerId);
           if (!sub) {
@@ -72,6 +87,28 @@ export class StripeController {
               subscriptionId: subId,
             },
           });
+
+          if (pmId) {
+            try {
+              const pm = await this.stripeService.getStripe().paymentMethods.retrieve(pmId);
+              const card = pm.card;
+              if (card) {
+                await this.prismaService.subscription.update({
+                  where: { customerId: customerId },
+                  data: {
+                    paymentMethodId: pm.id,
+                    brand: card.brand,
+                    last4: card.last4,
+                    exp_month: card.exp_month,
+                    exp_year: card.exp_year,
+                  },
+                });
+                console.log('Updated pmId:', pm.id);
+              }
+            } catch (er) {
+              console.warn(er);
+            }
+          }
         } catch (er) {
           console.warn('Failed to update subscription record');
           console.warn(er);

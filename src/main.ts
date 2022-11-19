@@ -20,7 +20,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
   app.set('etag', 'strong');
-
+  app;
   app.useStaticAssets(join(__dirname, '..', 'uploads'));
 
   app.use((req: Request, res: Response, next: NextFunction) => {

@@ -74,6 +74,31 @@ export class TutorsService {
     return this.stripeService.createSubscription(customerId);
   }
 
+  async cancelSubscription(userId: number) {
+    const subId = (await this.getSubscription(userId)).subscriptionId;
+    await this.prisma.subscription.update({
+      where: { userId },
+      data: {
+        cancelled: true,
+      },
+    });
+    return this.stripeService
+      .getStripe()
+      .subscriptions.update(subId, { cancel_at_period_end: true });
+  }
+  async reinstateSubscription(userId: number) {
+    const subId = (await this.getSubscription(userId)).subscriptionId;
+    await this.prisma.subscription.update({
+      where: { userId },
+      data: {
+        cancelled: false,
+      },
+    });
+    return this.stripeService
+      .getStripe()
+      .subscriptions.update(subId, { cancel_at_period_end: false });
+  }
+
   async createSubscriptionRecord(userId: number) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });

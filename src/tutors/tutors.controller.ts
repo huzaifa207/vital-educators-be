@@ -90,6 +90,31 @@ export class TutorsController {
     }
   }
 
+  @Post('cancel-subscription')
+  async cancelSubscription(@Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+
+    try {
+      await this.tutorsService.cancelSubscription(id);
+      return { ok: true };
+    } catch (er) {
+      console.warn(er);
+      return new InternalServerErrorException();
+    }
+  }
+  @Post('reinstate-subscription')
+  async reinstateSubscription(@Req() request: Request) {
+    const { id } = request.currentUser as Prisma.UserCreateManyInput;
+
+    try {
+      await this.tutorsService.reinstateSubscription(id);
+      return { ok: true };
+    } catch (er) {
+      console.warn(er);
+      return new InternalServerErrorException();
+    }
+  }
+
   @Get('profile/:id')
   async getTutorProfile(@Param() { id }: { id: string }) {
     return await this.tutorsService.getTutorProfile(parseInt(id), {
