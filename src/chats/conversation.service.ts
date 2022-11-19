@@ -51,7 +51,10 @@ export class ConversationService {
     student: Prisma.UserCreateManyInput,
   ) {
     const { error, valid } = is_valid_msg(msg);
-    if (!valid) {
+
+    const sub = await this.prisma.subscription.findUnique({ where: { userId: tutorId } });
+
+    if (!valid && sub.status != 'ACTIVE') {
       this.flaggedMessagesService.create(studentId, tutorId, msg);
       return {
         status: CHAT_STATUS.ERROR,
@@ -136,7 +139,10 @@ export class ConversationService {
   async msgFromTutor(tutorId: number, studentId: number, message: string) {
     // CHECK IF MESSAGE IS VALID {not contain email or mobile number}
     const { error, valid } = is_valid_msg(message);
-    if (!valid) {
+
+    const sub = await this.prisma.subscription.findUnique({ where: { userId: tutorId } });
+
+    if (!valid && sub.status !== 'ACTIVE') {
       this.flaggedMessagesService.create(tutorId, studentId, message);
       return {
         status: CHAT_STATUS.ERROR,
