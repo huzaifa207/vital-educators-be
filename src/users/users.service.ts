@@ -106,6 +106,14 @@ export class UsersService {
 
     return newUser;
   }
+  async getByCustomerId(customerId: string) {
+    try {
+      const sub = await this.prisma.subscription.findUnique({ where: { customerId: customerId } });
+      return this.findOne(sub.userId);
+    } catch (er) {
+      return null;
+    }
+  }
 
   async login({ email, password, role }: { email: string; password: string; role: Role }) {
     try {

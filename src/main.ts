@@ -18,7 +18,7 @@ async function bootstrap() {
   //   region: process.env.AWS_REGION,
   // });
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
   app.set('etag', 'strong');
 
   app.useStaticAssets(join(__dirname, '..', 'uploads'));

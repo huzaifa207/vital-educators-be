@@ -65,6 +65,10 @@ export class TutorsService {
     }
   }
 
+  async getSubscriptionByCustomerId(customerId: string) {
+    return this.prisma.subscription.findUnique({ where: { customerId: customerId } });
+  }
+
   async createSubscription(userId: number) {
     const customerId = (await this.getSubscription(userId)).customerId;
     return this.stripeService.createSubscription(customerId);

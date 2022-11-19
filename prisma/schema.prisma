@@ -96,6 +96,7 @@ model Tutor {
 }
 
 enum StripePlan {
+  NONE
   BASE
 }
 
@@ -107,8 +108,8 @@ enum SubscriptionStatus {
 model Subscription {
   id Int @id @default(autoincrement())
 
-  customerId           String
-  plan                 StripePlan         @default(BASE)
+  customerId           String             @unique
+  plan                 StripePlan         @default(NONE)
   subscriptionId       String
   status               SubscriptionStatus @default(INACTIVE)
   user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
