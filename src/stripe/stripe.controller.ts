@@ -10,7 +10,7 @@ export const webhook_hosted_secret = 'whsec_APgLI5l355D9Po54pRW7CNG7vYUxJ0Cb';
 export const webhook_local_secret =
   'whsec_374059379c53dcebd242e9963b4c1cd34a0b1e85bf655d936ff49e9252988b81';
 
-export const webhook_secret = webhook_local_secret;
+export const webhook_secret = webhook_hosted_secret;
 
 @Controller('payments')
 export class StripeController {
