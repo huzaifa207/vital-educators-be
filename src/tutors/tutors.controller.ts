@@ -58,10 +58,10 @@ export class TutorsController {
 
     const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
     const newAccountStatus =
-      $.is_government_document_approved == 'ADDED' &&
-      $.is_profile_pic_approved == 'ADDED' &&
-      $.is_qualification_document_approved == 'ADDED' &&
-      $.is_referee_approved == 'ADDED' &&
+      $.is_government_document_approved == 'APPROVED' &&
+      $.is_profile_pic_approved == 'APPROVED' &&
+      $.is_qualification_document_approved == 'APPROVED' &&
+      $.is_referee_approved == 'APPROVED' &&
       email_approved == true;
 
     return this.tutorsService.updateTutor(+id, {
