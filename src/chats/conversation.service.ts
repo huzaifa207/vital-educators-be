@@ -53,6 +53,7 @@ export class ConversationService {
     const { error, valid } = is_valid_msg(msg);
 
     const sub = await this.prisma.subscription.findUnique({ where: { userId: tutorId } });
+    console.log('Sub status:', sub.status);
 
     if (!valid && sub.status != 'ACTIVE') {
       this.flaggedMessagesService.create(studentId, tutorId, msg);
@@ -142,6 +143,7 @@ export class ConversationService {
 
     const sub = await this.prisma.subscription.findUnique({ where: { userId: tutorId } });
 
+    console.log('Sub status:', sub.status);
     if (!valid && sub.status !== 'ACTIVE') {
       this.flaggedMessagesService.create(tutorId, studentId, message);
       return {
