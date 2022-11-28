@@ -4,6 +4,8 @@ import { AlertsService } from 'src/alerts/alerts.service';
 import { MailModule } from 'src/mail-service/mail.module';
 import { ENV } from 'src/settings';
 import { StripeModule } from 'src/stripe/stripe.module';
+import { StripeService } from 'src/stripe/stripe.service';
+import { StudentsModule } from 'src/students/students.module';
 import { TaskSchadularsModule } from 'src/task-schadulars/task-schadulars.module';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { TokenModule } from 'src/token/token.module';
@@ -23,8 +25,8 @@ import { UsersService } from 'src/users/users.service';
     MailModule,
     TokenModule,
     TutorsModule,
-    StripeModule,
     TaskSchadularsModule,
+    StudentsModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -34,6 +36,7 @@ import { UsersService } from 'src/users/users.service';
     TokenService,
     DocumentsService,
     TutoringDetailsService,
+    StripeService,
 
     // TaskSchadularsService,
   ],

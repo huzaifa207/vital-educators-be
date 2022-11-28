@@ -86,6 +86,19 @@ export class TutorsService {
       .getStripe()
       .subscriptions.update(subId, { cancel_at_period_end: true });
   }
+
+  async cancelSubscriptionInstant(userId: number) {
+    const subId = (await this.getSubscription(userId)).subscriptionId;
+    await this.prisma.subscription.update({
+      where: { userId },
+      data: {
+        cancelled: false,
+        subscriptionId: '',
+        status: 'INACTIVE',
+      },
+    });
+    return this.stripeService.getStripe().subscriptions.cancel(subId);
+  }
   async reinstateSubscription(userId: number) {
     const subId = (await this.getSubscription(userId)).subscriptionId;
     await this.prisma.subscription.update({
@@ -106,6 +119,7 @@ export class TutorsService {
       const customer = await this.stripeService.getStripe().customers.create({
         email: user.email,
         name: user.first_name + ' ' + user.last_name,
+        metadata: { role: 'TUTOR' },
       });
       console.log('Created customer:', customer.id);
       return await this.prisma.subscription.create({
@@ -166,6 +180,7 @@ export class TutorsService {
           tutor: {
             select: { id: true },
           },
+          subscription: true,
         },
       });
       if (!user) {

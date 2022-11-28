@@ -34,7 +34,7 @@ import { TutorsService } from './tutors.service';
     SubjectOffersController,
     DocumentsController,
   ],
-  providers: [TutorsService, StripeService],
+  providers: [TutorsService],
   exports: [TutorsService],
 })
 export class TutorsModule {

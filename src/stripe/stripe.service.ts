@@ -49,4 +49,26 @@ export class StripeService {
         .client_secret,
     };
   }
+  async createTutorPurchaseToken(customerId: string, studentId: number, tutorId: number) {
+    // const customerId = 'cus_MnmJ5PEdMfapAz';
+    const productId = 'prod_MsHv5euaangn7o';
+
+    const product = (await this.stripe.products.retrieve(productId, {
+      expand: ['default_price'],
+    })) as Stripe.Product & { default_price: Stripe.Price };
+
+    const price = product.default_price;
+
+    if (!price?.id) throw new Error('default price not set');
+
+    const intent = await this.stripe.paymentIntents.create({
+      amount: price.unit_amount,
+      currency: price.currency,
+      automatic_payment_methods: { enabled: true },
+      customer: customerId,
+      metadata: { tutorId, productId, studentId, priceId: price.id },
+    });
+
+    return intent;
+  }
 }

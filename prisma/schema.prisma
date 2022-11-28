@@ -11,35 +11,37 @@ datasource db {
 }
 
 model User {
-  id                       Int              @id @default(autoincrement())
+  id                       Int               @id @default(autoincrement())
   first_name               String
   last_name                String
-  email                    String           @unique
+  email                    String            @unique
   password                 String
-  profile_url              String           @default("")
+  profile_url              String            @default("")
   address_1                String
-  address_2                String           @default("")
+  address_2                String            @default("")
   phone                    String?
   country                  String
   postal_code              String
-  search_visibility        Boolean?         @default(false)
-  promotion_vital_educator Boolean?         @default(false)
-  promotion_third_parties  Boolean?         @default(false)
-  email_approved           Boolean?         @default(false)
-  email_token              String?          @unique
-  password_reset_token     Int?             @unique
-  createdAt                DateTime?        @default(now())
-  updatedAt                DateTime?        @updatedAt
-  role                     Role             @default(STUDENT)
+  search_visibility        Boolean?          @default(false)
+  promotion_vital_educator Boolean?          @default(false)
+  promotion_third_parties  Boolean?          @default(false)
+  email_approved           Boolean?          @default(false)
+  email_token              String?           @unique
+  password_reset_token     Int?              @unique
+  createdAt                DateTime?         @default(now())
+  updatedAt                DateTime?         @updatedAt
+  role                     Role              @default(STUDENT)
   tutor                    Tutor?
   student                  Student?
   notifications            Notification[]
-  block_status             Boolean          @default(false)
-  block_reason             String?          @default("")
-  flaggedMessagesReceived  FlaggedMessage[] @relation("SentTo")
-  flaggedMessagesSent      FlaggedMessage[] @relation("SentBy")
+  block_status             Boolean           @default(false)
+  block_reason             String?           @default("")
+  flaggedMessagesReceived  FlaggedMessage[]  @relation("SentTo")
+  flaggedMessagesSent      FlaggedMessage[]  @relation("SentBy")
   subscription             Subscription?
-  subscriptionId           Int?             @unique
+  subscriptionId           Int?              @unique
+  StudentPayment           StudentPayment?
+  purchases                StudentPurchase[]
 }
 
 model whitelist {
@@ -103,6 +105,37 @@ enum StripePlan {
 enum SubscriptionStatus {
   ACTIVE
   INACTIVE
+}
+
+model StudentPayment {
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int               @unique
+  customerId String            @default("")
+  credits    Int               @default(0)
+  purchases  StudentPurchase[]
+}
+
+enum PurchaseMethod {
+  Credit
+  Stripe
+}
+
+enum PurchaseStatus {
+  Active
+  Deleted
+  Suspended
+}
+
+model StudentPurchase {
+  id        Int            @id @default(autoincrement())
+  tutor     User           @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId   Int
+  user      StudentPayment @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId    Int
+  method    PurchaseMethod
+  status    PurchaseStatus @default(Active)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @default(now())
 }
 
 model Subscription {

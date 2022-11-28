@@ -126,8 +126,11 @@ export class UsersController {
         console.warn('Parsing failed for "limit"', offset);
       }
     }
+    const users = await this.usersService.findAll({ offset, limit, role, status });
+    console.log(users);
+
     return {
-      users: await this.usersService.findAll({ offset, limit, role, status }),
+      users: users,
       total: await this.usersService.getCount(role),
     };
   }

@@ -1,5 +1,42 @@
 import { Expose, Type } from 'class-transformer';
 
+export class ReturnSubsciptionDto {
+  @Expose()
+  id: number;
+  @Expose()
+  customerId: string;
+  @Expose()
+  plan: string;
+  @Expose()
+  subscriptionId: string;
+  @Expose()
+  status: 'ACTIVE' | 'INACTIVE';
+  @Expose()
+  userId: number;
+  @Expose()
+  paymentMethodId: string;
+  @Expose()
+  last4: string;
+  @Expose()
+  brand: string;
+  @Expose()
+  exp_month: number;
+  @Expose()
+  exp_year: number;
+  @Expose()
+  last_attempt_success: boolean;
+  @Expose()
+  started: number;
+  @Expose()
+  end: number;
+  @Expose()
+  cancelled: boolean;
+  @Expose()
+  createdAt: string;
+  @Expose()
+  updatedAt: string;
+}
+
 export class ReturnUserDto {
   @Expose()
   id: number;
@@ -55,6 +92,10 @@ export class ReturnUserDto {
 
   @Expose()
   updated_at: Date;
+
+  @Type(() => ReturnSubsciptionDto)
+  @Expose()
+  subscription: ReturnSubsciptionDto;
 }
 
 export class AllUsersDTO {

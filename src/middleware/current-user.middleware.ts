@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { TokenService } from 'src/token/token.service';
 import { UsersService } from 'src/users/users.service';
@@ -7,7 +7,7 @@ import { UsersService } from 'src/users/users.service';
 declare global {
   namespace Express {
     interface Request {
-      currentUser?: Prisma.UserCreateInput;
+      currentUser?: User;
     }
   }
 }

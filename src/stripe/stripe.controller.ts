@@ -1,6 +1,8 @@
 import { Controller, Post, RawBodyRequest, Req, Res } from '@nestjs/common';
+import { PurchaseMethod, PurchaseStatus } from '@prisma/client';
 import { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma-module/prisma.service';
+import { StudentsService } from 'src/students/students.service';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { UsersService } from 'src/users/users.service';
 import Stripe from 'stripe';
@@ -10,7 +12,7 @@ export const webhook_hosted_secret = 'whsec_APgLI5l355D9Po54pRW7CNG7vYUxJ0Cb';
 export const webhook_local_secret =
   'whsec_374059379c53dcebd242e9963b4c1cd34a0b1e85bf655d936ff49e9252988b81';
 
-export const webhook_secret = webhook_hosted_secret;
+export const webhook_secret = webhook_local_secret;
 
 @Controller('payments')
 export class StripeController {
@@ -163,6 +165,33 @@ export class StripeController {
           console.warn(er);
         }
         break;
+      case 'payment_intent.succeeded':
+        try {
+          const intent = dataObject as Stripe.PaymentIntent;
+
+          const metadata = intent.metadata as unknown as {
+            tutorId: string;
+            studentId: string;
+            productId: string;
+            priceId: string;
+          };
+          if (typeof intent.customer != 'string') throw new Error('customer is invalid');
+
+          const record = await this.prismaService.studentPayment.findFirst({
+            where: { customerId: intent.customer },
+          });
+          await this.prismaService.studentPurchase.create({
+            data: {
+              user: { connect: { userId: Number(record.userId) } },
+              method: PurchaseMethod.Stripe,
+              status: PurchaseStatus.Active,
+              tutor: { connect: { id: Number(metadata.tutorId) } },
+            },
+          });
+          console.log('Purchase ' + metadata.studentId + ' -> ' + metadata.tutorId);
+        } catch (er) {
+          console.warn(er);
+        }
     }
 
     res.status(200).json({ ok: true });

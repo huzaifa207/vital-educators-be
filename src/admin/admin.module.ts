@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from 'src/prisma-module/prisma.module';
+import { StudentsModule } from 'src/students/students.module';
 import { QualificationsModule } from 'src/tutors/qualifications/qualifications.module';
 import { RefereesModule } from 'src/tutors/referees/referees.module';
 import { SubjectOffersModule } from 'src/tutors/subject-offers/subject-offers.module';
@@ -9,7 +10,14 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 
 @Module({
-  imports: [PrismaModule, RefereesModule, QualificationsModule, SubjectOffersModule, TutorsModule],
+  imports: [
+    PrismaModule,
+    RefereesModule,
+    QualificationsModule,
+    SubjectOffersModule,
+    TutorsModule,
+    StudentsModule,
+  ],
   controllers: [AdminController],
   providers: [AdminService],
 })

@@ -14,6 +14,7 @@ import { emailRecovered } from 'src/mail-service/templates/email-recovered';
 import { emailSuspended } from 'src/mail-service/templates/email-suspended';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { StripeService } from 'src/stripe/stripe.service';
+import { StudentsService } from 'src/students/students.service';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { DocumentsService } from 'src/tutors/documents/documents.service';
 import { TutoringDetailsService } from 'src/tutors/tutoring-details/tutoring-details.service';
@@ -32,6 +33,7 @@ export class UsersService {
     private alertService: AlertsService,
     private tutorsService: TutorsService,
     private stripeService: StripeService,
+    private studentsService: StudentsService,
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
@@ -92,7 +94,15 @@ export class UsersService {
       } catch (error) {
         throw new BadRequestException("Couldn't create tutor");
       }
+    } else if (newUser.role == 'STUDENT') {
+      try {
+        await this.studentsService.createPaymentRecord(newUser.id);
+      } catch (er) {
+        console.warn(er);
+        throw new Error('Failed to create student sub records');
+      }
     }
+
     try {
       this.sendEmail(
         newUser.email,
@@ -349,6 +359,8 @@ export class UsersService {
   ) {
     try {
       // console.log('first 22');
+      const includes: Prisma.UserInclude =
+        queryOptions.role === 'TUTOR' ? { subscription: true } : {};
       return (
         this.prisma.user.findMany({
           skip: queryOptions.offset,
@@ -362,6 +374,7 @@ export class UsersService {
               ? {}
               : { block_status: queryOptions.status == 'BLOCKED' ? true : false }),
           },
+          include: includes,
         }) || []
       );
     } catch (error) {
