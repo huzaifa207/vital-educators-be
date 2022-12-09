@@ -4,6 +4,7 @@ import { FlaggedMessagesService } from 'src/flagged-messages/flagged-messages.se
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
 import { PrismaService } from 'src/prisma-module/prisma.service';
+import { StudentsService } from 'src/students/students.service';
 import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import { UsersService } from 'src/users/users.service';
 import { is_valid_msg, remove_bad_words } from 'src/utils/message_validation';
@@ -29,6 +30,7 @@ interface IConversation {
     lastName: string;
     email: string;
     profile_url: string;
+    subscribed: boolean;
   };
   message: TMessage[];
   status: string;
@@ -42,6 +44,7 @@ export class ConversationService {
     private mailService: MailService,
     private flaggedMessagesService: FlaggedMessagesService,
     private taskSchadularsService: TaskSchadularsService,
+    private studentService: StudentsService,
   ) {}
 
   async msgFromStudent(
@@ -53,9 +56,11 @@ export class ConversationService {
     const { error, valid } = is_valid_msg(msg);
 
     const sub = await this.prisma.subscription.findUnique({ where: { userId: tutorId } });
-    console.log('Sub status:', sub.status);
 
-    if (!valid && sub.status != 'ACTIVE') {
+    const hasPurchased = await this.studentService.hasPurchasedTutor(studentId, tutorId);
+    console.log('Sub status:', sub.status, 'has Purchased', hasPurchased);
+
+    if (!valid && sub.status !== 'ACTIVE' && hasPurchased === false) {
       this.flaggedMessagesService.create(studentId, tutorId, msg);
       return {
         status: CHAT_STATUS.ERROR,
@@ -143,8 +148,10 @@ export class ConversationService {
 
     const sub = await this.prisma.subscription.findUnique({ where: { userId: tutorId } });
 
+    const hasPurchased = await this.studentService.hasPurchasedTutor(studentId, tutorId);
+
     console.log('Sub status:', sub.status);
-    if (!valid && sub.status !== 'ACTIVE') {
+    if (!valid && sub.status !== 'ACTIVE' && hasPurchased === false) {
       this.flaggedMessagesService.create(tutorId, studentId, message);
       return {
         status: CHAT_STATUS.ERROR,
@@ -219,9 +226,20 @@ export class ConversationService {
           },
         });
 
-        const { first_name, last_name, email, profile_url } = await this.userService.findOne(
+        const { first_name, last_name, email, profile_url, role } = await this.userService.findOne(
           participantId,
         );
+        let subscribed = false;
+        if (role == 'TUTOR') {
+          try {
+            const d = await this.prisma.subscription.findUnique({
+              where: { userId: participantId },
+            });
+            if (d.status == 'ACTIVE') subscribed = true;
+          } catch (er) {
+            console.warn(er);
+          }
+        }
         conv = {
           participantId: participantId,
           participantData: {
@@ -229,6 +247,7 @@ export class ConversationService {
             lastName: last_name,
             email: email,
             profile_url,
+            subscribed: subscribed,
           },
           message: [],
           status,

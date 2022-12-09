@@ -1,11 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PurchaseStatus } from '@prisma/client';
+import { MailService } from 'src/mail-service/mail.service';
+import { emailFeePaid } from 'src/mail-service/templates/email-fee-paid';
+import { emailPurchase } from 'src/mail-service/templates/email-purchase';
 import { PrismaService } from 'src/prisma-module/prisma.service';
+import { ENV } from 'src/settings';
 import { StripeService } from 'src/stripe/stripe.service';
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly prisma: PrismaService, private stripe: StripeService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private stripe: StripeService,
+    private mailService: MailService,
+  ) {}
 
   // createStudentProfile(userId: number, profile: string) {
   //   try {
@@ -20,6 +28,84 @@ export class StudentsService {
   //     throw new BadRequestException(error);
   //   }
   // }
+
+  async closeDispute(disputeId: number, remarks: string, awardCredit: boolean) {
+    const student = await this.prisma.purchaseDispute.findUnique({
+      where: { id: disputeId },
+      include: { purchase: { select: { userId: true } } },
+    });
+
+    const studentId = student.purchase.userId;
+
+    if (awardCredit) {
+      console.log('>Awarding credit to ' + studentId);
+      await this.accumulateCredits(studentId, 1);
+    }
+    return await this.prisma.purchaseDispute.update({
+      where: { id: disputeId },
+      data: {
+        status: 'Closed',
+        closeDescription: remarks,
+      },
+    });
+  }
+
+  async hasPurchasedTutor(studentId: number, tutorId: number) {
+    let res = false;
+    try {
+      const d = await this.prisma.studentPurchase.findFirst({
+        where: { userId: studentId, tutorId: tutorId, status: 'Active' },
+      });
+      if (!d) throw new Error('nil result');
+      res = true;
+    } catch (er) {}
+    return res;
+  }
+
+  async fileDispute(purchaseId: number, description: string) {
+    console.log('Dispute:', purchaseId);
+    return await this.prisma.purchaseDispute.create({
+      data: {
+        purchase: { connect: { id: purchaseId } },
+        openDescription: description,
+        status: 'Open',
+      },
+    });
+  }
+  async getAllDisputes() {
+    return await this.prisma.purchaseDispute.findMany({
+      include: {
+        purchase: {
+          include: {
+            tutor: { select: { id: true, first_name: true, last_name: true, email: true } },
+            user: {
+              select: {
+                user: { select: { id: true, first_name: true, last_name: true, email: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getDisputes(studentId: number) {
+    return await this.prisma.purchaseDispute.findMany({
+      where: { purchase: { userId: studentId } },
+      include: {
+        purchase: {
+          include: {
+            tutor: { select: { id: true, first_name: true, last_name: true, email: true } },
+            user: {
+              select: {
+                user: { select: { id: true, first_name: true, last_name: true, email: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 
   async accumulateCredits(studentId: number, accumulator: number) {
     const r = await this.getStudentPaymentRecord(studentId);
@@ -81,6 +167,32 @@ export class StudentsService {
       throw new Error('already purchased');
     }
     await this.accumulateCredits(studentId, -1);
+
+    try {
+      const student = await this.prisma.user.findFirst({ where: { id: studentId } });
+      const tutor = await this.prisma.user.findFirst({ where: { id: tutorId } });
+      if (!student || !tutor) throw new Error('invalid ids');
+      this.mailService.sendMailSimple({
+        email: student.email,
+        emailContent: emailPurchase(
+          tutor.first_name + ' ' + tutor.last_name,
+          ENV['FRONTEND_URL'] + '/student/login',
+        ),
+        subject: 'Tutor Fee Paid',
+        text: 'Tutor fee has been paid.',
+      });
+      this.mailService.sendMailSimple({
+        email: tutor.email,
+        emailContent: emailFeePaid(
+          student.first_name + ' ' + student.last_name,
+          ENV['FRONTEND_URL'] + '/tutor/login',
+        ),
+        subject: 'Student paid tutor fee',
+        text: 'A student has paid tutor fee.',
+      });
+    } catch (er) {
+      console.warn(er);
+    }
 
     return await this.prisma.studentPurchase.create({
       data: {

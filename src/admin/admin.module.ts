@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AlertsModule } from 'src/alerts/alerts.module';
 import { PrismaModule } from 'src/prisma-module/prisma.module';
 import { StudentsModule } from 'src/students/students.module';
 import { QualificationsModule } from 'src/tutors/qualifications/qualifications.module';
@@ -17,6 +18,7 @@ import { AdminService } from './admin.service';
     SubjectOffersModule,
     TutorsModule,
     StudentsModule,
+    AlertsModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

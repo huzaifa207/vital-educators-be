@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { AlertsModule } from 'src/alerts/alerts.module';
 import { MailModule } from 'src/mail-service/mail.module';
 import { StripeModule } from 'src/stripe/stripe.module';
 import { StripeService } from 'src/stripe/stripe.service';
@@ -24,7 +25,6 @@ import { TutorsService } from './tutors.service';
     SubjectOffersModule,
     DocumentsModule,
     StripeModule,
-    MailModule,
   ],
   controllers: [
     TutorsController,

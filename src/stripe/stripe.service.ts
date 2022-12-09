@@ -29,7 +29,7 @@ export class StripeService {
   }
   async createSubscription(customerId: string) {
     // const customerId = 'cus_MnmJ5PEdMfapAz';
-    const priceId = 'price_1M4AZAFR1WytI4FHLmDFOwCz';
+    const priceId = 'price_1MD0X8FR1WytI4FHOkoEAnCn';
 
     const sub = await this.stripe.subscriptions.create({
       customer: customerId,

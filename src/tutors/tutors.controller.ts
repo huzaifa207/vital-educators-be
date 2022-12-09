@@ -8,6 +8,8 @@ import { TutorGuard } from 'src/guards/tutor.guard';
 import { DeleteKeys } from 'src/utils/helpers';
 import { UpdateTutorDto } from './dto/update-tutor.dto';
 import { TutorsService } from './tutors.service';
+import { ENV } from 'src/settings';
+import { MailService } from 'src/mail-service/mail.service';
 
 @Controller('tutor')
 export class TutorsController {

@@ -126,16 +126,33 @@ enum PurchaseStatus {
   Suspended
 }
 
+enum DisputeStatus {
+  Open
+  Closed
+}
+
+model PurchaseDispute {
+  id               Int             @id @default(autoincrement())
+  purchase         StudentPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  purchaseId       Int
+  status           DisputeStatus   @default(Open)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @default(now())
+  openDescription  String          @default("")
+  closeDescription String          @default("")
+}
+
 model StudentPurchase {
-  id        Int            @id @default(autoincrement())
-  tutor     User           @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId   Int
-  user      StudentPayment @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  userId    Int
-  method    PurchaseMethod
-  status    PurchaseStatus @default(Active)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @default(now())
+  id              Int               @id @default(autoincrement())
+  tutor           User              @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId         Int
+  user            StudentPayment    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId          Int
+  method          PurchaseMethod
+  status          PurchaseStatus    @default(Active)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now())
+  purchaseDispute PurchaseDispute[]
 }
 
 model Subscription {

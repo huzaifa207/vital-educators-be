@@ -1,11 +1,16 @@
 import { BadRequestException, Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
+import { AlertsService } from 'src/alerts/alerts.service';
 import { StudentsService } from './students.service';
+import { ENV } from 'src/settings';
 
 @Controller('students')
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) {}
+  constructor(
+    private readonly studentsService: StudentsService,
+    private alertService: AlertsService,
+  ) {}
 
   // @Post()
   // createStudentProfile(@Req() req: Request, @Body() profile: string) {
@@ -38,11 +43,46 @@ export class StudentsController {
       throw new BadRequestException(er.toString());
     }
   }
+  @Get('/disputes')
+  async getDisputes(@Req() req: Request) {
+    return await this.studentsService.getDisputes(req.currentUser.id);
+  }
+  @Post('/file-dispute')
+  async fileDispute(
+    @Body() body: { purchaseId: number; description: string },
+    @Req() req: Request,
+  ) {
+    try {
+      const r = await this.studentsService.fileDispute(body.purchaseId, body.description);
 
+      try {
+        this.alertService.create({
+          actionURL: `${ENV['FRONTEND_URL']}/admin/disputes`,
+          description: 'A student has filed a new dispute.',
+        });
+      } catch (er) {
+        console.warn(er);
+      }
+      return { id: r.id };
+    } catch (er) {
+      console.log('dispute failed');
+      console.warn(er);
+      throw new BadRequestException(er.toString());
+    }
+  }
   @Post('/credit-purchase')
   async creditPurchase(@Body() body: { tutorId: number }, @Req() req: Request) {
     try {
       const r = await this.studentsService.creditPurchase(req.currentUser.id, body.tutorId);
+
+      try {
+        this.alertService.create({
+          actionURL: `${ENV['FRONTEND_URL']}/admin/student-detail/` + r.userId,
+          description: 'A student has paid fee for the tutor through wallet.',
+        });
+      } catch (er) {
+        console.warn(er);
+      }
       return { id: r.id };
     } catch (er) {
       console.log('purchase failed');

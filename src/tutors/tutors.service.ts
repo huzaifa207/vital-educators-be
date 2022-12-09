@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApprovalStatus, Prisma, User } from '@prisma/client';
+import { AlertsService } from 'src/alerts/alerts.service';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { StripeService } from 'src/stripe/stripe.service';
 import { UsersService } from 'src/users/users.service';

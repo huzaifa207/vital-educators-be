@@ -23,6 +23,8 @@ import { SubjectOffersModule } from 'src/tutors/subject-offers/subject-offers.mo
 import { SubjectOffersService } from 'src/tutors/subject-offers/subject-offers.service';
 import { StudentsService } from 'src/students/students.service';
 import { Request } from 'express';
+import { ENV } from 'src/settings';
+import { AlertsService } from 'src/alerts/alerts.service';
 
 @Controller('/admin')
 export class AdminController {
@@ -31,6 +33,7 @@ export class AdminController {
     private readonly refereeService: RefereesService,
     private readonly adminService: AdminService,
     private readonly studentsService: StudentsService,
+    private alertsService: AlertsService,
   ) {}
   @UseGuards(AdminGuard)
   @Get('tutor/:tutorId')
@@ -56,6 +59,31 @@ export class AdminController {
     return {
       ok: true,
     };
+  }
+  @UseGuards(AdminGuard)
+  @Get('student/disputes')
+  async getStudentDisputes() {
+    return await this.studentsService.getAllDisputes();
+  }
+  @UseGuards(AdminGuard)
+  @Post('student/close-dispute')
+  async closeDispute(
+    @Req() req: Request,
+    @Body() body: { disputeId: number; description: string; awardCredit: boolean },
+  ) {
+    try {
+      this.alertsService.create({
+        actionURL: `${ENV['FRONTEND_URL']}/admin/disputes`,
+        description: 'Dispute has been marked as closed.',
+      });
+    } catch (er) {
+      console.warn(er);
+    }
+    return await this.studentsService.closeDispute(
+      body.disputeId,
+      body.description,
+      body.awardCredit,
+    );
   }
   @UseGuards(AdminGuard)
   @Post('tutor/:tutorId/reinstate-subscription')
@@ -98,7 +126,7 @@ export class AdminController {
   ) {
     try {
       const r = await this.studentsService.getStudentPaymentRecord(studentId);
-      const p = await this.studentsService.getPurchases(studentId);
+      const p = await this.studentsService.getPurchases(studentId, true);
       return { record: r, purchases: p };
     } catch (er) {
       console.log('fetch failed');
