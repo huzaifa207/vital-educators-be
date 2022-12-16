@@ -30,25 +30,22 @@ export class StripeController {
   ) {}
 
   @Post('/webhook')
-  async handleWebhook(
-    @Req() req: RawBodyRequest<Request>,
-    @Res({ passthrough: false }) res: Response,
-  ) {
-    let event;
+  async handleWebhook(@Req() req: Request, @Res({ passthrough: false }) res: Response) {
+    const event = req.body;
 
-    try {
-      event = this.stripeService
-        .getStripe()
-        .webhooks.constructEvent(
-          req.rawBody,
-          req.headers['stripe-signature'] as any,
-          webhook_secret,
-        );
-    } catch (er) {
-      console.warn(er);
-      res.status(400).json({ oK: false });
-      return;
-    }
+    // try {
+    //   event = this.stripeService
+    //     .getStripe()
+    //     .webhooks.constructEvent(
+    //       req.rawBody,
+    //       req.headers['stripe-signature'] as any,
+    //       webhook_secret,
+    //     );
+    // } catch (er) {
+    //   console.warn(er);
+    //   res.status(400).json({ oK: false });
+    //   return;
+    // }
 
     const dataObject: any = event.data.object;
     const hookType = event.type;
