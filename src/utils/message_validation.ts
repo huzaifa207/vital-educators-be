@@ -22,14 +22,14 @@ function is_valid_msg(msg: string): { valid: boolean; error: string } {
   if (is_email_detect().test(msg)) {
     return {
       valid: false,
-      error: 'Email is not allowed',
+      error: 'Sharing email is not allowed. Please pay to share contact details.',
     };
   }
 
   if (is_phone_detect().test(msg)) {
     return {
       valid: false,
-      error: 'Phone number is not allowed',
+      error: 'Sharing phone is not allowed. Please pay to share contact details.',
     };
   }
   return {
