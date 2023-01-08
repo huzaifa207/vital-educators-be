@@ -93,6 +93,9 @@ export class ReturnUserDto {
   @Expose()
   updated_at: Date;
 
+  @Expose()
+  subscribed: boolean;
+
   @Type(() => ReturnSubsciptionDto)
   @Expose()
   subscription: ReturnSubsciptionDto;

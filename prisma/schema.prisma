@@ -51,9 +51,10 @@ model whitelist {
 }
 
 model Student {
-  id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @unique
+  id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int        @unique
+  feedbacks Feedback[]
 }
 
 model Conversation {
@@ -95,6 +96,20 @@ model Tutor {
   is_government_document_approved    ApprovalStatus  @default(NOT_ADDED)
   is_qualification_document_approved ApprovalStatus  @default(NOT_ADDED)
   is_referee_approved                ApprovalStatus  @default(NOT_ADDED)
+  feedbacks                          Feedback[]
+}
+
+model Feedback {
+  id            Int       @id @default(autoincrement())
+  rating        Int
+  comment       String
+  comment_reply String    @default("")
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  Tutor         Tutor     @relation(fields: [tutorId], references: [id])
+  tutorId       Int
+  Student       Student   @relation(fields: [studentId], references: [id])
+  studentId     Int
 }
 
 enum StripePlan {

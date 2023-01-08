@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { TokenService } from 'src/token/token.service';
 import { UsersService } from 'src/users/users.service';

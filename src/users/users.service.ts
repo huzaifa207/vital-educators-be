@@ -128,7 +128,7 @@ export class UsersService {
   async login({ email, password, role }: { email: string; password: string; role: Role }) {
     try {
       const _role = role ? role : Role.TUTOR;
-      console.log('email = ', email);
+      console.log('email = ', email, password, role);
       const currentUser = await this.prisma.user.findFirst({
         where: {
           AND: [{ email }, { role: _role }],
@@ -149,7 +149,13 @@ export class UsersService {
         throw new BadRequestException('This account has been blocked.');
       }
 
-      return currentUser;
+      if (role == 'TUTOR') {
+        const d = await this.prisma.subscription.findUnique({
+          where: { userId: currentUser.id },
+        });
+        if (d.status == 'ACTIVE') return { ...currentUser, subscribed: true };
+      }
+      return { ...currentUser, subscribed: false };
     } catch (er) {
       console.warn(er);
       throw er;
@@ -158,9 +164,21 @@ export class UsersService {
 
   async findOne(id: number) {
     try {
-      return await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: { id },
       });
+
+      if (user.role == 'TUTOR') {
+        const d = await this.prisma.subscription.findUnique({
+          where: { userId: user.id },
+        });
+        if (d.status == 'ACTIVE') {
+          return { ...user, subscribed: true };
+        } else {
+          return { ...user, subscribed: false };
+        }
+      }
+      return { ...user };
     } catch (error) {
       throw new NotFoundException('User not found');
     }

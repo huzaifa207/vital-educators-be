@@ -14,6 +14,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatsModule } from './chats/chats.module';
 import { CloudinaryModule } from './cloudinay/cloudinay.module';
+import { FeedbackController } from './feedback/feedback.controller';
+import { FeedbackModule } from './feedback/feedback.module';
 import { FlaggedMessagesModule } from './flagged-messages/flagged-messages.module';
 import { MailModule } from './mail-service/mail.module';
 import { MediaController } from './media/media.controller';
@@ -26,7 +28,6 @@ import { StripeModule } from './stripe/stripe.module';
 import { StudentsController } from './students/students.controller';
 import { StudentsModule } from './students/students.module';
 import { TaskSchadularsModule } from './task-schadulars/task-schadulars.module';
-import { TaskSchadularsService } from './task-schadulars/task-schadulars.service';
 import { TokenModule } from './token/token.module';
 import { DocumentsController } from './tutors/documents/documents.controller';
 import { QualificationsController } from './tutors/qualifications/qualifications.controller';
@@ -61,6 +62,7 @@ import { UsersModule } from './users/users.module';
     NotificationModule,
     FlaggedMessagesModule,
     StripeModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [
@@ -106,6 +108,10 @@ export class AppModule {
         { path: 'media/:id', method: RequestMethod.GET },
         { path: 'file', method: RequestMethod.POST },
         { path: 'file/:key', method: RequestMethod.DELETE },
+        { path: 'feedback', method: RequestMethod.POST },
+        { path: 'feedback/request', method: RequestMethod.POST },
+        { path: 'feedback/reply', method: RequestMethod.PATCH },
+        { path: 'feedback/all/:id/:role', method: RequestMethod.GET },
 
         // 'notifications/user/(.+)',
         // 'notifications',
@@ -128,6 +134,7 @@ export class AppModule {
         NotificationController,
         AlertsController,
         StudentsController,
+        FeedbackController,
       );
   }
 }
