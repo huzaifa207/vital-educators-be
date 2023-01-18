@@ -4,8 +4,10 @@ import { Prisma } from '@prisma/client';
 import { CronJob } from 'cron';
 import { MailService } from 'src/mail-service/mail.service';
 import { EmailType, EmailUtility } from 'src/mail-service/mail.utils';
+import { reviewRequest } from 'src/mail-service/templates/review-request';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { TutorsService } from 'src/tutors/tutors.service';
+import Base64 from 'src/utils/base64';
 
 @Injectable()
 export class TaskSchadularsService {
@@ -100,6 +102,60 @@ export class TaskSchadularsService {
       stop: () => {
         this.schedulerRegistry.deleteCronJob(`${convId}`);
         tutorReplyJob.stop();
+      },
+    };
+  }
+
+  async sendEmailToStudentWhenStudentNotGiveFeedback({
+    tutorId,
+    tutorName,
+    studentId,
+    studentName,
+    studentEmail,
+  }: {
+    tutorId: number;
+    tutorName: string;
+    studentId: number;
+    studentName: string;
+    studentEmail: string;
+  }) {
+    const studentFeedback = new CronJob(CronExpression.EVERY_WEEK, async () => {
+      const isStudentGiveFeedback = await this.prisma.feedback.findFirst({
+        where: {
+          AND: [
+            {
+              tutorId: tutorId,
+            },
+            {
+              studentId: studentId,
+            },
+          ],
+        },
+      });
+
+      if (!isStudentGiveFeedback) {
+        this.mailService.sendMailSimple({
+          email: studentEmail,
+          text: `Tutor ${tutorName} request feedback from you`,
+          subject: 'Feedback request from tutor',
+          emailContent: reviewRequest({
+            tutorId: Base64().encode(tutorId),
+            tutorName: tutorName,
+            studentId: Base64().encode(studentId),
+            studentName: studentName,
+          }),
+        });
+      }
+    });
+
+    return {
+      start: () => {
+        this.schedulerRegistry.addCronJob(`${tutorId} - ${studentId}`, studentFeedback);
+        studentFeedback.start();
+      },
+      stop: () => {
+        this.schedulerRegistry.deleteCronJob(`${tutorId} - ${studentId}`);
+        studentFeedback.stop();
       },
     };
   }

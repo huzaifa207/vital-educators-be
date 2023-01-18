@@ -153,7 +153,7 @@ export const reviewTutorReplyToStudentReview = (tutorName: string, studentName: 
                                       line-height: 48px;
                                       text-align: center;
                                   ">
-                    Tutor Reply Your Feedback
+                    First Tutor
                   </h2>
                 </td>
               </tr>
@@ -186,7 +186,7 @@ export const reviewTutorReplyToStudentReview = (tutorName: string, studentName: 
                    Dear ${studentName},
                   </p>
                   <p style="margin: .5em 2em;text-align:left; font-weight:300; color:'#ccc'">
-                    I wanted to let you know that your tutor [Tutor's Name] has replied to your feedback. You can view their response by logging into your account and accessing the feedback section.
+                    I wanted to let you know that your tutor ${tutorName} has replied to your feedback. You can view their response by logging into your account and accessing the feedback section.
                   </p>
                   <p style="margin: 1em 2em; text-align:left;font-weight:300; color:'#ccc'">
                  If you have any further questions or concerns, please don't hesitate to reach out to us. We are here to support you and ensure that you have a positive learning experience.

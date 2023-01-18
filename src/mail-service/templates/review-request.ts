@@ -202,7 +202,7 @@ export const reviewRequest = ({
               If you are willing to provide a review, you can either send it to me via email or you can fill out a short survey by following the link below:
 
               </p>
-              <a href="https://vital-educators.vercel.app/tutor/${tutorId}?studentId=${studentId}" style="margin: 1em 2em; text-align:left;font-weight:300; color:'#ccc'">
+              <a href="https://vital-educators.vercel.app/tutor/${tutorId}?studentId=${studentId}" target="_blank" style="margin: 1em 2em; text-align:left;font-weight:300;text-decoration: underline; color:'#ccc'">
               https://vital-educators.vercel.app/tutor/${tutorId}?studentId=${studentId}
                 </a>
              
@@ -229,7 +229,7 @@ export const reviewRequest = ({
                     <table border="0" cellpadding="0" cellspacing="0">
                       <tr>
                         <td align="center" bgcolor="#2A2462" style="border-radius: 6px">
-                          <a href='' target="_blank" style="
+                          <a href='https://vital-educators.vercel.app/tutor/${tutorId}?studentId=${studentId}' target="_blank" style="
                                       display: inline-block;
                                       padding: 16px 36px;
                                       font-family: 'Source Sans Pro', Helvetica, Arial,

@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AlertsModule } from 'src/alerts/alerts.module';
 import { MailModule } from 'src/mail-service/mail.module';
-import { MailService } from 'src/mail-service/mail.service';
 import { StripeModule } from 'src/stripe/stripe.module';
 import { CurrentStudentMiddleware } from './middleware/current-student.middleware';
 import { StudentsController } from './students.controller';

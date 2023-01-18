@@ -4,13 +4,18 @@ import { reviewRequest } from 'src/mail-service/templates/review-request';
 import { studentReview } from 'src/mail-service/templates/review-student';
 import { reviewTutorReplyToStudentReview } from 'src/mail-service/templates/review-tutor-repy';
 import { PrismaService } from 'src/prisma-module/prisma.service';
+import { TaskSchadularsService } from 'src/task-schadulars/task-schadulars.service';
 import Base64 from 'src/utils/base64';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
 
 @Injectable()
 export class FeedbackService {
-  constructor(private prisma: PrismaService, private readonly mailService: MailService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly mailService: MailService,
+    private taskSchadularsService: TaskSchadularsService,
+  ) {}
 
   async create(createFeedbackDto: CreateFeedbackDto) {
     const { tutorId, studentId } = createFeedbackDto;
@@ -20,6 +25,15 @@ export class FeedbackService {
     });
 
     if (isTutorAndStudentBuySubscription) {
+      (
+        await this.taskSchadularsService.sendEmailToStudentWhenStudentNotGiveFeedback({
+          tutorId: tutor.id,
+          studentId: student.id,
+          tutorName: tutor.first_name + ' ' + tutor.last_name,
+          studentName: student.first_name + ' ' + student.last_name,
+          studentEmail: student.email,
+        })
+      ).stop();
       await this.prisma.feedback.create({
         data: {
           rating: createFeedbackDto.rating,
@@ -54,7 +68,7 @@ export class FeedbackService {
       },
     });
     if (feedback) {
-      if (feedback.comment) {
+      if (feedback.comment_reply) {
         throw new BadRequestException('Feedback already reply');
       }
       await this.prisma.feedback.update({
@@ -62,38 +76,46 @@ export class FeedbackService {
           id: feedbackId,
         },
         data: {
-          comment,
+          comment_reply: comment,
         },
       });
 
-      const student = await this.prisma.user.findUnique({
+      const student = await this.prisma.student.findUnique({
         where: {
           id: feedback.studentId,
         },
-        select: {
-          email: true,
-          first_name: true,
-          last_name: true,
+        include: {
+          user: {
+            select: {
+              email: true,
+              first_name: true,
+              last_name: true,
+            },
+          },
         },
       });
 
-      const tutor = await this.prisma.user.findUnique({
+      const tutor = await this.prisma.tutor.findUnique({
         where: {
           id: feedback.tutorId,
         },
-        select: {
-          first_name: true,
-          last_name: true,
+        include: {
+          user: {
+            select: {
+              first_name: true,
+              last_name: true,
+            },
+          },
         },
       });
 
       this.mailService.sendMailSimple({
-        email: student.email,
-        text: `Tutor ${tutor.first_name} ${tutor.last_name} reply your feedback`,
+        email: student.user.email,
+        text: `Tutor ${tutor.user.first_name} ${tutor.user.last_name} reply your feedback`,
         subject: 'Feedback reply from tutor',
         emailContent: reviewTutorReplyToStudentReview(
-          tutor.first_name + ' ' + tutor.last_name,
-          student.first_name + ' ' + student.last_name,
+          tutor.user.first_name + ' ' + tutor.user.last_name,
+          student.user.first_name + ' ' + student.user.last_name,
         ),
       });
     } else {
@@ -121,6 +143,15 @@ export class FeedbackService {
         },
       });
       if (feedback.length === 0) {
+        (
+          await this.taskSchadularsService.sendEmailToStudentWhenStudentNotGiveFeedback({
+            tutorId: tutor.id,
+            studentId: student.id,
+            tutorName: tutor.first_name + ' ' + tutor.last_name,
+            studentName: student.first_name + ' ' + student.last_name,
+            studentEmail: student.email,
+          })
+        ).start();
         console.log('send mail');
         this.mailService.sendMailSimple({
           email: student.email,
@@ -163,11 +194,15 @@ export class FeedbackService {
         where: {
           tutorId: user.tutor.id,
         },
+        orderBy: {
+          updatedAt: 'desc',
+        },
       });
       const feedBackwithStudent = await Promise.all(
         feedback.map(async (item) => {
           const student = await this.prisma.student.findUnique({
             where: { id: item.studentId },
+
             include: {
               user: {
                 select: {
@@ -200,6 +235,9 @@ export class FeedbackService {
       const feedbacks = await this.prisma.feedback.findMany({
         where: {
           studentId: user.student.id,
+        },
+        orderBy: {
+          updatedAt: 'desc',
         },
       });
       const feedBackwithTutor = await Promise.all(
