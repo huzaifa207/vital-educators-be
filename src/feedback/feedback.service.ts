@@ -280,7 +280,7 @@ export class FeedbackService {
     return `This action removes a #${id} feedback`;
   }
   async helper({ tutorId, studentId }: { tutorId: number; studentId: number }) {
-    console.log({ tutorId, studentId });
+    // console.log({ tutorId, studentId });
     // const users = await this.prisma.user.findMany({
     //   where: {
     //     OR: [

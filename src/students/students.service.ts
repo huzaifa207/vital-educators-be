@@ -38,7 +38,7 @@ export class StudentsService {
     const studentId = student.purchase.userId;
 
     if (awardCredit) {
-      console.log('>Awarding credit to ' + studentId);
+      // console.log('>Awarding credit to ' + studentId);
       await this.accumulateCredits(studentId, 1);
     }
     return await this.prisma.purchaseDispute.update({
@@ -63,7 +63,7 @@ export class StudentsService {
   }
 
   async fileDispute(purchaseId: number, description: string) {
-    console.log('Dispute:', purchaseId);
+    // console.log('Dispute:', purchaseId);
     return await this.prisma.purchaseDispute.create({
       data: {
         purchase: { connect: { id: purchaseId } },

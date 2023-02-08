@@ -76,7 +76,7 @@ export class ChatsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     //---------------- GET CHAT LIST ----------------
     const data = await this.conversationService.getChat(id);
-    console.log('all data = ', JSON.stringify(data));
+    // console.log('all data = ', JSON.stringify(data));
     client.emit('receiveMsg', data);
 
     // Data arragnemnt

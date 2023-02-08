@@ -359,6 +359,49 @@ export class TutorsService {
     }
   }
 
+  async getPendingStudents(userId: number) {
+    try {
+      const tutorIdRes = await this.prisma.user.findFirst({
+        where: {
+          id: Number(userId),
+        },
+        select: {
+          tutor: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      const pendingStudents = await this.prisma.conversation.findMany({
+        where: {
+          AND: [
+            {
+              tutorId: tutorIdRes.tutor.id,
+            },
+            {
+              status: 'PENDING',
+            },
+          ],
+        },
+        select: {
+          studentId: true,
+        },
+      });
+
+      return { studentIds: [...new Set(pendingStudents.map((s) => s.studentId))] };
+    } catch (error) {
+      console.log(error);
+      if (error.message === 'Student not found') {
+        throw new NotFoundException('Student not found');
+      }
+      if (error.message === 'Conversation not found') {
+        throw new NotFoundException('Conversation not found');
+      }
+    }
+  }
+
   async tutorStats(tutorId: number) {
     return {
       tutor: await this.findOneTutor(tutorId),
