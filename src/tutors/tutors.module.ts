@@ -1,8 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { AlertsModule } from 'src/alerts/alerts.module';
-import { MailModule } from 'src/mail-service/mail.module';
 import { StripeModule } from 'src/stripe/stripe.module';
-import { StripeService } from 'src/stripe/stripe.service';
 import { DocumentsController } from './documents/documents.controller';
 import { DocumentsModule } from './documents/documents.module';
 import { CurrentTutorMiddleware } from './middleware/current-tutor.middleware';
@@ -43,6 +40,7 @@ export class TutorsModule {
       .apply(CurrentTutorMiddleware)
       .exclude({ path: 'tutoring-detail/:id', method: RequestMethod.GET })
       .exclude({ path: 'referee/review/:token', method: RequestMethod.POST })
+      .exclude({ path: 'approve-student', method: RequestMethod.PATCH })
       .forRoutes(
         RefereesController,
         QualificationsController,

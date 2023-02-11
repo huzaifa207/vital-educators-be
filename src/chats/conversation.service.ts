@@ -25,6 +25,7 @@ type TMessage = {
 };
 interface IConversation {
   participantId: number;
+  conversationId: number;
   participantData: {
     firstName: string;
     lastName: string;
@@ -188,6 +189,7 @@ export class ConversationService {
     ) {
       return {
         status: CHAT_STATUS.APPROVED,
+        conversationId: conversation.id,
         data: await this.createChat({
           senderId: tutorId,
           receiverId: studentId,
@@ -217,7 +219,7 @@ export class ConversationService {
         conv = conversations[ind];
       } else {
         // create conv
-        const { status } = await this.prisma.conversation.findFirst({
+        const { status, id } = await this.prisma.conversation.findFirst({
           where: {
             AND: [
               { OR: [{ studentId: clientId }, { studentId: participantId }] },
@@ -242,6 +244,7 @@ export class ConversationService {
         }
         conv = {
           participantId: participantId,
+          conversationId: id,
           participantData: {
             firstName: first_name,
             lastName: last_name,

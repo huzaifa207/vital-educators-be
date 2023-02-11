@@ -1,9 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApprovalStatus, Prisma, User } from '@prisma/client';
-import { AlertsService } from 'src/alerts/alerts.service';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { StripeService } from 'src/stripe/stripe.service';
-import { UsersService } from 'src/users/users.service';
 import { DeleteKeys, PickKeys } from 'src/utils/helpers';
 import { PaginationOptions } from 'src/utils/types';
 
@@ -318,6 +316,46 @@ export class TutorsService {
     } catch (error) {
       console.log(error);
       throw new NotFoundException('tutors not found');
+    }
+  }
+
+  async approveStudent(tutorId: number, studentId: number) {
+    try {
+      const tutorIdRes = await this.prisma.tutor.findFirst({
+        where: {
+          userId: tutorId,
+        },
+      });
+      try {
+        await this.prisma.conversation.updateMany({
+          where: {
+            AND: [
+              {
+                studentId,
+              },
+              {
+                tutorId: tutorIdRes.id,
+              },
+            ],
+          },
+          data: {
+            status: 'APPROVED',
+          },
+        });
+        return {
+          message: 'Student approved',
+        };
+      } catch (err) {
+        console.log(err);
+        throw new NotFoundException('Conversation not found');
+      }
+    } catch (error) {
+      if (error.message === 'Student not found') {
+        throw new NotFoundException('Student not found');
+      }
+      if (error.message === 'Conversation not found') {
+        throw new NotFoundException('Conversation not found');
+      }
     }
   }
 

@@ -1,15 +1,24 @@
-import { DefaultValuePipe, InternalServerErrorException, Post } from '@nestjs/common';
-import { ParseIntPipe } from '@nestjs/common';
-import { Body, Controller, Delete, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Delete,
+  Get,
+  InternalServerErrorException,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 import { AdminGuard } from 'src/guards/admin.guard';
 import { TutorGuard } from 'src/guards/tutor.guard';
 import { DeleteKeys } from 'src/utils/helpers';
-import { UpdateTutorDto } from './dto/update-tutor.dto';
 import { TutorsService } from './tutors.service';
-import { ENV } from 'src/settings';
-import { MailService } from 'src/mail-service/mail.service';
 
 @Controller('tutor')
 export class TutorsController {
@@ -110,6 +119,17 @@ export class TutorsController {
 
     try {
       await this.tutorsService.reinstateSubscription(id);
+      return { ok: true };
+    } catch (er) {
+      console.warn(er);
+      return new InternalServerErrorException();
+    }
+  }
+
+  @Patch('approve-student')
+  async approveStudent(@Body() { tutorId, studentId }: { tutorId: number; studentId: number }) {
+    try {
+      await this.tutorsService.approveStudent(tutorId, studentId);
       return { ok: true };
     } catch (er) {
       console.warn(er);

@@ -99,6 +99,7 @@ export class AppModule {
         { path: 'tutor/filter', method: RequestMethod.GET },
         { path: 'tutor/profile/:id', method: RequestMethod.GET },
         { path: 'tutor/pending', method: RequestMethod.GET },
+        { path: 'tutor/approve-student', method: RequestMethod.PATCH },
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },

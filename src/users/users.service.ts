@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotAcceptableException,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
 import { randomBytes, scrypt as _script } from 'crypto';
@@ -37,16 +37,17 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
-    const userAlreadyExists =
-      ((await this.prisma.user.findUnique({
+    try {
+      const userAlreadyExists = await this.prisma.user.findUnique({
         where: { email: createUserDto.email },
-      })) &&
-        'Email aready exist') ||
-      '';
-
-    if (userAlreadyExists) {
-      throw new NotAcceptableException(userAlreadyExists);
+      });
+      if (userAlreadyExists) {
+        throw new NotAcceptableException('User already exists');
+      }
+    } catch (error) {
+      throw new BadRequestException(error);
     }
+
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
