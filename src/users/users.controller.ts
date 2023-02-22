@@ -58,7 +58,7 @@ export class UsersController {
     },
     @Res({ passthrough: true }) response: Response,
   ) {
-    console.log(loginUserDto);
+    // console.log(loginUserDto);
     const user = await this.usersService.login(loginUserDto);
     const jwt = await this.tokenService.generateNewToken(user.id);
     response.cookie('jwt', jwt, {
@@ -127,7 +127,7 @@ export class UsersController {
       }
     }
     const users = await this.usersService.findAll({ offset, limit, role, status });
-    console.log(users);
+    // console.log(users);
 
     return {
       users: users,

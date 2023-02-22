@@ -23,20 +23,18 @@ const handleMessage = ({ event, msg, id }) => {
       data: { msg, receiverId: id },
     },
     (resp) => {
-      console.log('ACK', resp);
+      // console.log('ACK', resp);
     },
   );
 };
 
 socket.on('reveiveMsgFromTutor', (data) => {
-  console.log('data', data);
   const { msg } = data;
   const receiveMsgFromTutor = document.getElementById('receiveMsgFromTutor');
   receiveMsgFromTutor.innerHTML = `<p>${msg}</p>`;
 });
 
 socket.on('reveiveMsgFromStudent', (data) => {
-  console.log('data', data);
   const { msg } = data;
   const receiveMsgFromStudent = document.getElementById('receiveMsgFromStudent');
   receiveMsgFromStudent.innerHTML = `<p>${msg}</p>`;

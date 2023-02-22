@@ -52,7 +52,7 @@ export class StudentsController {
     @Body() body: { purchaseId: number; description: string },
     @Req() req: Request,
   ) {
-    console.log('>PurchaseId:', body.purchaseId);
+    // console.log('>PurchaseId:', body.purchaseId);
     try {
       const r = await this.studentsService.fileDispute(body.purchaseId, body.description);
 

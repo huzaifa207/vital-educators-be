@@ -126,6 +126,14 @@ export class TutorsController {
     }
   }
 
+  @Get('pending-students/:tutorId')
+  async getPendingStudents(
+    @Param('tutorId')
+    tutorId: number,
+  ) {
+    return await this.tutorsService.getPendingStudents(tutorId);
+  }
+
   @Patch('approve-student')
   async approveStudent(@Body() { tutorId, studentId }: { tutorId: number; studentId: number }) {
     try {

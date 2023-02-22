@@ -59,7 +59,7 @@ export class ConversationService {
     const sub = await this.prisma.subscription.findUnique({ where: { userId: tutorId } });
 
     const hasPurchased = await this.studentService.hasPurchasedTutor(studentId, tutorId);
-    console.log('Sub status:', sub.status, 'has Purchased', hasPurchased);
+    // console.log('Sub status:', sub.status, 'has Purchased', hasPurchased);
 
     if (!valid && sub.status !== 'ACTIVE' && hasPurchased === false) {
       this.flaggedMessagesService.create(studentId, tutorId, msg);
@@ -151,7 +151,7 @@ export class ConversationService {
 
     const hasPurchased = await this.studentService.hasPurchasedTutor(studentId, tutorId);
 
-    console.log('Sub status:', sub.status);
+    // console.log('Sub status:', sub.status);
     if (!valid && sub.status !== 'ACTIVE' && hasPurchased === false) {
       this.flaggedMessagesService.create(tutorId, studentId, message);
       return {

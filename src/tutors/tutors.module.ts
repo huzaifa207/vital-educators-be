@@ -41,6 +41,7 @@ export class TutorsModule {
       .exclude({ path: 'tutoring-detail/:id', method: RequestMethod.GET })
       .exclude({ path: 'referee/review/:token', method: RequestMethod.POST })
       .exclude({ path: 'approve-student', method: RequestMethod.PATCH })
+      .exclude({ path: 'pending-students/:tutorId', method: RequestMethod.GET })
       .forRoutes(
         RefereesController,
         QualificationsController,

@@ -50,7 +50,7 @@ export class StripeController {
     const dataObject: any = event.data.object;
     const hookType = event.type;
 
-    console.log('Hook Type:', hookType);
+    // console.log('Hook Type:', hookType);
 
     switch (hookType) {
       case 'customer.subscription.created':
@@ -74,7 +74,7 @@ export class StripeController {
         }
       case 'customer.subscription.updated':
         try {
-          console.log(dataObject);
+          // console.log(dataObject);
           const subId = dataObject.id;
           const customerId = dataObject.customer;
           const pmId = dataObject.default_payment_method;
@@ -85,13 +85,13 @@ export class StripeController {
           const subStatus: Stripe.Subscription['status'] = dataObject.status;
           const cancelled = dataObject.cancel_at_period_end;
 
-          console.log(
-            'SUB ID:' + subId,
-            'customerId:' + customerId,
-            'status: ' + subStatus,
-            'cancel at end:',
-            cancelled,
-          );
+          // console.log(
+          //   'SUB ID:' + subId,
+          //   'customerId:' + customerId,
+          //   'status: ' + subStatus,
+          //   'cancel at end:',
+          //   cancelled,
+          // );
 
           const sub = await this.tutorService.getSubscriptionByCustomerId(customerId);
           if (!sub) {
@@ -127,7 +127,7 @@ export class StripeController {
                     exp_year: card.exp_year,
                   },
                 });
-                console.log('Updated pmId:', pm.id);
+                // console.log('Updated pmId:', pm.id);
               }
             } catch (er) {
               console.warn(er);
@@ -167,7 +167,7 @@ export class StripeController {
         break;
       case 'customer.updated':
         try {
-          console.log(dataObject);
+          // console.log(dataObject);
 
           const customerId = dataObject.id;
           const paymentMethodId = dataObject.invoice_settings.default_payment_method;
@@ -262,7 +262,7 @@ export class StripeController {
             console.warn(er);
           }
 
-          console.log('Purchase ' + metadata.studentId + ' -> ' + metadata.tutorId);
+          // console.log('Purchase ' + metadata.studentId + ' -> ' + metadata.tutorId);
         } catch (er) {
           console.warn(er);
         }
