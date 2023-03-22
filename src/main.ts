@@ -31,7 +31,11 @@ async function bootstrap() {
 
   app.enableCors({
     credentials: true,
-    origin: ['https://localhost:3000', 'https://vital-educators.vercel.app'],
+    origin: [
+      'https://localhost:3000',
+      'https://vital-educators.vercel.app',
+      'https://www.vitaleducators.com',
+    ],
   });
 
   app.use(cookieParser());
