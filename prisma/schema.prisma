@@ -305,6 +305,16 @@ model FlaggedMessage {
   isArchived Boolean?  @default(false)
 }
 
+model Resources {
+  id      Int    @id @default(autoincrement())
+  subject String
+  level   String
+  type    String
+  title   String
+  link    String
+  slug    String
+}
+
 enum NotificationTargetType {
   GLOBAL
   USER

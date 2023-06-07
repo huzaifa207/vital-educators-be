@@ -24,6 +24,8 @@ import { CurrentUserMiddleware } from './middleware/current-user.middleware';
 import { NotificationController } from './notifications/notifications.controller';
 import { NotificationModule } from './notifications/notifications.module';
 import { PrismaModule } from './prisma-module/prisma.module';
+import { ResourcesController } from './resources/resources.controller';
+import { ResourcesModule } from './resources/resources.module';
 import { StripeModule } from './stripe/stripe.module';
 import { StudentsController } from './students/students.controller';
 import { StudentsModule } from './students/students.module';
@@ -63,6 +65,7 @@ import { UsersModule } from './users/users.module';
     FlaggedMessagesModule,
     StripeModule,
     FeedbackModule,
+    ResourcesModule,
   ],
   controllers: [AppController],
   providers: [
@@ -115,6 +118,12 @@ export class AppModule {
         { path: 'feedback/reply', method: RequestMethod.PATCH },
         { path: 'feedback/all/:id/:role', method: RequestMethod.GET },
 
+        { path: 'resources', method: RequestMethod.POST },
+        { path: 'resources', method: RequestMethod.GET },
+        { path: 'resources/admin', method: RequestMethod.GET },
+        { path: 'resources/request-link', method: RequestMethod.POST },
+        { path: 'resources/:id', method: RequestMethod.DELETE },
+        { path: 'resources/:id', method: RequestMethod.PATCH },
         // 'notifications/user/(.+)',
         // 'notifications',
         // 'notifications/global',
@@ -137,6 +146,7 @@ export class AppModule {
         AlertsController,
         StudentsController,
         FeedbackController,
+        ResourcesController,
       );
   }
 }
