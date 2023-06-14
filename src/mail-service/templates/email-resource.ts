@@ -1,4 +1,4 @@
-export const resourceLinkTemplate = (url: string) => {
+export const resourceLinkTemplate = (url: string, subject: string) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -235,7 +235,7 @@ export const resourceLinkTemplate = (url: string) => {
                     "
                   >
                     <p style="margin: 0">
-                      Hi there, You have requested for a resource link. Please click on the button below to access the resource.
+                      Hi there, You have requested for a resource link of subject ${subject}. Please click on the button below to access the resource.
                     </p>
                   </td>
                 </tr>

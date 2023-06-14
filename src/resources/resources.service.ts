@@ -28,6 +28,7 @@ export class ResourcesService {
 
       select: {
         link: true,
+        subject: true,
       },
     });
     if (!resourceLink) return;
@@ -35,7 +36,7 @@ export class ResourcesService {
     try {
       this.mailService.sendMailSimple({
         email: email,
-        emailContent: resourceLinkTemplate(resourceLink.link),
+        emailContent: resourceLinkTemplate(resourceLink.link, resourceLink.subject),
         subject: 'Resource Link',
         text: `Click here to access the resource ${resourceLink.link}`,
       });
