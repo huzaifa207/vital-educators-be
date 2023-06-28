@@ -1,23 +1,33 @@
-import { Controller, Delete, Get, Param, Post, Req, Res } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Query, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { FileService } from './file.service';
 
+export type TFileType = 'RESOURCE' | 'DOCUMENT' | 'MEDIA';
+
 @Controller('file')
 export class FileUploadController {
   constructor(private readonly fileService: FileService, private prisma: PrismaService) {}
-  @Post()
-  async create(@Req() request: Request, @Res() response: Response) {
+  @Post('/:mediaType')
+  async create(
+    @Param('mediaType') mediaType: TFileType,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
     try {
-      await this.fileService.fileupload(request, response);
+      if (mediaType === 'RESOURCE') {
+        await this.fileService.resourceUpload(request, response);
+      } else {
+        await this.fileService.fileUpload(request, response, mediaType);
+      }
     } catch (error) {
       return response.status(500).json(`Failed to upload image file: ${error.message}`);
     }
   }
 
-  @Get('/:id')
-  async get(@Param('id') id: number) {
-    return await this.fileService.getMedia(id);
+  @Get('/url')
+  async get(@Query('key') key: string) {
+    return await this.fileService.getFileUrl(key);
   }
 
   @Delete(':key')

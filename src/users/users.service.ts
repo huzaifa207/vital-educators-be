@@ -2,10 +2,10 @@ import {
   BadRequestException,
   Injectable,
   NotAcceptableException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
-import { randomBytes, scrypt as _script } from 'crypto';
+import { scrypt as _script, randomBytes } from 'crypto';
 import { nanoid } from 'nanoid';
 import { AlertsService } from 'src/alerts/alerts.service';
 import { MailService } from 'src/mail-service/mail.service';
@@ -47,7 +47,6 @@ export class UsersService {
     } catch (error) {
       throw new BadRequestException(error);
     }
-
 
     const hashPassowrd = await this.passHashGenerator(createUserDto.password);
     const emailToken = nanoid(12);
