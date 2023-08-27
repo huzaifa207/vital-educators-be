@@ -8,6 +8,10 @@ export type TFileType = 'RESOURCE' | 'DOCUMENT' | 'MEDIA';
 @Controller('file')
 export class FileUploadController {
   constructor(private readonly fileService: FileService, private prisma: PrismaService) {}
+
+  // ***** Need User Authenticatoin ****
+  // ***** User must have logged as ADMIN, TUTOR OR STUDENT ****
+
   @Post('/:mediaType')
   async create(
     @Param('mediaType') mediaType: TFileType,

@@ -25,7 +25,7 @@ export class ResourcesController {
       transformedData[subj] = resources
         .filter((item) => item.subject === subj)
         .reduce((result, item) => {
-          const { level, type, title, id, fileType, resourceS3Key, link } = item;
+          const { level, type, title, id, fileType, resourceS3Key, link } = item as any;
           if (!result[level]) {
             result[level] = {};
           }
