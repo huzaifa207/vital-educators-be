@@ -40,41 +40,32 @@ export class FileService {
       return res.status(500).json(`Failed to upload image file: ${error}`);
     }
   }
-
   async uploadFileToS3(
     @Req() req: Request,
     @Res() res: Response,
     key: string,
     mediaType: TFileType,
   ) {
-    try {
-      return this.upload(key)(req, res, function (error: any) {
-        if (error) {
-          console.log(error);
-          return res.status(404).json(`Failed to upload image file: ${error}`);
-        }
-        const file = req.files[0];
-        new Promise(async function (resolve, reject) {
-          await this.prisma.media.create({
-            data: {
-              key: file.key,
-              type: mediaType,
-            },
-          });
-          const url = await this.getFileUrl(file.key);
-          console.log('url = ', url);
-          resolve(file.location);
-        });
+    return this.upload(key)(req, res, async (error: any) => {
+      if (error) {
+        console.log(error);
+        throw new BadRequestException(`Failed to upload file: ${error.message}`);
+      }
 
-        return res.status(201).json({
-          url: file.location,
+      const file = req.files[0];
+
+      await this.prisma.media.create({
+        data: {
           key: file.key,
-        });
+          fileType: mediaType,
+        },
       });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(`Failed to upload image file: ${error}`);
-    }
+
+      return res.status(201).json({
+        url: file.location,
+        key: file.key,
+      });
+    });
   }
 
   async getFileUrl(key: string) {
@@ -85,7 +76,6 @@ export class FileService {
         Key: key,
         Expires: 60 * 60 * 24 * 7,
       });
-      console.log('url = ', url);
       return url;
     } catch (error) {
       console.log(error);
