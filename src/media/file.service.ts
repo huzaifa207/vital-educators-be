@@ -52,19 +52,24 @@ export class FileService {
         throw new BadRequestException(`Failed to upload file: ${error.message}`);
       }
 
-      const file = req.files[0];
+      try {
+        const file = req.files[0];
 
-      await this.prisma.media.create({
-        data: {
+        await this.prisma.media.create({
+          data: {
+            key: file.key,
+            fileType: mediaType,
+          },
+        });
+
+        return res.status(201).json({
+          url: file.location,
           key: file.key,
-          fileType: mediaType,
-        },
-      });
-
-      return res.status(201).json({
-        url: file.location,
-        key: file.key,
-      });
+        });
+      } catch (error) {
+        console.log(error);
+        return error;
+      }
     });
   }
 
