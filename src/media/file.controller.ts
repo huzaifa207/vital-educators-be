@@ -17,10 +17,11 @@ export class FileUploadController {
     @Param('mediaType') mediaType: TFileType,
     @Req() request: Request,
     @Res() response: Response,
+    @Query('key') key: string
   ) {
     try {
       if (mediaType === 'RESOURCE') {
-        await this.fileService.resourceUpload(request, response);
+        await this.fileService.resourceUpload(request, response, key);
       } else {
         await this.fileService.fileUpload(request, response, mediaType);
       }

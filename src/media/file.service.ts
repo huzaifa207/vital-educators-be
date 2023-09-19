@@ -27,14 +27,9 @@ export class FileService {
     }
   }
 
-  async resourceUpload(@Req() req: Request, @Res() res: Response) {
+  async resourceUpload(@Req() req: Request, @Res() res: Response, key: string) {
     try {
-      const lastPdfIdx = await this.prisma.media.findFirst({
-        where: { fileType: 'RESOURCE' },
-        orderBy: { id: 'desc' },
-      });
-      const newPdfIdx = lastPdfIdx ? lastPdfIdx.id + 1 : 1;
-      return await this.uploadFileToS3(req, res, `resources/${newPdfIdx}`, 'RESOURCE');
+      return await this.uploadFileToS3(req, res, `resources/${key}`, 'RESOURCE');
     } catch (error) {
       console.log(error);
       return res.status(500).json(`Failed to upload image file: ${error}`);
@@ -99,7 +94,7 @@ export class FileService {
           cb(null, { fileType, fieldName: file.fieldname });
         },
         key: function (_, file, cb) {
-          cb(null, `${prePath}/${file.originalname}`);
+          cb(null, `${prePath}/${Date.now()}-${file.originalname}`);
         },
       }),
     }).array('file', 1);
