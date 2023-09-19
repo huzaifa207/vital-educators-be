@@ -310,6 +310,7 @@ model Resources {
   subject       String
   level         String
   type          String
+  revisionType  String?
   title         String
   link          String?
   resourceS3Key String?
