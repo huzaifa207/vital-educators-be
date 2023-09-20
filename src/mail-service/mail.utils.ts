@@ -82,7 +82,7 @@ export class EmailUtility extends GenericMail {
       const emailTemp = this.templates[EmailType.CONFIRM_EMAIL];
       return emailTemp({
         name: this.data.name,
-        url: `https://vital-educator.herokuapp.com/user/confirm-email/${this.data.token as string}`,
+        url: `https://api.vitaleducators.com/user/confirm-email/${this.data.token as string}`,
       });
     }
 

@@ -184,7 +184,7 @@ export class UsersController {
       res.header('Location', URL);
       res.statusCode = 301;
       res.end();
-    }
+    } else res.send('Email could not be approved')
   }
 
   @Serializer(ReturnUserDto)
