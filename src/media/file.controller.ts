@@ -19,6 +19,7 @@ export class FileUploadController {
     @Res() response: Response,
     @Query('key') key: string
   ) {
+    if(!key) return response.status(500).json('key was not provided');
     try {
       if (mediaType === 'RESOURCE') {
         await this.fileService.resourceUpload(request, response, key);
