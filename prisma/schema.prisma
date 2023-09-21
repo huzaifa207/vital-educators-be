@@ -263,10 +263,10 @@ model Documents {
 }
 
 model Media {
-  id   Int    @id @default(autoincrement())
-  url  String
-  key  String
-  type String
+  id       Int      @id @default(autoincrement())
+  key      String
+  link     String?
+  fileType FileType @default(MEDIA)
 }
 
 model Alert {
@@ -306,13 +306,22 @@ model FlaggedMessage {
 }
 
 model Resources {
-  id      Int    @id @default(autoincrement())
-  subject String
-  level   String
-  type    String
-  title   String
-  link    String
-  slug    String
+  id            Int     @id @default(autoincrement())
+  subject       String
+  level         String
+  type          String
+  revisionType  String?
+  title         String
+  link          String?
+  resourceS3Key String?
+  fileType      String  @default("URL")
+  slug          String
+}
+
+enum FileType {
+  RESOURCE
+  DOCUMENT
+  MEDIA
 }
 
 enum NotificationTargetType {
