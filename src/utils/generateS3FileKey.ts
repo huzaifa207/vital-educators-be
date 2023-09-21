@@ -14,7 +14,7 @@ const FileKey = (data: IFileKey) => {
   if (role === 'ADMIN') {
     return `${role}/${mediaType}/` + `${Date.now().toString()}-${fileName}`;
   } else {
-    return `${role}/${id}_${first_name}/${mediaType}/` + `${Date.now().toString()}_${fileName}`;
+    return `${role}/${id}-${first_name}/${mediaType}/` + `${Date.now().toString()}-${fileName}`;
   }
 };
 export { FileKey };
