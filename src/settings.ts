@@ -9,6 +9,7 @@ export const ENV = {
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   FRONTEND_URL: process.env.FRONTEND_URL || `https://vital-educators.vercel.app`,
+  API_URL: process.env.API_URL || 'https://api.vitaleducators.com'
 };
 
 const cred = {

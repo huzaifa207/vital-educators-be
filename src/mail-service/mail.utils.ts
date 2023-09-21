@@ -1,3 +1,4 @@
+import { ENV } from 'src/settings';
 import { emailConfirm } from './templates/email-confirm';
 import { emailFirstMessage } from './templates/email-first-message';
 import { EmailReferee } from './templates/email-referee';
@@ -82,7 +83,7 @@ export class EmailUtility extends GenericMail {
       const emailTemp = this.templates[EmailType.CONFIRM_EMAIL];
       return emailTemp({
         name: this.data.name,
-        url: `https://api.vitaleducators.com/user/confirm-email/${this.data.token as string}`,
+        url: `${ENV.API_URL}/user/confirm-email/${this.data.token as string}`,
       });
     }
 
