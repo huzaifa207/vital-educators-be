@@ -12,7 +12,7 @@ interface IFileKey {
 const FileKey = (data: IFileKey) => {
   const { mediaType, id, first_name, role, fileName } = data;
   if (role === 'ADMIN') {
-    return `${role}/${mediaType}/` + `${Date.now().toString()}_${fileName}`;
+    return `${role}/${mediaType}/` + `${Date.now().toString()}-${fileName}`;
   } else {
     return `${role}/${id}_${first_name}/${mediaType}/` + `${Date.now().toString()}_${fileName}`;
   }
