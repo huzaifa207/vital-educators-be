@@ -70,11 +70,10 @@ export class FileService {
 
   async getFileUrl(key: string) {
     try {
-      console.log('key = ', key);
       const url = await s3.getSignedUrlPromise('getObject', {
         Bucket: S3Cred.bucket,
         Key: key,
-        Expires: 60 * 60 * 24 * 7,
+        Expires: 30 * 60,
       });
       return url;
     } catch (error) {

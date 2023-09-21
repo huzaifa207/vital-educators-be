@@ -10,5 +10,6 @@ import { MediaService } from './media.service';
   imports: [CloudinaryModule, PrismaModule],
   controllers: [MediaController, FileUploadController],
   providers: [MediaService, FileService],
+  exports: [FileService],
 })
 export class MediaModule {}
