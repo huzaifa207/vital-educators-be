@@ -25,16 +25,30 @@ export class ResourcesController {
       transformedData[subj] = resources
         .filter((item) => item.subject === subj)
         .reduce((result, item) => {
-          const { level, type, title, id, fileType, resourceS3Key, link } = item as any;
+          const { level, type, revisionType, title, id, fileType, resourceS3Key, link } =
+            item as any;
+
           if (!result[level]) {
             result[level] = {};
           }
+
           if (!result[level][type]) {
-            result[level][type] = {
-              topic: [{ id, title }],
-            };
+            result[level][type] = {};
+          }
+
+          let currentTarget = result[level][type];
+
+          if (revisionType) {
+            if (!currentTarget[revisionType]) {
+              currentTarget[revisionType] = {};
+            }
+            currentTarget = currentTarget[revisionType];
+          }
+
+          if (!currentTarget.topic) {
+            currentTarget.topic = [{ id, title }];
           } else {
-            result[level][type].topic.push({
+            currentTarget.topic.push({
               id,
               title,
               fileType,
@@ -42,6 +56,7 @@ export class ResourcesController {
               link,
             });
           }
+
           return result;
         }, {});
     });
