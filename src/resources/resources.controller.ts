@@ -25,8 +25,15 @@ export class ResourcesController {
       transformedData[subj] = resources
         .filter((item) => item.subject === subj)
         .reduce((result, item) => {
-          const { level, type, revisionType, title, id, fileType, resourceS3Key, link } =
-            item as any;
+          let { level, type, revisionType, title, id, fileType, resourceS3Key, link } = item as any;
+
+          if (level === 'GCSE' || level === 'IGCSE') {
+            level = 'GCSE_IGCSE';
+            type = revisionType;
+            if (resourceS3Key?.includes('/Topic Questions/')) revisionType = 'Topic Questions';
+            else if (resourceS3Key?.includes('/Revision Notes/')) revisionType = 'Revision Notes';
+            else revisionType = '';
+          }
 
           if (!result[level]) {
             result[level] = {};
