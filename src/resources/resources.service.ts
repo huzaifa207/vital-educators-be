@@ -25,6 +25,13 @@ export class ResourcesService {
     return resources;
   }
 
+  async subscribe(data: Prisma.SubscriptionsCreateInput) {
+    const subscription = await this.prisma.subscriptions.create({
+      data,
+    });
+    return subscription;
+  }
+
   async sendLinkToEmail({ email, id }: { email: string; id: string }) {
     const resourceLink = await this.prisma.resources.findUnique({
       where: {
@@ -44,13 +51,30 @@ export class ResourcesService {
       const signedUrl = await this.FileService.getFileUrl(resourceLink.resourceS3Key);
       if (signedUrl) {
         try {
-          await this.mailService.sendMailSimple({
+          const result = await this.mailService.sendMailSimple({
             email: email,
             emailContent: resourceLinkTemplate(signedUrl, resourceLink.subject),
             subject: 'Resource Link',
             text: `Click here to access the resource ${signedUrl}`,
           });
-          return { message: 'success', success: true };
+          if (result) {
+            try {
+              const exists = await this.prisma.subscriptions.findUnique({
+                where: {
+                  email,
+                },
+              });
+              if (exists) return { message: 'success', success: true, signedUrl, subscribed: true };
+              else {
+                const subscribed = await this.subscribe({ email });
+                if (subscribed)
+                  return { message: 'success', success: true, signedUrl, subscribed: true };
+              }
+            } catch (error) {
+              console.log('Subscription error: ', error);
+              return { message: 'success', success: true, signedUrl, subscribed: false };
+            }
+          }
         } catch (error) {
           console.log('email error - ', error);
           return { message: 'failed', success: false };

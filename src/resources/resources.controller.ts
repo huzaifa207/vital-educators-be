@@ -78,7 +78,6 @@ export class ResourcesController {
 
   @Post('/request-link')
   async sendLinkToEmail(@Body() data: { email: string; id: string }) {
-    console.log('data', data);
     const { email, id } = data;
     const resource = await this.resourcesService.sendLinkToEmail({ email, id });
     return resource;

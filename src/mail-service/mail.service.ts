@@ -31,12 +31,13 @@ export class MailService {
     emailContent: string;
   }) {
     try {
-      await this.mailerService.sendMail({
+      const result = await this.mailerService.sendMail({
         to: email,
         text: text,
         subject: subject,
         html: emailContent,
       });
+      return result;
     } catch (error) {
       console.log('email error - ', error);
       // throw new HttpException(error.message, 500);
