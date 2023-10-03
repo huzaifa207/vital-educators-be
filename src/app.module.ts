@@ -119,6 +119,7 @@ export class AppModule {
         { path: 'resources/request-link', method: RequestMethod.POST },
         { path: 'resources/:id', method: RequestMethod.DELETE },
         { path: 'resources/:id', method: RequestMethod.PATCH },
+        { path: 'file/url', method: RequestMethod.GET },
         // 'notifications/user/(.+)',
         // 'notifications',
         // 'notifications/global',
