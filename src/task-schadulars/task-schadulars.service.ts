@@ -50,8 +50,8 @@ export class TaskSchadularsService {
       // }
 
       if (documents.length === 1) {
-        const { id_card_back, id_card_front, criminal_record } = documents[0];
-        if (!id_card_back || !id_card_front || !criminal_record) {
+        const { license_url, passport_url, criminal_record_url } = documents[0];
+        if (!license_url || !passport_url || !criminal_record_url) {
           tutoRemainder = true;
         }
       }

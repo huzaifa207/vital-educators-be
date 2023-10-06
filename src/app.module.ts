@@ -40,6 +40,7 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
+import { FileUploadController } from './media/file.controller';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -143,6 +144,7 @@ export class AppModule {
         StudentsController,
         FeedbackController,
         ResourcesController,
+        FileUploadController,
       );
   }
 }

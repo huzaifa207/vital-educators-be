@@ -254,12 +254,12 @@ model SubjectOffer {
 }
 
 model Documents {
-  id              Int    @id @default(autoincrement())
-  id_card_front   String
-  id_card_back    String
-  criminal_record String
-  tutor           Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId         Int    @unique
+  id                      Int    @id @default(autoincrement())
+  passport_url            String @default("")
+  license_url             String @default("")
+  criminal_record_url     String @default("")
+  tutor                   Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId                 Int    @unique
 }
 
 model Media {

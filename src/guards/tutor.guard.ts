@@ -5,7 +5,7 @@ export class TutorGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.currentUser;
-    if (!user || user.role !== 'TUTOR' || user.role !== 'ADMIN') {
+    if (!user || (user.role !== 'TUTOR' && user.role !== 'ADMIN')) {
       return false;
     }
     return true;

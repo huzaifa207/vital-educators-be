@@ -5,9 +5,10 @@ import { FileUploadController } from './file.controller';
 import { FileService } from './file.service';
 import { MediaController } from './media.controller';
 import { MediaService } from './media.service';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [CloudinaryModule, PrismaModule],
+  imports: [CloudinaryModule, PrismaModule, UsersModule],
   controllers: [MediaController, FileUploadController],
   providers: [MediaService, FileService],
   exports: [FileService],

@@ -68,9 +68,9 @@ export class UsersService {
           this.taskSchadularsService.newTutorSchedule(newUser, tutor);
         }
         const doc = {
-          id_card_back: '',
-          id_card_front: '',
-          criminal_record: '',
+          license_url: '',
+          passport_url: '',
+          criminal_record_url: '',
         } as Prisma.DocumentsCreateInput;
 
         await this.documentsService.create(doc, +tutor.id);

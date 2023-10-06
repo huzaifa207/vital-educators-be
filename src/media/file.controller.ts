@@ -17,14 +17,14 @@ export class FileUploadController {
     @Param('mediaType') mediaType: TFileType,
     @Req() request: Request,
     @Res() response: Response,
-    @Query('key') key: string
+    @Query('key') key: string,
   ) {
-    if(!key) return response.status(500).json('key was not provided');
     try {
       if (mediaType === 'RESOURCE') {
+        if (!key) return response.status(500).json('key was not provided');
         await this.fileService.resourceUpload(request, response, key);
       } else {
-        await this.fileService.fileUpload(request, response, mediaType);
+        await this.fileService.fileUpload(request, response);
       }
     } catch (error) {
       return response.status(500).json(`Failed to upload image file: ${error.message}`);
