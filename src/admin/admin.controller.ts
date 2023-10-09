@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  DefaultValuePipe,
   Get,
   Param,
   ParseIntPipe,
@@ -12,19 +11,19 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Prisma, PurchaseStatus } from '@prisma/client';
 import { UpdateTutorDto } from 'src/tutors/dto/update-tutor.dto';
 import { RefereesService } from 'src/tutors/referees/referees.service';
 import { TutorsService } from 'src/tutors/tutors.service';
 import { AdminService } from './admin.service';
 import { AdminGuard } from 'src/guards/admin.guard';
-import { QualificationsService } from 'src/tutors/qualifications/qualifications.service';
-import { SubjectOffersModule } from 'src/tutors/subject-offers/subject-offers.module';
-import { SubjectOffersService } from 'src/tutors/subject-offers/subject-offers.service';
 import { StudentsService } from 'src/students/students.service';
 import { Request } from 'express';
 import { ENV } from 'src/settings';
 import { AlertsService } from 'src/alerts/alerts.service';
+import { MailService } from 'src/mail-service/mail.service';
+import { NotFoundException } from '@nestjs/common';
+import { emailNotification } from 'src/mail-service/templates/email-notification';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('/admin')
 export class AdminController {
@@ -33,6 +32,8 @@ export class AdminController {
     private readonly refereeService: RefereesService,
     private readonly adminService: AdminService,
     private readonly studentsService: StudentsService,
+    private readonly usersService: UsersService,
+    private readonly mailService: MailService,
     private alertsService: AlertsService,
   ) {}
   @UseGuards(AdminGuard)
@@ -138,10 +139,35 @@ export class AdminController {
 
   @UseGuards(AdminGuard)
   @Patch('tutor-detail/:tutorId')
-  update(
+  async update(
     @Body() updateTutorDto: UpdateTutorDto,
     @Param('tutorId', new ParseIntPipe()) tutorId: number,
+    @Query('toBeUpdated') toBeUpdated: string,
   ) {
-    return this.tutorService.updateTutor(tutorId, updateTutorDto);
+    try {
+      const tutor = await this.tutorService.findOneTutor(tutorId);
+      if (!tutor) throw new NotFoundException();
+
+      const user = await this.usersService.findOne(tutor.userId);
+      const updatedTutor = await this.tutorService.updateTutor(tutorId, updateTutorDto);
+
+      const document = toBeUpdated.split('_')[1];
+      const description =
+        document === 'profile'
+          ? `Your ${document} picture has been approved`
+          : `Your ${document} documents have been approved`;
+
+      this.mailService.sendMailSimple({
+        email: user.email,
+        text: 'Notification from Vital Educators',
+        subject: 'Notification from Vital Educators',
+        emailContent: emailNotification('Documents approval', description),
+      });
+
+      return updatedTutor;
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException();
+    }
   }
 }

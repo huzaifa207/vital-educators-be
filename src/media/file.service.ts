@@ -1,12 +1,5 @@
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Req, Res } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { S3 } from 'aws-sdk';
 import { Request, Response } from 'express';
