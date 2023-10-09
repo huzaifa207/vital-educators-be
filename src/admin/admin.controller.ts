@@ -41,10 +41,11 @@ export class AdminController {
     const tutorDetails = await this.tutorService.getTutorProfile(tutorId, {
       userExcludedFields: ['password', 'password_reset_token'],
     });
+    const referees = await this.refereeService.findAll(tutorId);
 
     return {
       ...tutorDetails,
-      referees: await this.refereeService.findAll(tutorId),
+      referees,
     };
   }
   @UseGuards(AdminGuard)

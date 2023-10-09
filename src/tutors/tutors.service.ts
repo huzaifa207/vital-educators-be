@@ -192,8 +192,10 @@ export class TutorsService {
           subjectOffers: true,
           qualification: true,
           tutoringDetail: true,
+          documents: true,
         },
       });
+
       let pickedFields: Record<string, any> = Object.assign({}, user);
       if (options && options.userIncludedFields)
         pickedFields = PickKeys(user, options.userIncludedFields);
@@ -211,6 +213,7 @@ export class TutorsService {
           is_government_document_approved: tutor.is_government_document_approved,
           is_qualification_document_approved: tutor.is_qualification_document_approved,
           is_referee_approved: tutor.is_referee_approved,
+          documents: tutor.documents,
         },
         subjects: tutor.subjectOffers.map((subject) => {
           return {
