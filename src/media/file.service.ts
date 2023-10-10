@@ -65,7 +65,11 @@ export class FileService {
           if (type === 'profile_url') {
             try {
               const updateUser = { profile_url: file?.location };
-              const { profile_url } = await this.usersService.update(+id, updateUser);
+              const { profile_url } = await this.usersService.update(
+                +id,
+                updateUser,
+                'Tutor just updated their profile picture.',
+              );
               if (profile_url) return res.status(201).json({ profile_url });
             } catch (er) {
               console.warn(er);
