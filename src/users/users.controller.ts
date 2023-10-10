@@ -143,8 +143,25 @@ export class UsersController {
     if (!email_approved) {
       throw new ForbiddenException('Email not confirmed');
     }
+
+    const updatedProperties: string[] = Object.keys(updateUserDto)
+      .filter(
+        (key) => JSON.stringify(request.currentUser[key]) !== JSON.stringify(updateUserDto[key]),
+      )
+      .map((key) => key.replace(/_/g, ' '));
+
+    const properties =
+      updatedProperties?.slice(0, -1).join(', ') +
+      (updatedProperties.length > 1
+        ? `, and ${updatedProperties.slice(-1)}`
+        : updatedProperties[0]);
+
     try {
-      return await this.usersService.update(+id, updateUserDto);
+      return await this.usersService.update(
+        +id,
+        updateUserDto,
+        `Tutor just updated their ${properties}.`,
+      );
     } catch (er) {
       console.warn(er);
       throw new InternalServerErrorException();
@@ -184,7 +201,7 @@ export class UsersController {
       res.header('Location', URL);
       res.statusCode = 301;
       res.end();
-    } else res.send('Email could not be approved')
+    } else res.send('Email could not be approved');
   }
 
   @Serializer(ReturnUserDto)

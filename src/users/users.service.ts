@@ -184,13 +184,14 @@ export class UsersService {
     }
   }
 
-  async update(id: number, updateUserDto: Prisma.UserUpdateInput) {
+  async update(id: number, updateUserDto: Prisma.UserUpdateInput, alertMessage: string = '') {
     try {
       const r = await this.prisma.user.update({
         where: { id },
         data: updateUserDto,
       });
-      this.alertService.dispatchTutorProfileUpdated(id);
+
+      this.alertService.dispatchTutorProfileUpdated(id, alertMessage);
       return r;
     } catch (er) {
       throw er;

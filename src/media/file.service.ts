@@ -1,12 +1,5 @@
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Req, Res } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { S3 } from 'aws-sdk';
 import { Request, Response } from 'express';
@@ -72,7 +65,11 @@ export class FileService {
           if (type === 'profile_url') {
             try {
               const updateUser = { profile_url: file?.location };
-              const { profile_url } = await this.usersService.update(+id, updateUser);
+              const { profile_url } = await this.usersService.update(
+                +id,
+                updateUser,
+                'Tutor just updated their profile picture.',
+              );
               if (profile_url) return res.status(201).json({ profile_url });
             } catch (er) {
               console.warn(er);

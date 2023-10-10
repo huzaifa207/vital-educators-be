@@ -45,10 +45,13 @@ export class AlertsService {
     });
   }
 
-  async dispatchTutorProfileUpdated(tutorId: number) {
+  async dispatchTutorProfileUpdated(
+    tutorId: number,
+    description: string = 'Tutor just updated their profile',
+  ) {
     try {
       await this.create({
-        description: 'Tutor just updated their profile',
+        description,
         actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#profile`,
       });
     } catch (er) {
