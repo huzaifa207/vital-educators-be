@@ -22,8 +22,8 @@ import { ENV } from 'src/settings';
 import { AlertsService } from 'src/alerts/alerts.service';
 import { MailService } from 'src/mail-service/mail.service';
 import { NotFoundException } from '@nestjs/common';
-import { emailNotification } from 'src/mail-service/templates/email-notification';
 import { UsersService } from 'src/users/users.service';
+import { emailAlert } from 'src/mail-service/templates/email-alert';
 
 @Controller('/admin')
 export class AdminController {
@@ -161,7 +161,7 @@ export class AdminController {
         email: user.email,
         text: 'Notification from Vital Educators',
         subject: 'Notification from Vital Educators',
-        emailContent: emailNotification('Documents approval', description),
+        emailContent: emailAlert(description, `${ENV['FRONTEND_URL']}/tutor/dashbord`),
       });
 
       return updatedTutor;
