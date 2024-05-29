@@ -27,6 +27,9 @@ documentation
 # environment
 .env
 
+# local certs
+.certs/
+
 # IDEs and editors
 /.idea
 .project

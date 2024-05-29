@@ -22,6 +22,7 @@
     "migration:dev": "npx prisma migrate dev --name",
     "doc": "npx @compodoc/compodoc --config compodoc.json",
     "gen": "npx prisma generate",
+    "local-pem": "npx local-ssl-proxy --key .certs/localhost-key.pem --cert .certs/localhost.pem --source 5001 --target 5002",
     "deploy": "git push heroku main"
   },
   "dependencies": {

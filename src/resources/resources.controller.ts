@@ -15,7 +15,7 @@ export class ResourcesController {
 
   @Get('/')
   async getResources() {
-    const resources = await this.resourcesService.getResouces();
+    const resources = await this.resourcesService.getResources();
 
     const transformedData = {
       subject: [...new Set(resources.map((item) => item.subject))],
@@ -72,7 +72,7 @@ export class ResourcesController {
 
   @Get('/admin')
   async getResourcesForAdmin() {
-    const resources = await this.resourcesService.getResouces();
+    const resources = await this.resourcesService.getResources();
     return resources;
   }
 

@@ -20,7 +20,7 @@ export class ResourcesService {
     return resource;
   }
 
-  async getResouces() {
+  async getResources() {
     const resources = await this.prisma.resources.findMany();
     return resources;
   }
@@ -43,6 +43,7 @@ export class ResourcesService {
         subject: true,
       },
     });
+
     if (!resourceLink) return;
 
     if (!resourceLink.resourceS3Key) return { message: 'failed', success: false };
