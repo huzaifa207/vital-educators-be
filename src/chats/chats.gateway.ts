@@ -34,6 +34,7 @@ type IChatFromConversation = {
     credentials: true,
     origin: [
       'https://vital-educators.vercel.app',
+      'https://www.vitaleducators.com',
       'https://localhost:5501',
       'https://localhost:3000',
     ],

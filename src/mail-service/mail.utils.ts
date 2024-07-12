@@ -44,7 +44,7 @@ export abstract class GenericMail {
   constructor(email: string, subject: string) {
     this.email = email;
     this.subject = subject;
-    this.domain = 'https://vital-educators.vercel.app/';
+    this.domain = 'https://www.vitaleducators.com/';
 
     this.templates = {
       [EmailType.CONFIRM_EMAIL]: (data: EmailParam[EmailType.CONFIRM_EMAIL]) =>

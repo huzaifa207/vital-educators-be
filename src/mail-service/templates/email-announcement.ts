@@ -104,7 +104,7 @@ export const emailAnnouncement = (title: string, description: string) => {
                     style="display: inline-block"
                   >
                     <img
-                      src="https://vital-educators.vercel.app/logo-black.png"
+                      src="https://www.vitaleducators.com/logo-black.png"
                       alt="Logo" border="0" width="30%" 
                       style="
                               display: block;

@@ -209,7 +209,7 @@ export class UsersService {
           email: user.email,
           emailContent: emailSuspended(
             reason || 'Reason is not specified',
-            `https://vital-educators.vercel.app/?from=account-suspended&role=` + user.role,
+            `https://www.vitaleducators.com/?from=account-suspended&role=` + user.role,
           ),
           subject: 'Account Suspended',
           text: `Your VitalEducators account has been suspended.`,
@@ -220,8 +220,8 @@ export class UsersService {
     } else {
       let url =
         user.role == 'STUDENT'
-          ? `https://vital-educators.vercel.app/student/login`
-          : `https://vital-educators.vercel.app/tutor/login`;
+          ? `https://www.vitaleducators.com/student/login`
+          : `https://www.vitaleducators.com/tutor/login`;
       url = url + '?from=account-recovered';
 
       try {
