@@ -117,12 +117,12 @@ export const EmailReferee = (name: string, referee_name: string, url: string) =>
                 <tr>
                   <td align="center" valign="top" style="padding: 36px 24px">
                     <a
-                      href="https://vital-educators.vercel.app/tutor"
+                      href="https://www.vitaleducators.com/tutor"
                       target="_blank"
                       style="display: inline-block"
                     >
                       <img
-                        src="https://vital-educators.vercel.app/logo-black.png"
+                        src="https://www.vitaleducators.com/logo-black.png"
                         alt="Logo" border="0" width="30%" 
                         style="
                                 display: block;
@@ -305,7 +305,7 @@ export const EmailReferee = (name: string, referee_name: string, url: string) =>
                     </p>
                    
                     <a href="#">
-                      https://vital-educators.vercel.app
+                      https://www.vitaleducators.com
                     </a>
                     <br/><br/>
                     <p style="margin: 0">

@@ -112,7 +112,7 @@ export const reviewTutorReplyToStudentReview = (tutorName: string, studentName: 
               <tr>
                 <td align="center" valign="top" style="padding: 36px 24px">
                   <a href="https://sendgrid.com" target="_blank" style="display: inline-block">
-                    <img src="https://vital-educators.vercel.app/logo-black.png" alt="Logo" border="0" width="30%" style="
+                    <img src="https://www.vitaleducators.com/logo-black.png" alt="Logo" border="0" width="30%" style="
                                       display: block;
                                       width: 30%;
                                       max-width: 30%;

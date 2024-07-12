@@ -102,7 +102,7 @@ export const resourceLinkTemplate = (url: string, subject: string) => {
                     style="display: inline-block"
                   >
                     <img
-                      src="https://vital-educators.vercel.app/logo-black.png"
+                      src="https://www.vitaleducators.com/logo-black.png"
                       alt="Logo"
                       border="0"
                       width="30%"

@@ -105,7 +105,7 @@ export const emailConfirm = (name: string, url: string) => {
                       style="display: inline-block"
                     >
                       <img
-                        src="https://vital-educators.vercel.app/logo-black.png"
+                        src="https://www.vitaleducators.com/logo-black.png"
                         alt="Logo" border="0" width="30%" 
                         style="
                                 display: block;
@@ -237,7 +237,7 @@ export const emailConfirm = (name: string, url: string) => {
                     <p style="margin: 0">
                       Hi ${name}, Tap the button below to confirm your email address. If you
                       didn't create an account on
-                      <a href="https://vital-educators.vercel.app">VitalEducators</a>, you can safely
+                      <a href="https://www.vitaleducators.com">VitalEducators</a>, you can safely
                       delete this email.
                     </p>
                   </td>

@@ -191,10 +191,10 @@ export class UsersController {
     let URL = '';
     switch (role) {
       case 'STUDENT':
-        URL = `https://vital-educators.vercel.app/student/email-verified`;
+        URL = `https://www.vitaleducators.com/student/email-verified`;
         break;
       case 'TUTOR':
-        URL = `https://vital-educators.vercel.app/tutor/email-verified`;
+        URL = `https://www.vitaleducators.com/tutor/email-verified`;
         break;
     }
     if (approved) {
