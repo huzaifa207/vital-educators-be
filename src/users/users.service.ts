@@ -3,6 +3,7 @@ import {
   Injectable,
   NotAcceptableException,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
 import { scrypt as _script, randomBytes } from 'crypto';
@@ -116,6 +117,39 @@ export class UsersService {
 
     return newUser;
   }
+
+  async resendVerificationEmail(userID: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userID },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.email_approved) {
+      throw new BadRequestException('User already verified');
+    }
+
+    const token = nanoid(12);
+    try {
+      await this.prisma.user.update({
+        where: { id: userID },
+        data: { email_token: token },
+      });
+      this.sendEmail(
+        user.email,
+        `${user.first_name} ${user.last_name}`,
+        EmailType.CONFIRM_EMAIL,
+        token,
+      );
+      return { message: 'Verification email sent.' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Unable to resend verification email.');
+    }
+  }
+
   async getByCustomerId(customerId: string) {
     try {
       const sub = await this.prisma.subscription.findUnique({ where: { customerId: customerId } });
