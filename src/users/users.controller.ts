@@ -13,6 +13,7 @@ import {
   Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
 import { Request, Response } from 'express';
@@ -21,6 +22,8 @@ import { EmailType } from 'src/mail-service/mail.utils';
 import { TokenService } from 'src/token/token.service';
 import { AllUsersDTO, ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
+import { AuthGuard } from 'src/guards/authenticated.guard';
+
 @Controller('user')
 export class UsersController {
   constructor(
@@ -202,6 +205,12 @@ export class UsersController {
       res.statusCode = 301;
       res.end();
     } else res.send('Email could not be approved');
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('/resend-confirmation-email')
+  resendConfirmationEmail(@Req() request: Request) {
+    return this.usersService.resendVerificationEmail(request.currentUser.id);
   }
 
   @Serializer(ReturnUserDto)
