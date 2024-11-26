@@ -71,7 +71,7 @@ export class AlertsService {
   async dispatchDocUpdated(tutorId: number) {
     try {
       await this.create({
-        description: 'Tutor updated their official doscs',
+        description: 'Tutor updated their official docs',
         actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#documents`,
       });
     } catch (er) {
