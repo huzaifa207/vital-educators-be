@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -168,6 +169,52 @@ export class AdminController {
     } catch (error) {
       console.log(error);
       throw new BadRequestException();
+    }
+  }
+  @UseGuards(AdminGuard)
+  @Delete('tutor/:userId')
+  async deleteTutor(@Param('userId', ParseIntPipe) userId: number) {
+    try {
+      const tutor = await this.tutorService.findOneTutor(userId);
+      if (!tutor) {
+        throw new NotFoundException('Tutor not found');
+      }
+
+      await this.usersService.remove(tutor.userId);
+      return {
+        message: 'Tutor deleted successfully',
+        tutorId: tutor.id,
+        userId: tutor.userId,
+      };
+    } catch (error) {
+      console.error('Error deleting tutor:', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException('Failed to delete tutor');
+    }
+  }
+  @UseGuards(AdminGuard)
+  @Delete('student/:userId')
+  async deleteStudent(@Param('userId', ParseIntPipe) userId: number) {
+    try {
+      const student = await this.usersService.findOne(userId);
+      if (!student) {
+        throw new NotFoundException('Student not found');
+      }
+
+      await this.usersService.remove(student.id);
+
+      return {
+        message: 'Student deleted successfully',
+        userId: student.id,
+      };
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException('Failed to delete student');
     }
   }
 }
