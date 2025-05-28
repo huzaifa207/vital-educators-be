@@ -60,7 +60,7 @@ export class NotificationService {
       take: options.limit,
       where: {
         targetType: NotificationTargetType.GLOBAL,
-        role,
+        OR: [{ role }, { role: NotificationRole.ALL }],
         isArchived: false,
       },
     });
