@@ -103,6 +103,7 @@ export class UsersService {
           },
         });
         await this.studentsService.createPaymentRecord(newUser.id);
+        this.alertService.dispatchStudentRegistered(newUser.id);
       } catch (er) {
         console.warn(er);
         throw new Error('Failed to create student sub records');
