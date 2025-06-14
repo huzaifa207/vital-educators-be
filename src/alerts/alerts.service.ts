@@ -33,16 +33,22 @@ export class AlertsService {
     }
     return r;
   }
-  getAll(
-    options: Partial<PaginationOptions> = {
-      limit: undefined,
-      offset: 0,
-    },
-  ): Promise<Alert[]> {
-    return this.prismaService.alert.findMany({
-      skip: options.offset,
-      take: options.limit,
-    });
+  async getAll(options: Partial<PaginationOptions> = { limit: undefined, offset: 0 }) {
+    const [alerts, totalCount] = await Promise.all([
+      this.prismaService.alert.findMany({
+        skip: options.offset,
+        take: options.limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prismaService.alert.count(),
+    ]);
+
+    return {
+      alerts,
+      length: totalCount,
+      offset: options.offset,
+      limit: options.limit,
+    };
   }
 
   async dispatchTutorProfileUpdated(
@@ -83,6 +89,16 @@ export class AlertsService {
       await this.create({
         description: 'Referee left a review',
         actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#referees`,
+      });
+    } catch (er) {
+      console.warn(er);
+    }
+  }
+  async dispatchStudentRegistered(userId: number) {
+    try {
+      await this.create({
+        description: 'New student has been registered',
+        actionURL: `${ENV['FRONTEND_URL']}/admin/student-detail/${userId}`,
       });
     } catch (er) {
       console.warn(er);

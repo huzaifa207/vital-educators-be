@@ -97,7 +97,13 @@ export class UsersService {
       }
     } else if (newUser.role == 'STUDENT') {
       try {
+        await this.prisma.student.create({
+          data: {
+            user: { connect: { id: newUser.id } },
+          },
+        });
         await this.studentsService.createPaymentRecord(newUser.id);
+        this.alertService.dispatchStudentRegistered(newUser.id);
       } catch (er) {
         console.warn(er);
         throw new Error('Failed to create student sub records');

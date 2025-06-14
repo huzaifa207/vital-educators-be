@@ -232,6 +232,7 @@ model TutoringDetail {
   teaching_experience String
   approach            String
   availability        String[]
+  languages           String[]
   tutor               Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   tutorId             Int      @unique
 }

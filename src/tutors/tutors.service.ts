@@ -232,7 +232,7 @@ export class TutorsService {
               })
               .filter((e) => e !== null),
             online: subject.online,
-            online_discount: subject.online,
+            online_discount: subject.online_discount,
             first_free_lesson: subject.first_free_lesson,
           };
         }),

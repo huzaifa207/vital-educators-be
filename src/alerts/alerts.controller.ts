@@ -22,12 +22,7 @@ export class AlertsController {
     @Query('limit', new DefaultValuePipe('15'), new ParseIntPipe()) queryLimit?: number,
   ) {
     const res = await this.alertsService.getAll({ offset: queryOffset, limit: queryLimit });
-    return {
-      length: res.length,
-      offset: queryOffset,
-      limit: queryLimit,
-      alerts: res,
-    };
+    return res;
   }
   @UseGuards(AdminGuard)
   @Post()
