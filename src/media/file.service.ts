@@ -36,6 +36,15 @@ export class FileService {
     }
   }
 
+  async documentUpload(@Req() req: Request, @Res() res: Response, key: string) {
+    try {
+      return await this.uploadFileToS3(req, res, `documents/${key}`);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(`Failed to upload document file: ${error}`);
+    }
+  }
+
   async uploadFileToS3(@Req() req: Request, @Res() res: Response, key: string) {
     return this.upload(key)(req, res, async (error: any) => {
       if (error) {
@@ -50,11 +59,12 @@ export class FileService {
       fileTypes.forEach(async (type) => {
         const file = req?.files?.[type]?.[0];
         if (file) {
-          if (type === 'resource')
+          if (type === 'resource' || type === 'file') {
             return res.status(201).json({
               url: file?.location,
               key: file?.key,
             });
+          }
           if (type === 'profile_url') {
             try {
               const updateUser = { profile_url: file?.location };
@@ -103,13 +113,17 @@ export class FileService {
         },
         key: function (_, file, cb) {
           let path = '';
-          if (file.fieldname === 'resource') path = `${prePath}/${file.originalname}`;
-          else path = `${prePath}/${file.fieldname}/${file.originalname}`;
+          if (file.fieldname === 'resource' || file.fieldname === 'file') {
+            path = `${prePath}/${file.originalname}`;
+          } else {
+            path = `${prePath}/${file.fieldname}/${file.originalname}`;
+          }
           cb(null, path);
         },
       }),
     }).fields([
       { name: 'resource', maxCount: 1 },
+      { name: 'file', maxCount: 1 },
       { name: 'profile_url', maxCount: 1 },
       { name: 'passport_url', maxCount: 1 },
       { name: 'license_url', maxCount: 1 },
