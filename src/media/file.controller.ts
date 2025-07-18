@@ -21,16 +21,22 @@ export class FileUploadController {
   ) {
     try {
       if (mediaType === 'RESOURCE') {
-        if (!key) return response.status(500).json('key was not provided');
+        if (!key) return response.status(400).json('key was not provided');
         await this.fileService.resourceUpload(request, response, key);
       } else if (mediaType === 'DOCUMENT') {
-        if (!key) return response.status(500).json('key was not provided');
+        if (!key) return response.status(400).json('key was not provided');
         await this.fileService.documentUpload(request, response, key);
+      } else if (mediaType === 'MEDIA') {
+        if (!key) {
+          await this.fileService.fileUpload(request, response);
+        } else {
+          await this.fileService.mediaUpload(request, response, key);
+        }
       } else {
-        await this.fileService.fileUpload(request, response);
+        return response.status(400).json('Invalid media type');
       }
     } catch (error) {
-      return response.status(500).json(`Failed to upload image file: ${error.message}`);
+      return response.status(500).json(`Failed to upload file: ${error.message}`);
     }
   }
 

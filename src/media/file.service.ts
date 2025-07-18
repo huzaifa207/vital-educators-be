@@ -45,6 +45,15 @@ export class FileService {
     }
   }
 
+  async mediaUpload(@Req() req: Request, @Res() res: Response, key: string) {
+    try {
+      return await this.uploadFileToS3(req, res, `media/${key}`);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(`Failed to upload media file: ${error}`);
+    }
+  }
+
   async uploadFileToS3(@Req() req: Request, @Res() res: Response, key: string) {
     return this.upload(key)(req, res, async (error: any) => {
       if (error) {
@@ -59,21 +68,27 @@ export class FileService {
       fileTypes.forEach(async (type) => {
         const file = req?.files?.[type]?.[0];
         if (file) {
-          if (type === 'resource' || type === 'file') {
+          if (
+            type === 'resource' ||
+            type === 'file' ||
+            type === 'passport_url' ||
+            type === 'license_url' ||
+            type === 'criminal_record_url'
+          ) {
             return res.status(201).json({
               url: file?.location,
               key: file?.key,
             });
           }
+
           if (type === 'profile_url') {
             try {
-              const updateUser = { profile_url: file?.location };
-              const { profile_url } = await this.usersService.update(
+              await this.usersService.update(
                 +id,
-                updateUser,
-                'Tutor just updated their profile picture.',
+                { profile_url: file?.location },
+                'User updated their profile picture.',
               );
-              if (profile_url) return res.status(201).json({ profile_url });
+              return res.status(201).json({ profile_url: file?.location });
             } catch (er) {
               console.warn(er);
               throw new BadRequestException();
@@ -83,6 +98,7 @@ export class FileService {
           }
         }
       });
+
       if (Object.entries(documents).length > 0) return res.status(201).json(documents);
     });
   }
