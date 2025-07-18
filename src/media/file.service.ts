@@ -7,7 +7,6 @@ import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { S3Cred } from 'src/settings';
-import { TFileType } from './file.controller';
 import { UsersService } from 'src/users/users.service';
 
 const s3Config = new S3Client(S3Cred.config);
@@ -21,7 +20,7 @@ export class FileService {
     try {
       const { id, role } = req.currentUser as Prisma.UserCreateManyInput;
       const filePathAsKey = `public/media/${role}/${id}`;
-      return await this.uploadFileToS3(req, res, filePathAsKey, 'MEDIA');
+      return await this.uploadFileToS3(req, res, filePathAsKey);
     } catch (error) {
       console.log(error);
       return res.status(500).json(`Failed to upload image file: ${error}`);
@@ -30,21 +29,15 @@ export class FileService {
 
   async resourceUpload(@Req() req: Request, @Res() res: Response, key: string) {
     try {
-      return await this.uploadFileToS3(req, res, `resources/${key}`, 'RESOURCE');
+      return await this.uploadFileToS3(req, res, `resources/${key}`);
     } catch (error) {
       console.log(error);
       return res.status(500).json(`Failed to upload image file: ${error}`);
     }
   }
 
-  async uploadFileToS3(
-    @Req() req: Request,
-    @Res() res: Response,
-    key: string,
-    mediaType: TFileType,
-  ) {
-    const acl = mediaType === 'RESOURCE' ? 'private' : 'public-read';
-    return this.upload(key, acl)(req, res, async (error: any) => {
+  async uploadFileToS3(@Req() req: Request, @Res() res: Response, key: string) {
+    return this.upload(key)(req, res, async (error: any) => {
       if (error) {
         console.log(error);
         throw new BadRequestException(`Failed to upload file: ${error.message}`);
@@ -98,12 +91,11 @@ export class FileService {
     }
   }
 
-  upload(prePath: string, acl: string = 'private') {
+  upload(prePath: string) {
     return multer({
       storage: multerS3({
         s3: s3Config,
         bucket: S3Cred.bucket,
-        acl,
         contentType: multerS3.AUTO_CONTENT_TYPE,
         metadata: function (_, file, cb) {
           const fileType = file.mimetype.split('/')[0];
