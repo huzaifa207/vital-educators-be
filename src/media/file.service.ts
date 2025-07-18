@@ -1,5 +1,5 @@
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { BadRequestException, Injectable, NotFoundException, Req, Res } from '@nestjs/common';
+import { BadRequestException, Injectable, Req, Res } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { S3 } from 'aws-sdk';
 import { Request, Response } from 'express';
@@ -8,6 +8,7 @@ import * as multerS3 from 'multer-s3';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { S3Cred } from 'src/settings';
 import { UsersService } from 'src/users/users.service';
+import { TFileType } from './file.controller';
 
 const s3Config = new S3Client(S3Cred.config);
 const s3 = new S3(S3Cred.S3);
@@ -16,91 +17,59 @@ const s3 = new S3(S3Cred.S3);
 export class FileService {
   constructor(private prisma: PrismaService, private readonly usersService: UsersService) {}
 
-  async fileUpload(@Req() req: Request, @Res() res: Response) {
+  async unifiedUpload(
+    @Req() req: Request,
+    @Res() res: Response,
+    mediaType: TFileType,
+    key: string,
+  ) {
     try {
-      const { id, role } = req.currentUser as Prisma.UserCreateManyInput;
-      const filePathAsKey = `public/media/${role}/${id}`;
-      return await this.uploadFileToS3(req, res, filePathAsKey);
+      const folderPath = this.buildFolderPath(mediaType, key);
+      return await this.uploadFileToS3(req, res, folderPath);
     } catch (error) {
       console.log(error);
-      return res.status(500).json(`Failed to upload image file: ${error}`);
+      return res.status(500).json(`Failed to upload ${mediaType.toLowerCase()} file: ${error}`);
     }
   }
 
-  async resourceUpload(@Req() req: Request, @Res() res: Response, key: string) {
-    try {
-      return await this.uploadFileToS3(req, res, `resources/${key}`);
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(`Failed to upload image file: ${error}`);
-    }
-  }
-
-  async documentUpload(@Req() req: Request, @Res() res: Response, key: string) {
-    try {
-      return await this.uploadFileToS3(req, res, `documents/${key}`);
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(`Failed to upload document file: ${error}`);
-    }
-  }
-
-  async mediaUpload(@Req() req: Request, @Res() res: Response, key: string) {
-    try {
-      return await this.uploadFileToS3(req, res, `media/${key}`);
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(`Failed to upload media file: ${error}`);
-    }
-  }
-
-  async uploadFileToS3(@Req() req: Request, @Res() res: Response, key: string) {
-    return this.upload(key)(req, res, async (error: any) => {
+  async uploadFileToS3(@Req() req: Request, @Res() res: Response, folderPath: string) {
+    return this.upload(folderPath)(req, res, async (error: any) => {
       if (error) {
         console.log(error);
         throw new BadRequestException(`Failed to upload file: ${error.message}`);
       }
 
       const fileTypes = Object.keys(req?.files);
-      const { id } = req?.currentUser as Prisma.UserCreateManyInput;
-      const documents = {};
 
-      fileTypes.forEach(async (type) => {
+      for (const type of fileTypes) {
         const file = req?.files?.[type]?.[0];
         if (file) {
-          if (
-            type === 'resource' ||
-            type === 'file' ||
-            type === 'passport_url' ||
-            type === 'license_url' ||
-            type === 'criminal_record_url'
-          ) {
-            return res.status(201).json({
-              url: file?.location,
-              key: file?.key,
-            });
-          }
-
           if (type === 'profile_url') {
-            try {
-              await this.usersService.update(
-                +id,
-                { profile_url: file?.location },
-                'User updated their profile picture.',
-              );
-              return res.status(201).json({ profile_url: file?.location });
-            } catch (er) {
-              console.warn(er);
-              throw new BadRequestException();
-            }
-          } else {
-            documents[type] = file?.location;
+            await this.updateUserProfile(req, file);
           }
-        }
-      });
 
-      if (Object.entries(documents).length > 0) return res.status(201).json(documents);
+          return res.status(201).json({
+            url: file?.location,
+            key: file?.key,
+          });
+        }
+      }
+
+      return res.status(400).json('No file uploaded');
     });
+  }
+
+  private async updateUserProfile(req: Request, file: any) {
+    try {
+      const { id } = req.currentUser as Prisma.UserCreateManyInput;
+      await this.usersService.update(
+        +id,
+        { profile_url: file?.location },
+        'User updated their profile picture.',
+      );
+    } catch (error) {
+      console.warn('Failed to update user profile:', error);
+    }
   }
 
   async getFileUrl(key: string, expires: number = 30 * 60) {
@@ -113,7 +82,7 @@ export class FileService {
       return url;
     } catch (error) {
       console.log(error);
-      return error;
+      throw new BadRequestException('Failed to generate signed URL');
     }
   }
 
@@ -128,12 +97,7 @@ export class FileService {
           cb(null, { fileType, fieldName: file.fieldname });
         },
         key: function (_, file, cb) {
-          let path = '';
-          if (file.fieldname === 'resource' || file.fieldname === 'file') {
-            path = `${prePath}/${file.originalname}`;
-          } else {
-            path = `${prePath}/${file.fieldname}/${file.originalname}`;
-          }
+          const path = `${prePath}/${file.originalname}`;
           cb(null, path);
         },
       }),
@@ -150,30 +114,24 @@ export class FileService {
   public async deleteFile(key: string) {
     try {
       const params = {
-        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Bucket: S3Cred.bucket,
         Key: key,
       };
       const data = await s3Config.send(new DeleteObjectCommand(params));
       return data;
     } catch (error) {
       console.log(error);
-      return error;
+      throw new BadRequestException('Failed to delete file');
     }
   }
 
-  async getMedia(id: number) {
-    try {
-      const media = await this.prisma.media.findUnique({
-        where: { id: +id },
-      });
-      if (!media) {
-        throw new NotFoundException('Media not found');
-      }
+  private buildFolderPath(mediaType: TFileType, key: string): string {
+    const folderMap = {
+      RESOURCE: 'resources',
+      DOCUMENT: 'documents',
+      MEDIA: 'media',
+    };
 
-      return media;
-    } catch (error) {
-      console.log(error);
-      throw new BadRequestException('Media not found');
-    }
+    return `${folderMap[mediaType]}/${key}`;
   }
 }
