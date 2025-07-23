@@ -108,7 +108,7 @@ export class AppModule {
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'user/confirm-email/:token', method: RequestMethod.GET },
         { path: 'subject-offer/all', method: RequestMethod.GET },
-        { path: 'referee/review/*', method: RequestMethod.POST },
+        { path: 'referee/review/:token', method: RequestMethod.POST },
         { path: '/', method: RequestMethod.POST },
         { path: 'feedback', method: RequestMethod.POST },
         { path: 'feedback/request', method: RequestMethod.POST },

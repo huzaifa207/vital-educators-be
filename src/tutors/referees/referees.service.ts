@@ -20,7 +20,6 @@ export class RefereesService {
     tutorId: number,
     user: Prisma.UserCreateManyInput,
   ) {
-
     const refereeAlreadyExist = await this.prisma.referees.findMany({
       where: {
         email: createRefereeDto.email,
@@ -136,6 +135,10 @@ export class RefereesService {
       try {
         const r = await this.prisma.referees.findUnique({ where: { id: refereeId } });
         if (r) {
+          await this.prisma.tutor.update({
+            where: { id: r.tutorId },
+            data: { is_referee_approved: 'PENDING' },
+          });
           this.alertService.dispatchRefereeLeftReview(r.tutorId, refereeId);
         }
       } catch (er) {

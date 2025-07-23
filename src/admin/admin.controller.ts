@@ -43,7 +43,7 @@ export class AdminController {
     const tutorDetails = await this.tutorService.getTutorProfile(tutorId, {
       userExcludedFields: ['password', 'password_reset_token'],
     });
-    const referees = await this.refereeService.findAll(tutorId);
+    const referees = await this.refereeService.findAll(tutorDetails.tutor.id);
 
     return {
       ...tutorDetails,
