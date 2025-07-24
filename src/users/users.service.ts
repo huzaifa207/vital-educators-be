@@ -231,7 +231,10 @@ export class UsersService {
         data: updateUserDto,
       });
 
-      this.alertService.dispatchTutorProfileUpdated(id, alertMessage);
+      if (alertMessage.trim()) {
+        this.alertService.dispatchTutorProfileUpdated(id, alertMessage);
+      }
+
       return r;
     } catch (er) {
       throw er;

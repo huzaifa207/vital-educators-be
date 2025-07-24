@@ -61,12 +61,14 @@ export class FileService {
 
   private async updateUserProfile(req: Request, file: any) {
     try {
-      const { id } = req.currentUser as Prisma.UserCreateManyInput;
-      await this.usersService.update(
-        +id,
-        { profile_url: file?.location },
-        'User updated their profile picture.',
-      );
+      const { id, role } = req.currentUser as Prisma.UserCreateManyInput;
+
+      const alertMessage =
+        role === 'TUTOR'
+          ? 'Tutor updated their profile picture.'
+          : 'Student updated their profile picture.';
+
+      await this.usersService.update(+id, { profile_url: file?.location }, alertMessage);
     } catch (error) {
       console.warn('Failed to update user profile:', error);
     }

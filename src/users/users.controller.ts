@@ -141,7 +141,7 @@ export class UsersController {
   @Patch()
   @Serializer(ReturnUserDto)
   async update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
-    const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
+    const { id, email_approved, role } = request.currentUser as Prisma.UserCreateManyInput;
 
     if (!email_approved) {
       throw new ForbiddenException('Email not confirmed');
@@ -159,18 +159,20 @@ export class UsersController {
         ? `, and ${updatedProperties.slice(-1)}`
         : updatedProperties[0]);
 
+    const roleText = role === 'TUTOR' ? 'Tutor' : 'Student';
+
+    const alertMessage =
+      properties && properties !== 'undefined'
+        ? `${roleText} just updated their ${properties}.`
+        : '';
+
     try {
-      return await this.usersService.update(
-        +id,
-        updateUserDto,
-        `Tutor just updated their ${properties}.`,
-      );
+      return await this.usersService.update(+id, updateUserDto, alertMessage);
     } catch (er) {
       console.warn(er);
       throw new InternalServerErrorException();
     }
   }
-
   @Patch('/updatePassword')
   async updatePassword(
     @Body() body: { password: string; newPassword: string },
@@ -194,10 +196,10 @@ export class UsersController {
     let URL = '';
     switch (role) {
       case 'STUDENT':
-        URL = `https://www.vitaleducators.com/student/email-verified`;
+        URL = `https://localhost:3000/student/email-verified`;
         break;
       case 'TUTOR':
-        URL = `https://www.vitaleducators.com/tutor/email-verified`;
+        URL = `https://localhost:3000/tutor/email-verified`;
         break;
     }
     if (approved) {
