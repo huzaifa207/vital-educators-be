@@ -55,7 +55,7 @@ export class RefereesService {
     } catch (error) {
       throw new BadRequestException(error);
     }
-    this.alertService.dispatchRefereeAdded(tutorId, id);
+    this.alertService.dispatchRefereeAdded(user.id);
     return referee;
   }
 
@@ -139,7 +139,15 @@ export class RefereesService {
             where: { id: r.tutorId },
             data: { is_referee_approved: 'PENDING' },
           });
-          this.alertService.dispatchRefereeLeftReview(r.tutorId, refereeId);
+
+          const tutor = await this.prisma.tutor.findUnique({
+            where: { id: r.tutorId },
+            select: { userId: true },
+          });
+
+          if (tutor) {
+            this.alertService.dispatchRefereeLeftReview(tutor.userId);
+          }
         }
       } catch (er) {
         console.warn(er);

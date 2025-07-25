@@ -232,7 +232,7 @@ export class UsersService {
       });
 
       if (alertMessage.trim()) {
-        this.alertService.dispatchTutorProfileUpdated(id, alertMessage);
+        this.alertService.dispatchUserProfileUpdated(id, alertMessage);
       }
 
       return r;
