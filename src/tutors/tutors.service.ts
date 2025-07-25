@@ -193,6 +193,11 @@ export class TutorsService {
           qualification: true,
           tutoringDetail: true,
           documents: true,
+          referees: {
+            include: {
+              RefereesReviews: true,
+            },
+          },
         },
       });
 
@@ -238,6 +243,26 @@ export class TutorsService {
         }),
         qualification: tutor.qualification,
         tutoringDetail: tutor.tutoringDetail,
+        refereeReviews: tutor.referees.map((referee) => {
+          return {
+            referee: {
+              id: referee.id,
+              first_name: referee.first_name,
+              last_name: referee.last_name,
+              email: referee.email,
+              phone: referee.phone,
+              relation: referee.relation,
+            },
+            review: referee.RefereesReviews
+              ? {
+                  reliability_rating: referee.RefereesReviews.reliability_rating,
+                  trust_rating: referee.RefereesReviews.trust_rating,
+                  professionalism_rating: referee.RefereesReviews.professionalism_rating,
+                  description: referee.RefereesReviews.description,
+                }
+              : null,
+          };
+        }),
       };
     } catch (error) {
       if (error.message === 'Tutor not found') {
