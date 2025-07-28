@@ -202,12 +202,12 @@ export class FeedbackService {
         feedback.map(async (item) => {
           const student = await this.prisma.student.findUnique({
             where: { id: item.studentId },
-
             include: {
               user: {
                 select: {
                   first_name: true,
                   last_name: true,
+                  profile_url: true,
                 },
               },
             },
@@ -249,6 +249,7 @@ export class FeedbackService {
                 select: {
                   first_name: true,
                   last_name: true,
+                  profile_url: true,
                 },
               },
             },
