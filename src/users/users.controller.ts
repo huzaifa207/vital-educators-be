@@ -24,6 +24,7 @@ import { TokenService } from 'src/token/token.service';
 import { AllUsersDTO, ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/guards/authenticated.guard';
+import { DELETED_EMAIL_SUFFIX } from 'src/admin/admin.controller';
 
 @Controller('user')
 export class UsersController {
@@ -283,7 +284,19 @@ export class UsersController {
 
   @Delete()
   async remove(@Req() request: Request) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return await this.usersService.remove(+id);
+    const { id, email } = request.currentUser as Prisma.UserCreateManyInput;
+
+    const newEmail = `${email}.${DELETED_EMAIL_SUFFIX}`;
+
+    const updatedUser = await this.usersService.update(+id, {
+      email: newEmail,
+    });
+
+    return {
+      message: 'Account deleted successfully',
+      userId: id,
+      oldEmail: email,
+      newEmail: newEmail,
+    };
   }
 }
