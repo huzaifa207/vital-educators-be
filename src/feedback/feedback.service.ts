@@ -158,9 +158,9 @@ export class FeedbackService {
           text: `Tutor ${tutor.first_name} ${tutor.last_name} request feedback from you`,
           subject: 'Feedback request from tutor',
           emailContent: reviewRequest({
-            tutorId: Base64().encode(tutor.id),
+            tutorId: String(tutor.id),
             tutorName: tutor.first_name + ' ' + tutor.last_name,
-            studentId: Base64().encode(student.id),
+            studentId: String(student.id),
             studentName: student.first_name + ' ' + student.last_name,
           }),
         });
