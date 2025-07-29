@@ -30,7 +30,7 @@ export class S3Service {
         const expirableLink = this.s3.getSignedUrl('getObject', {
           Bucket: bucketS3,
           Key: originalname,
-          Expires: new Date(Date.now() + 1000 * 60 * 60), // 1 hour
+          Expires: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
         });
         console.log('2222');
         console.log({
