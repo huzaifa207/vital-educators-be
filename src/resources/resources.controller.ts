@@ -53,15 +53,9 @@ export class ResourcesController {
           }
 
           if (!currentTarget.topic) {
-            currentTarget.topic = [{ id, title }];
+            currentTarget.topic = [{ id, title, fileType, resourceS3Key, link }];
           } else {
-            currentTarget.topic.push({
-              id,
-              title,
-              fileType,
-              resourceS3Key,
-              link,
-            });
+            currentTarget.topic.push({ id, title, fileType, resourceS3Key, link });
           }
 
           return result;

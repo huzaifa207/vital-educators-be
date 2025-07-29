@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Exception } from 'handlebars';
 import { AlertsService } from 'src/alerts/alerts.service';
@@ -44,7 +39,16 @@ export class DocumentsService {
         where: { tutorId },
         data: updateDocumentDto,
       });
-      this.alertService.dispatchDocUpdated(tutorId);
+
+      const tutor = await this.prisma.tutor.findUnique({
+        where: { id: tutorId },
+        select: { userId: true },
+      });
+
+      if (tutor) {
+        this.alertService.dispatchDocUpdated(tutor.userId);
+      }
+
       return t;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientValidationError) {

@@ -8,12 +8,19 @@ export class QualificationsService {
 
   async create(createQualificationDto: Prisma.QualificationCreateInput, userId: number) {
     try {
-      return await this.prisma.qualification.create({
+      const qualification = await this.prisma.qualification.create({
         data: {
           ...createQualificationDto,
           tutor: { connect: { id: userId } },
         },
       });
+
+      await this.prisma.tutor.update({
+        where: { id: userId },
+        data: { is_qualification_document_approved: 'PENDING' },
+      });
+
+      return qualification;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientValidationError) {
         throw new BadRequestException('Please send a valid data');

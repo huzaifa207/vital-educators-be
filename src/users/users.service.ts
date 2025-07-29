@@ -231,7 +231,10 @@ export class UsersService {
         data: updateUserDto,
       });
 
-      this.alertService.dispatchTutorProfileUpdated(id, alertMessage);
+      if (alertMessage.trim()) {
+        this.alertService.dispatchUserProfileUpdated(id, alertMessage);
+      }
+
       return r;
     } catch (er) {
       throw er;
@@ -391,6 +394,19 @@ export class UsersService {
 
   async sendEmail(email: string, name: string, action: EmailType, token: string | number) {
     await this.mailService.sendMail(new EmailUtility({ email, name, action, token }));
+  }
+
+  async findByEmail(email: string) {
+    return await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        role: true,
+      },
+    });
   }
 
   // ------------ PERSONAL DEV SERVICES ------------

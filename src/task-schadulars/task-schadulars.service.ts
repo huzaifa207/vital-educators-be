@@ -119,6 +119,8 @@ export class TaskSchadularsService {
     studentName: string;
     studentEmail: string;
   }) {
+    const jobName = `${tutorId} - ${studentId}`;
+
     const studentFeedback = new CronJob(CronExpression.EVERY_WEEK, async () => {
       const isStudentGiveFeedback = await this.prisma.feedback.findFirst({
         where: {
@@ -139,9 +141,9 @@ export class TaskSchadularsService {
           text: `Tutor ${tutorName} request feedback from you`,
           subject: 'Feedback request from tutor',
           emailContent: reviewRequest({
-            tutorId: Base64().encode(tutorId),
+            tutorId: String(tutorId),
             tutorName: tutorName,
-            studentId: Base64().encode(studentId),
+            studentId: String(studentId),
             studentName: studentName,
           }),
         });
@@ -150,12 +152,28 @@ export class TaskSchadularsService {
 
     return {
       start: () => {
-        this.schedulerRegistry.addCronJob(`${tutorId} - ${studentId}`, studentFeedback);
-        studentFeedback.start();
+        try {
+          const existingJobs = this.schedulerRegistry.getCronJobs();
+          if (!existingJobs.has(jobName)) {
+            this.schedulerRegistry.addCronJob(jobName, studentFeedback);
+            studentFeedback.start();
+            console.log(`Started reminder job: ${jobName}`);
+          }
+        } catch (error) {
+          console.warn(`Could not start job ${jobName}:`, error.message);
+        }
       },
       stop: () => {
-        this.schedulerRegistry.deleteCronJob(`${tutorId} - ${studentId}`);
-        studentFeedback.stop();
+        try {
+          const existingJobs = this.schedulerRegistry.getCronJobs();
+          if (existingJobs.has(jobName)) {
+            this.schedulerRegistry.deleteCronJob(jobName);
+            studentFeedback.stop();
+            console.log(`Stopped reminder job: ${jobName}`);
+          }
+        } catch (error) {
+          console.warn(`Could not stop job ${jobName}:`, error.message);
+        }
       },
     };
   }
