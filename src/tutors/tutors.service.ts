@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ApprovalStatus, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { StripeService } from 'src/stripe/stripe.service';
@@ -427,6 +427,79 @@ export class TutorsService {
       if (error.message === 'Conversation not found') {
         throw new NotFoundException('Conversation not found');
       }
+    }
+  }
+
+  async getTutorStudents(tutorUserId: number) {
+    try {
+      const tutorUser = await this.prisma.user.findUnique({
+        where: { id: tutorUserId },
+        include: {
+          tutor: {
+            select: { id: true },
+          },
+        },
+      });
+
+      if (!tutorUser || !tutorUser.tutor) {
+        throw new NotFoundException('Tutor not found');
+      }
+
+      const conversations = await this.prisma.conversation.findMany({
+        where: {
+          tutorId: tutorUserId,
+        },
+        select: {
+          studentId: true,
+          status: true,
+        },
+        distinct: ['studentId'],
+      });
+
+      if (conversations.length === 0) {
+        return [];
+      }
+
+      const studentIds = [...new Set(conversations.map((conv) => conv.studentId))];
+
+      const students = await this.prisma.user.findMany({
+        where: {
+          id: { in: studentIds },
+          role: 'STUDENT',
+          student: {
+            isNot: undefined,
+          },
+        },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+          profile_url: true,
+          student: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        orderBy: {
+          first_name: 'asc',
+        },
+      });
+
+      return students.map((student) => {
+        const conversation = conversations.find((conv) => conv.studentId === student.id);
+        return {
+          ...student,
+          conversationStatus: conversation?.status || 'UNKNOWN',
+        };
+      });
+    } catch (error) {
+      console.error('Error in getTutorStudents:', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch tutor students');
     }
   }
 

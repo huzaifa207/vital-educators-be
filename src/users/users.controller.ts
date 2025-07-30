@@ -198,10 +198,10 @@ export class UsersController {
     let URL = '';
     switch (role) {
       case 'STUDENT':
-        URL = `https://www.vitaleducators.com/student/email-verified`;
+        URL = `https://localhost:3000/student/email-verified`;
         break;
       case 'TUTOR':
-        URL = `https://www.vitaleducators.com/tutor/email-verified`;
+        URL = `https://localhost:3000/tutor/email-verified`;
         break;
     }
     if (approved) {
@@ -258,21 +258,6 @@ export class UsersController {
       await this.tokenService.deleteAllTokens(id);
     }
     return success;
-  }
-
-  @Get('by-email/:email')
-  async getUserByEmail(@Param('email') email: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      role: user.role,
-    };
   }
 
   // ----------PORSONAL DEV ROUTES-----------
