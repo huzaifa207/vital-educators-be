@@ -18,10 +18,15 @@ export class RefereesController {
   constructor(private readonly refereesService: RefereesService) {}
 
   @Get('/check/:token')
-  async checkReviewStatus(@Param('token') token: string) {
-    console.log('token is : ', token);
-    const isSubmitted = await this.refereesService.checkIfReviewSubmitted(token);
+  async checkRefereeReviewStatusByToken(@Param('token') token: string) {
+    const isSubmitted = await this.refereesService.checkIfRefereeHasReviewedByToken(token);
     return { submitted: isSubmitted };
+  }
+
+  @Get('/status/:id')
+  async checkRefereeReviewStatusById(@Param('id') id: string) {
+    const hasReviewed = await this.refereesService.checkIfRefereeHasReviewedById(+id);
+    return { hasReviewed };
   }
 
   @Post('/review/:token')

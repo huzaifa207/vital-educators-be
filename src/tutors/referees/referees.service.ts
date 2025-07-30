@@ -143,7 +143,7 @@ export class RefereesService {
     return true;
   }
 
-  async checkIfReviewSubmitted(token: string): Promise<boolean> {
+  async checkIfRefereeHasReviewedByToken(token: string): Promise<boolean> {
     try {
       const { id } = await this.jwtService.verify(token);
 
@@ -157,6 +157,13 @@ export class RefereesService {
     } catch (error) {
       throw new ForbiddenException('Invalid token');
     }
+  }
+
+  async checkIfRefereeHasReviewedById(refereeId: number): Promise<boolean> {
+    const existingReview = await this.prisma.refereesReviews.findFirst({
+      where: { refereeId: refereeId },
+    });
+    return !!existingReview;
   }
 
   async addRefereeReviw(
