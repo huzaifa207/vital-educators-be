@@ -433,9 +433,8 @@ export class UsersService {
     },
   ) {
     try {
-      // console.log('first 22');
       const includes: Prisma.UserInclude =
-        queryOptions.role === 'TUTOR' ? { subscription: true } : undefined;
+        queryOptions.role === 'TUTOR' ? { subscription: true, tutor: true } : undefined;
       return (
         this.prisma.user.findMany({
           skip: queryOptions.offset,
