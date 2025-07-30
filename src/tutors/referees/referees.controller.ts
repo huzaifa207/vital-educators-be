@@ -17,6 +17,21 @@ import { RefereesService } from './referees.service';
 export class RefereesController {
   constructor(private readonly refereesService: RefereesService) {}
 
+  @Get('/check/:token')
+  async checkReviewStatus(@Param('token') token: string) {
+    console.log('token is : ', token);
+    const isSubmitted = await this.refereesService.checkIfReviewSubmitted(token);
+    return { submitted: isSubmitted };
+  }
+
+  @Post('/review/:token')
+  async verify(
+    @Param('token') token: string,
+    @Body() refereesReviewsCreateInput: Prisma.RefereesReviewsCreateInput,
+  ) {
+    return this.refereesService.addRefereeReviw(token, refereesReviewsCreateInput);
+  }
+
   @Post()
   create(@Body() createRefereeDto: Prisma.RefereesCreateInput, @Req() request: Request) {
     const user = request.currentUser;
@@ -53,13 +68,5 @@ export class RefereesController {
   remove(@Param('id') id: string, @Req() request: Request) {
     const { id: tutorId } = request.currentTutor as Prisma.TutorCreateManyInput;
     return this.refereesService.remove(+id, +tutorId);
-  }
-
-  @Post('/review/:token')
-  async verify(
-    @Param('token') token: string,
-    @Body() refereesReviewsCreateInput: Prisma.RefereesReviewsCreateInput,
-  ) {
-    return this.refereesService.addRefereeReviw(token, refereesReviewsCreateInput);
   }
 }

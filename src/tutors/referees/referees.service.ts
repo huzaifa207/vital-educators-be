@@ -143,6 +143,22 @@ export class RefereesService {
     return true;
   }
 
+  async checkIfReviewSubmitted(token: string): Promise<boolean> {
+    try {
+      const { id } = await this.jwtService.verify(token);
+
+      console.log(id);
+
+      const existingReview = await this.prisma.refereesReviews.findFirst({
+        where: { refereeId: id },
+      });
+
+      return !!existingReview;
+    } catch (error) {
+      throw new ForbiddenException('Invalid token');
+    }
+  }
+
   async addRefereeReviw(
     token: string,
     refereesReviewsCreateInput: Prisma.RefereesReviewsCreateInput,
