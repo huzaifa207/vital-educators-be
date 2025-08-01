@@ -106,6 +106,7 @@ export class FileService {
     }).fields([
       { name: 'resource', maxCount: 1 },
       { name: 'file', maxCount: 1 },
+      { name: 'qualification_document', maxCount: 1 },
       { name: 'profile_url', maxCount: 1 },
       { name: 'passport_url', maxCount: 1 },
       { name: 'license_url', maxCount: 1 },
