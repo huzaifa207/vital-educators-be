@@ -153,7 +153,7 @@ export const reviewTutorReplyToStudentReview = (tutorName: string, studentName: 
                                       line-height: 48px;
                                       text-align: center;
                                   ">
-                    First Tutor
+                    Vital Educators
                   </h2>
                 </td>
               </tr>

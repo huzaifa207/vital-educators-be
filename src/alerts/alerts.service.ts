@@ -51,44 +51,44 @@ export class AlertsService {
     };
   }
 
-  async dispatchTutorProfileUpdated(
-    tutorId: number,
-    description: string = 'Tutor just updated their profile',
-  ) {
+  async dispatchUserProfileUpdated(userId: number, description: string) {
     try {
+      const userType = description.toLowerCase().includes('tutor') ? 'tutor' : 'student';
+
       await this.create({
         description,
-        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#profile`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/${userType}-detail/${userId}#profile`,
       });
     } catch (er) {
       console.warn(er);
     }
   }
-  async dispatchRefereeAdded(tutorId: number, refereeId: number) {
+
+  async dispatchRefereeAdded(userId: number) {
     try {
       await this.create({
         description: 'Tutor added a new referee',
-        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#referees`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${userId}#referees`,
       });
     } catch (er) {
       console.warn(er);
     }
   }
-  async dispatchDocUpdated(tutorId: number) {
+  async dispatchDocUpdated(userId: number) {
     try {
       await this.create({
         description: 'Tutor updated their official docs',
-        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#documents`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${userId}#documents`,
       });
     } catch (er) {
       console.warn(er);
     }
   }
-  async dispatchRefereeLeftReview(tutorId: number, refereeId: number) {
+  async dispatchRefereeLeftReview(userId: number) {
     try {
       await this.create({
         description: 'Referee left a review',
-        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${tutorId}#referees`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${userId}#referees`,
       });
     } catch (er) {
       console.warn(er);

@@ -158,9 +158,9 @@ export class FeedbackService {
           text: `Tutor ${tutor.first_name} ${tutor.last_name} request feedback from you`,
           subject: 'Feedback request from tutor',
           emailContent: reviewRequest({
-            tutorId: Base64().encode(tutor.id),
+            tutorId: String(tutor.id),
             tutorName: tutor.first_name + ' ' + tutor.last_name,
-            studentId: Base64().encode(student.id),
+            studentId: String(student.id),
             studentName: student.first_name + ' ' + student.last_name,
           }),
         });
@@ -202,12 +202,12 @@ export class FeedbackService {
         feedback.map(async (item) => {
           const student = await this.prisma.student.findUnique({
             where: { id: item.studentId },
-
             include: {
               user: {
                 select: {
                   first_name: true,
                   last_name: true,
+                  profile_url: true,
                 },
               },
             },
@@ -249,6 +249,7 @@ export class FeedbackService {
                 select: {
                   first_name: true,
                   last_name: true,
+                  profile_url: true,
                 },
               },
             },

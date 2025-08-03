@@ -26,6 +26,8 @@ import { NotFoundException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { emailAlert } from 'src/mail-service/templates/email-alert';
 
+export const DELETED_EMAIL_SUFFIX = 'deleted.a3knasd21';
+
 @Controller('/admin')
 export class AdminController {
   constructor(
@@ -43,7 +45,7 @@ export class AdminController {
     const tutorDetails = await this.tutorService.getTutorProfile(tutorId, {
       userExcludedFields: ['password', 'password_reset_token'],
     });
-    const referees = await this.refereeService.findAll(tutorId);
+    const referees = await this.refereeService.findAll(tutorDetails.tutor.id);
 
     return {
       ...tutorDetails,
@@ -171,6 +173,7 @@ export class AdminController {
       throw new BadRequestException();
     }
   }
+
   @UseGuards(AdminGuard)
   @Delete('tutor/:userId')
   async deleteTutor(@Param('userId', ParseIntPipe) userId: number) {
@@ -180,11 +183,23 @@ export class AdminController {
         throw new NotFoundException('Tutor not found');
       }
 
-      await this.usersService.remove(tutor.userId);
+      const user = await this.usersService.findOne(tutor.userId);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const newEmail = `${user.email}.${DELETED_EMAIL_SUFFIX}`;
+
+      await this.usersService.update(tutor.userId, {
+        email: newEmail,
+      });
+
       return {
         message: 'Tutor deleted successfully',
         tutorId: tutor.id,
         userId: tutor.userId,
+        oldEmail: user.email,
+        newEmail: newEmail,
       };
     } catch (error) {
       console.error('Error deleting tutor:', error);
@@ -194,6 +209,7 @@ export class AdminController {
       throw new BadRequestException('Failed to delete tutor');
     }
   }
+
   @UseGuards(AdminGuard)
   @Delete('student/:userId')
   async deleteStudent(@Param('userId', ParseIntPipe) userId: number) {
@@ -203,11 +219,17 @@ export class AdminController {
         throw new NotFoundException('Student not found');
       }
 
-      await this.usersService.remove(student.id);
+      const newEmail = `${student.email}.${DELETED_EMAIL_SUFFIX}`;
+
+      await this.usersService.update(student.id, {
+        email: newEmail,
+      });
 
       return {
         message: 'Student deleted successfully',
         userId: student.id,
+        oldEmail: student.email,
+        newEmail: newEmail,
       };
     } catch (error) {
       console.error('Error deleting student:', error);

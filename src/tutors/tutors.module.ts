@@ -38,10 +38,12 @@ export class TutorsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CurrentTutorMiddleware)
-      .exclude({ path: 'tutoring-detail/:id', method: RequestMethod.GET })
-      .exclude({ path: 'referee/review/*', method: RequestMethod.POST })
-      .exclude({ path: 'approve-student', method: RequestMethod.PATCH })
-      .exclude({ path: 'pending-students/:tutorId', method: RequestMethod.GET })
+      .exclude(
+        { path: 'tutoring-detail/:id', method: RequestMethod.GET },
+        { path: 'referee/review/:token', method: RequestMethod.POST },
+        { path: 'approve-student', method: RequestMethod.PATCH },
+        { path: 'pending-students/:tutorId', method: RequestMethod.GET },
+      )
       .forRoutes(
         RefereesController,
         QualificationsController,

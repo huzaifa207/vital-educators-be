@@ -20,14 +20,13 @@ export class FileUploadController {
     @Query('key') key: string,
   ) {
     try {
-      if (mediaType === 'RESOURCE') {
-        if (!key) return response.status(500).json('key was not provided');
-        await this.fileService.resourceUpload(request, response, key);
-      } else {
-        await this.fileService.fileUpload(request, response);
+      if (!key) {
+        return response.status(400).json('key parameter is required');
       }
+
+      await this.fileService.unifiedUpload(request, response, mediaType, key);
     } catch (error) {
-      return response.status(500).json(`Failed to upload image file: ${error.message}`);
+      return response.status(500).json(`Failed to upload file: ${error.message}`);
     }
   }
 
@@ -44,7 +43,7 @@ export class FileUploadController {
       const data = await this.fileService.deleteFile(key);
       return response.status(200).json(data);
     } catch (error) {
-      return response.status(500).json(`Failed to delete image file: ${error.message}`);
+      return response.status(500).json(`Failed to delete file: ${error.message}`);
     }
   }
 }

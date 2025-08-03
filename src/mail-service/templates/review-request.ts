@@ -202,8 +202,8 @@ export const reviewRequest = ({
               If you are willing to provide a review, you can either send it to me via email or you can fill out a short survey by following the link below:
 
               </p>
-              <a href="https://www.vitaleducators.com/tutor/${tutorId}?studentId=${studentId}" target="_blank" style="margin: 1em 2em; text-align:left;font-weight:300;text-decoration: underline; color:'#ccc'">
-              https://www.vitaleducators.com/tutor/${tutorId}?studentId=${studentId}
+              <a href="https://www.vitaleducators.com/tutor/profile/${tutorId}?studentId=${studentId}" target="_blank" style="margin: 1em 2em; text-align:left;font-weight:300;text-decoration: underline; color:'#ccc'">
+              https://www.vitaleducators.com/tutor/profile/${tutorId}?studentId=${studentId}
                 </a>
              
               <p style="margin: 1em 2em; text-align:left;font-weight:300; color:'#ccc'">
@@ -229,7 +229,7 @@ export const reviewRequest = ({
                     <table border="0" cellpadding="0" cellspacing="0">
                       <tr>
                         <td align="center" bgcolor="#2A2462" style="border-radius: 6px">
-                          <a href='https://www.vitaleducators.com/tutor/${tutorId}?studentId=${studentId}' target="_blank" style="
+                          <a href='https://www.vitaleducators.com/tutor/profile/${tutorId}?studentId=${studentId}' target="_blank" style="
                                       display: inline-block;
                                       padding: 16px 36px;
                                       font-family: 'Source Sans Pro', Helvetica, Arial,

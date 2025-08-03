@@ -7,6 +7,7 @@ import {
   ForbiddenException,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -23,6 +24,7 @@ import { TokenService } from 'src/token/token.service';
 import { AllUsersDTO, ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/guards/authenticated.guard';
+import { DELETED_EMAIL_SUFFIX } from 'src/admin/admin.controller';
 
 @Controller('user')
 export class UsersController {
@@ -141,7 +143,7 @@ export class UsersController {
   @Patch()
   @Serializer(ReturnUserDto)
   async update(@Body() updateUserDto: Prisma.UserUpdateInput, @Req() request: Request) {
-    const { id, email_approved } = request.currentUser as Prisma.UserCreateManyInput;
+    const { id, email_approved, role } = request.currentUser as Prisma.UserCreateManyInput;
 
     if (!email_approved) {
       throw new ForbiddenException('Email not confirmed');
@@ -159,18 +161,20 @@ export class UsersController {
         ? `, and ${updatedProperties.slice(-1)}`
         : updatedProperties[0]);
 
+    const roleText = role === 'TUTOR' ? 'Tutor' : 'Student';
+
+    const alertMessage =
+      properties && properties !== 'undefined'
+        ? `${roleText} just updated their ${properties}.`
+        : '';
+
     try {
-      return await this.usersService.update(
-        +id,
-        updateUserDto,
-        `Tutor just updated their ${properties}.`,
-      );
+      return await this.usersService.update(+id, updateUserDto, alertMessage);
     } catch (er) {
       console.warn(er);
       throw new InternalServerErrorException();
     }
   }
-
   @Patch('/updatePassword')
   async updatePassword(
     @Body() body: { password: string; newPassword: string },
@@ -256,6 +260,21 @@ export class UsersController {
     return success;
   }
 
+  @Get('by-email/:email')
+  async getUserByEmail(@Param('email') email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return {
+      id: user.id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      role: user.role,
+    };
+  }
+
   // ----------PORSONAL DEV ROUTES-----------
 
   @Delete('/all')
@@ -265,7 +284,19 @@ export class UsersController {
 
   @Delete()
   async remove(@Req() request: Request) {
-    const { id } = request.currentUser as Prisma.UserCreateManyInput;
-    return await this.usersService.remove(+id);
+    const { id, email } = request.currentUser as Prisma.UserCreateManyInput;
+
+    const newEmail = `${email}.${DELETED_EMAIL_SUFFIX}`;
+
+    const updatedUser = await this.usersService.update(+id, {
+      email: newEmail,
+    });
+
+    return {
+      message: 'Account deleted successfully',
+      userId: id,
+      oldEmail: email,
+      newEmail: newEmail,
+    };
   }
 }
