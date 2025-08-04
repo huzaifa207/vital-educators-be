@@ -323,7 +323,7 @@ model Subscriptions {
   id            Int     @id @default(autoincrement())
   email         String  @unique
   subscribed    Boolean @default(true)
-  source        String  @default("free-resources")    
+  source        String  @default("free-resources")
 }
 
 enum FileType {
