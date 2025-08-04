@@ -1,12 +1,17 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { Exception } from 'handlebars';
 import { AlertsService } from 'src/alerts/alerts.service';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 
 @Injectable()
 export class DocumentsService {
   constructor(private prisma: PrismaService, private alertService: AlertsService) {}
+
   async create(createDocumentDto: Prisma.DocumentsCreateInput, tutorId: number) {
     try {
       const document = await this.prisma.documents.create({
@@ -29,7 +34,7 @@ export class DocumentsService {
         where: { tutorId },
       });
     } catch (error) {
-      throw new Exception("Document doesn't exist");
+      throw new NotFoundException("Document doesn't exist");
     }
   }
 
@@ -66,7 +71,7 @@ export class DocumentsService {
       });
       return 'Document deleted successfully';
     } catch (error) {
-      throw new Exception("Document doesn't exist");
+      throw new NotFoundException("Document doesn't exist");
     }
   }
 }
