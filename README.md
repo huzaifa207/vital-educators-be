@@ -1,58 +1,69 @@
-## Description
+# Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project is a [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
 
-**Database Migrations: Development**
+### 1. Update Database URL
 
-```
-# 1 - npm run migration:dev -- {npx prisma migrate dev --name}
-# 2 - npx prisma generate
+Before proceeding, update the `DATABASE_URL` in your `.env` file to match your local database configuration.
 
-```
+### 2. Database Migrations: Development
 
-**Database Migrations: Production**
-
-```
-# 3 - change DB_URL in .env
-
-# 4 - npx prisma migrate resolve --applied "<migration file name>" --preview-feature
-
-# 5 - npx prisma db push
-```
+Run the following commands to apply migrations in development:
 
 ```bash
-$ npm install
+# Run migration for all
+npm run migration:dev --all {npx prisma migrate dev --all}
+
+# Or run migration for a specific name
+npm run migration:dev --name {npx prisma migrate dev --name}
 ```
 
-## Running the app
+Generate Prisma client:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npx prisma generate
 ```
 
-**Always USE local-ssl-proxy package**
+### 3. Install Dependencies
+
+Install the required dependencies for the project:
 
 ```bash
-$  npm i -g local-ssl-proxy
+npm install
 ```
 
-**_For Backend_**
+## Running the App Locally
 
-```
-    local-ssl-proxy -s 5001 -t 5002
+### 1. Start the App in Development Mode
+
+Run the following command to start the app in development mode:
+
+```bash
+npm run start:dev
 ```
 
-**_For Frontend_**
+The app will be accessible at [http://localhost:5002](http://localhost:5002).
 
+### 2. Set Up Proxy
+
+To set up the local SSL proxy for secure communication, install `local-ssl-proxy`:
+
+```bash
+npm i -g local-ssl-proxy
 ```
-    local-ssl-proxy -s 3000 -t 3001
+
+Then, create the proxy for your backend:
+
+```bash
+local-ssl-proxy -s 5001 -t 5002
 ```
+
+This will proxy the backend to [https://localhost:5001](https://localhost:5001).
+
+Always use this link to communicate with backend
+
+## Node Version
+
+Ensure you're using **Node v22** for the project to run smooth
