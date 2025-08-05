@@ -335,12 +335,63 @@ export class TutorsService {
             },
           },
           tutoringDetail: true,
+          referees: {
+            select: {
+              RefereesReviews: {
+                select: {
+                  reliability_rating: true,
+                  trust_rating: true,
+                  professionalism_rating: true,
+                },
+              },
+            },
+          },
+          feedbacks: {
+            select: {
+              rating: true,
+            },
+          },
         },
 
         skip,
         take: 10,
       });
-      return tutors;
+
+      const tutorsWithRatings = tutors.map((tutor) => {
+        const refereeReviews = tutor.referees
+          .map((ref) => ref.RefereesReviews)
+          .filter((review) => review !== null);
+
+        let refereeAvgRating = 0;
+        if (refereeReviews.length > 0) {
+          const totalRatings = refereeReviews.reduce((sum, review) => {
+            return (
+              sum + review.reliability_rating + review.trust_rating + review.professionalism_rating
+            );
+          }, 0);
+          refereeAvgRating = totalRatings / (refereeReviews.length * 3);
+        }
+
+        let feedbackAvgRating = 0;
+        if (tutor.feedbacks.length > 0) {
+          const totalFeedbackRating = tutor.feedbacks.reduce(
+            (sum, feedback) => sum + feedback.rating,
+            0,
+          );
+          feedbackAvgRating = totalFeedbackRating / tutor.feedbacks.length;
+        }
+
+        // Remove the raw data and add calculated averages
+        const { referees, feedbacks, ...tutorData } = tutor;
+
+        return {
+          ...tutorData,
+          refereeAvgRating,
+          feedbackAvgRating,
+        };
+      });
+
+      return tutorsWithRatings;
     } catch (error) {
       console.log(error);
       throw new NotFoundException('tutors not found');
