@@ -42,6 +42,9 @@ model User {
   subscriptionId           Int?              @unique
   StudentPayment           StudentPayment?
   purchases                StudentPurchase[]
+
+  @@index([role])
+  @@index([first_name])
 }
 
 model whitelist {
@@ -65,6 +68,10 @@ model Conversation {
   tutorReply Boolean   @default(false)
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@index([tutorId, studentId])
 }
 
 model Chats {
@@ -255,12 +262,12 @@ model SubjectOffer {
 }
 
 model Documents {
-  id                      Int    @id @default(autoincrement())
-  passport_url            String @default("")
-  license_url             String @default("")
-  criminal_record_url     String @default("")
-  tutor                   Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId                 Int    @unique
+  id                  Int    @id @default(autoincrement())
+  passport_url        String @default("")
+  license_url         String @default("")
+  criminal_record_url String @default("")
+  tutor               Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId             Int    @unique
 }
 
 model Media {
@@ -320,10 +327,10 @@ model Resources {
 }
 
 model Subscriptions {
-  id            Int     @id @default(autoincrement())
-  email         String  @unique
-  subscribed    Boolean @default(true)
-  source        String  @default("free-resources")
+  id         Int     @id @default(autoincrement())
+  email      String  @unique
+  subscribed Boolean @default(true)
+  source     String  @default("free-resources")
 }
 
 enum FileType {
