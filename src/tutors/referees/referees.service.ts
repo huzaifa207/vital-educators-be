@@ -147,8 +147,6 @@ export class RefereesService {
     try {
       const { id } = await this.jwtService.verify(token);
 
-      console.log(id);
-
       const existingReview = await this.prisma.refereesReviews.findFirst({
         where: { refereeId: id },
       });

@@ -1,3 +1,4 @@
+import { ApprovalStatus } from '@prisma/client';
 import { Expose, Type } from 'class-transformer';
 
 export class ReturnSubsciptionDto {
@@ -60,19 +61,19 @@ export class ReturnTutorDto {
   userId: number;
 
   @Expose()
-  is_account_approved: string;
+  is_account_approved: ApprovalStatus;
 
   @Expose()
-  is_profile_pic_approved: string;
+  is_profile_pic_approved: ApprovalStatus;
 
   @Expose()
-  is_government_document_approved: string;
+  is_government_document_approved: ApprovalStatus;
 
   @Expose()
-  is_qualification_document_approved: string;
+  is_qualification_document_approved: ApprovalStatus;
 
   @Expose()
-  is_referee_approved: string;
+  is_referee_approved: ApprovalStatus;
 }
 
 export class ReturnUserDto {
