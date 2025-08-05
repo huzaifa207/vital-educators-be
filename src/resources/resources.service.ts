@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { MailService } from 'src/mail-service/mail.service';
 import { resourceLinkTemplate } from 'src/mail-service/templates/email-resource';
-import { FileService } from 'src/media/file.service';
+import { FileService } from 'src/file/file.service';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 
 @Injectable()

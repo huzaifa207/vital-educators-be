@@ -18,8 +18,7 @@ import { FeedbackController } from './feedback/feedback.controller';
 import { FeedbackModule } from './feedback/feedback.module';
 import { FlaggedMessagesModule } from './flagged-messages/flagged-messages.module';
 import { MailModule } from './mail-service/mail.module';
-import { MediaController } from './media/media.controller';
-import { MediaModule } from './media/media.module';
+import { MediaModule } from './file/file.module';
 import { CurrentUserMiddleware } from './middleware/current-user.middleware';
 import { NotificationController } from './notifications/notifications.controller';
 import { NotificationModule } from './notifications/notifications.module';
@@ -40,7 +39,7 @@ import { TutorsController } from './tutors/tutors.controller';
 import { TutorsModule } from './tutors/tutors.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { FileUploadController } from './media/file.controller';
+import { FileUploadController } from './file/file.controller';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -137,7 +136,6 @@ export class AppModule {
         QualificationsController,
         TutoringDetailsController,
         SubjectOffersController,
-        MediaController,
         DocumentsController,
         AdminController,
         NotificationController,
