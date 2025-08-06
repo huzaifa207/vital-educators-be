@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
+import { ApproveFeedbackDto } from './dto/update-feedback.dto';
 import { FeedbackService } from './feedback.service';
 
 @Controller('feedback')
@@ -21,6 +22,11 @@ export class FeedbackController {
     return this.feedbackService.findAll(+id, role);
   }
 
+  @Get('/admin/all')
+  getAllForAdmin(@Query('status') status?: 'APPROVED' | 'REJECTED' | 'PENDING') {
+    return this.feedbackService.findAllForAdmin(status);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.feedbackService.findOne(+id);
@@ -31,10 +37,10 @@ export class FeedbackController {
     return this.feedbackService.replyFromTutor(+id, reply);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateFeedbackDto: UpdateFeedbackDto) {
-  //   return this.feedbackService.update(+id, updateFeedbackDto);
-  // }
+  @Patch('/approve/:id')
+  approveFeedback(@Param('id') id: string, @Body() approveFeedbackDto: ApproveFeedbackDto) {
+    return this.feedbackService.updateApprovalStatus(+id, approveFeedbackDto);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

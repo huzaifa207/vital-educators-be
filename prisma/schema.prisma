@@ -107,15 +107,16 @@ model Tutor {
 }
 
 model Feedback {
-  id            Int       @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   rating        Int
   comment       String
-  comment_reply String    @default("")
-  createdAt     DateTime? @default(now())
-  updatedAt     DateTime? @updatedAt
-  Tutor         Tutor     @relation(fields: [tutorId], references: [id])
+  comment_reply String         @default("")
+  status        ApprovalStatus @default(PENDING)
+  createdAt     DateTime?      @default(now())
+  updatedAt     DateTime?      @updatedAt
+  Tutor         Tutor          @relation(fields: [tutorId], references: [id])
   tutorId       Int
-  Student       Student   @relation(fields: [studentId], references: [id])
+  Student       Student        @relation(fields: [studentId], references: [id])
   studentId     Int
 }
 
