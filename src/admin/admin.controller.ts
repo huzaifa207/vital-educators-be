@@ -25,6 +25,8 @@ import { MailService } from 'src/mail-service/mail.service';
 import { NotFoundException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { emailAlert } from 'src/mail-service/templates/email-alert';
+import { DocumentsService } from 'src/tutors/documents/documents.service';
+import { UpdateDocumentStatusDto } from 'src/tutors/documents/dto/update-document-status.dto';
 
 export const DELETED_EMAIL_SUFFIX = 'deleted.a3knasd21';
 
@@ -37,8 +39,10 @@ export class AdminController {
     private readonly studentsService: StudentsService,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
+    private readonly documentsService: DocumentsService,
     private alertsService: AlertsService,
   ) {}
+
   @UseGuards(AdminGuard)
   @Get('tutor/:tutorId')
   async getTutorById(@Param('tutorId', new ParseIntPipe()) tutorId: number) {
@@ -52,6 +56,14 @@ export class AdminController {
       referees,
     };
   }
+
+  @UseGuards(AdminGuard)
+  @Patch('document/update-status')
+  async updateDocumentStatus(@Body() updateStatusDto: UpdateDocumentStatusDto) {
+    const { tutorId, ...statusUpdates } = updateStatusDto;
+    return this.documentsService.updateDocumentStatus(tutorId, statusUpdates);
+  }
+
   @UseGuards(AdminGuard)
   @Post('tutor/:tutorId/cancel-subscription')
   async cancelTutorSubscription(
@@ -65,11 +77,13 @@ export class AdminController {
       ok: true,
     };
   }
+
   @UseGuards(AdminGuard)
   @Get('student/disputes')
   async getStudentDisputes() {
     return await this.studentsService.getAllDisputes();
   }
+
   @UseGuards(AdminGuard)
   @Post('student/close-dispute')
   async closeDispute(
@@ -90,6 +104,7 @@ export class AdminController {
       body.awardCredit,
     );
   }
+
   @UseGuards(AdminGuard)
   @Post('tutor/:tutorId/reinstate-subscription')
   async reinstateTutorSubscription(@Param('tutorId', new ParseIntPipe()) tutorId: number) {
@@ -100,6 +115,7 @@ export class AdminController {
       ok: true,
     };
   }
+
   @UseGuards(AdminGuard)
   @Get('stats')
   async getStats() {

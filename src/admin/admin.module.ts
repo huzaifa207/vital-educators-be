@@ -10,6 +10,7 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { MailModule } from 'src/mail-service/mail.module';
 import { UsersModule } from 'src/users/users.module';
+import { DocumentsModule } from 'src/tutors/documents/documents.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UsersModule } from 'src/users/users.module';
     AlertsModule,
     MailModule,
     UsersModule,
+    DocumentsModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],
