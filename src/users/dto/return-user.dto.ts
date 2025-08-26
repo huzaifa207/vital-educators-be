@@ -1,3 +1,4 @@
+import { ApprovalStatus } from '@prisma/client';
 import { Expose, Type } from 'class-transformer';
 
 export class ReturnSubsciptionDto {
@@ -35,6 +36,44 @@ export class ReturnSubsciptionDto {
   createdAt: string;
   @Expose()
   updatedAt: string;
+}
+
+export class ReturnTutorDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  crb_check: boolean;
+
+  @Expose()
+  skype_id: string;
+
+  @Expose()
+  deActivate: boolean;
+
+  @Expose()
+  createdAt: string;
+
+  @Expose()
+  updatedAt: string;
+
+  @Expose()
+  userId: number;
+
+  @Expose()
+  is_account_approved: ApprovalStatus;
+
+  @Expose()
+  is_profile_pic_approved: ApprovalStatus;
+
+  @Expose()
+  is_government_document_approved: ApprovalStatus;
+
+  @Expose()
+  is_qualification_document_approved: ApprovalStatus;
+
+  @Expose()
+  is_referee_approved: ApprovalStatus;
 }
 
 export class ReturnUserDto {
@@ -85,8 +124,10 @@ export class ReturnUserDto {
 
   @Expose()
   created_at: Date;
+
   @Expose()
   block_status: boolean;
+
   @Expose()
   block_reason: string;
 
@@ -99,6 +140,10 @@ export class ReturnUserDto {
   @Type(() => ReturnSubsciptionDto)
   @Expose()
   subscription: ReturnSubsciptionDto;
+
+  @Type(() => ReturnTutorDto)
+  @Expose()
+  tutor: ReturnTutorDto;
 }
 
 export class AllUsersDTO {

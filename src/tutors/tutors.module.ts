@@ -41,6 +41,7 @@ export class TutorsModule {
       .exclude(
         { path: 'tutoring-detail/:id', method: RequestMethod.GET },
         { path: 'referee/review/:token', method: RequestMethod.POST },
+        { path: 'referee/check/:token', method: RequestMethod.GET },
         { path: 'approve-student', method: RequestMethod.PATCH },
         { path: 'pending-students/:tutorId', method: RequestMethod.GET },
       )

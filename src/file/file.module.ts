@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from 'src/prisma-module/prisma.module';
-import { CloudinaryModule } from './../cloudinay/cloudinay.module';
+import { CloudinaryModule } from '../cloudinay/cloudinay.module';
 import { FileUploadController } from './file.controller';
 import { FileService } from './file.service';
-import { MediaController } from './media.controller';
-import { MediaService } from './media.service';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [CloudinaryModule, PrismaModule, UsersModule],
-  controllers: [MediaController, FileUploadController],
-  providers: [MediaService, FileService],
+  controllers: [FileUploadController],
+  providers: [FileService],
   exports: [FileService],
 })
 export class MediaModule {}

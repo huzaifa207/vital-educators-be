@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ApprovalStatus, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { StripeService } from 'src/stripe/stripe.service';
@@ -335,12 +335,63 @@ export class TutorsService {
             },
           },
           tutoringDetail: true,
+          referees: {
+            select: {
+              RefereesReviews: {
+                select: {
+                  reliability_rating: true,
+                  trust_rating: true,
+                  professionalism_rating: true,
+                },
+              },
+            },
+          },
+          feedbacks: {
+            select: {
+              rating: true,
+            },
+          },
         },
 
         skip,
         take: 10,
       });
-      return tutors;
+
+      const tutorsWithRatings = tutors.map((tutor) => {
+        const refereeReviews = tutor.referees
+          .map((ref) => ref.RefereesReviews)
+          .filter((review) => review !== null);
+
+        let refereeAvgRating = 0;
+        if (refereeReviews.length > 0) {
+          const totalRatings = refereeReviews.reduce((sum, review) => {
+            return (
+              sum + review.reliability_rating + review.trust_rating + review.professionalism_rating
+            );
+          }, 0);
+          refereeAvgRating = totalRatings / (refereeReviews.length * 3);
+        }
+
+        let feedbackAvgRating = 0;
+        if (tutor.feedbacks.length > 0) {
+          const totalFeedbackRating = tutor.feedbacks.reduce(
+            (sum, feedback) => sum + feedback.rating,
+            0,
+          );
+          feedbackAvgRating = totalFeedbackRating / tutor.feedbacks.length;
+        }
+
+        // Remove the raw data and add calculated averages
+        const { referees, feedbacks, ...tutorData } = tutor;
+
+        return {
+          ...tutorData,
+          refereeAvgRating,
+          feedbackAvgRating,
+        };
+      });
+
+      return tutorsWithRatings;
     } catch (error) {
       console.log(error);
       throw new NotFoundException('tutors not found');
@@ -427,6 +478,79 @@ export class TutorsService {
       if (error.message === 'Conversation not found') {
         throw new NotFoundException('Conversation not found');
       }
+    }
+  }
+
+  async getTutorStudents(tutorUserId: number) {
+    try {
+      const tutorUser = await this.prisma.user.findUnique({
+        where: { id: tutorUserId },
+        include: {
+          tutor: {
+            select: { id: true },
+          },
+        },
+      });
+
+      if (!tutorUser || !tutorUser.tutor) {
+        throw new NotFoundException('Tutor not found');
+      }
+
+      const conversations = await this.prisma.conversation.findMany({
+        where: {
+          tutorId: tutorUserId,
+        },
+        select: {
+          studentId: true,
+          status: true,
+        },
+        distinct: ['studentId'],
+      });
+
+      if (conversations.length === 0) {
+        return [];
+      }
+
+      const studentIds = [...new Set(conversations.map((conv) => conv.studentId))];
+
+      const students = await this.prisma.user.findMany({
+        where: {
+          id: { in: studentIds },
+          role: 'STUDENT',
+          student: {
+            isNot: undefined,
+          },
+        },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+          profile_url: true,
+          student: {
+            select: {
+              id: true,
+            },
+          },
+        },
+        orderBy: {
+          first_name: 'asc',
+        },
+      });
+
+      return students.map((student) => {
+        const conversation = conversations.find((conv) => conv.studentId === student.id);
+        return {
+          ...student,
+          conversationStatus: conversation?.status || 'UNKNOWN',
+        };
+      });
+    } catch (error) {
+      console.error('Error in getTutorStudents:', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch tutor students');
     }
   }
 

@@ -1,0 +1,12 @@
+ALTER TABLE "Documents" ADD COLUMN     "approved_criminal_record_url" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "approved_license_url" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "approved_passport_url" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "criminal_record_note" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "criminal_record_rejection_reason" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "criminal_record_status" "ApprovalStatus" NOT NULL DEFAULT E'NOT_ADDED',
+ADD COLUMN     "license_note" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "license_rejection_reason" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "license_status" "ApprovalStatus" NOT NULL DEFAULT E'NOT_ADDED',
+ADD COLUMN     "passport_note" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "passport_rejection_reason" TEXT NOT NULL DEFAULT E'',
+ADD COLUMN     "passport_status" "ApprovalStatus" NOT NULL DEFAULT E'NOT_ADDED';

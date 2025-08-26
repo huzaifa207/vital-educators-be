@@ -42,6 +42,9 @@ model User {
   subscriptionId           Int?              @unique
   StudentPayment           StudentPayment?
   purchases                StudentPurchase[]
+
+  @@index([role])
+  @@index([first_name])
 }
 
 model whitelist {
@@ -65,6 +68,10 @@ model Conversation {
   tutorReply Boolean   @default(false)
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@index([tutorId, studentId])
 }
 
 model Chats {
@@ -100,15 +107,16 @@ model Tutor {
 }
 
 model Feedback {
-  id            Int       @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   rating        Int
   comment       String
-  comment_reply String    @default("")
-  createdAt     DateTime? @default(now())
-  updatedAt     DateTime? @updatedAt
-  Tutor         Tutor     @relation(fields: [tutorId], references: [id])
+  comment_reply String         @default("")
+  status        ApprovalStatus @default(PENDING)
+  createdAt     DateTime?      @default(now())
+  updatedAt     DateTime?      @updatedAt
+  Tutor         Tutor          @relation(fields: [tutorId], references: [id])
   tutorId       Int
-  Student       Student   @relation(fields: [studentId], references: [id])
+  Student       Student        @relation(fields: [studentId], references: [id])
   studentId     Int
 }
 
@@ -255,12 +263,25 @@ model SubjectOffer {
 }
 
 model Documents {
-  id                      Int    @id @default(autoincrement())
-  passport_url            String @default("")
-  license_url             String @default("")
-  criminal_record_url     String @default("")
-  tutor                   Tutor  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId                 Int    @unique
+  id                               Int            @id @default(autoincrement())
+  passport_url                     String         @default("")
+  license_url                      String         @default("")
+  criminal_record_url              String         @default("")
+  approved_passport_url            String         @default("")
+  approved_license_url             String         @default("")
+  approved_criminal_record_url     String         @default("")
+  passport_status                  ApprovalStatus @default(NOT_ADDED)
+  license_status                   ApprovalStatus @default(NOT_ADDED)
+  criminal_record_status           ApprovalStatus @default(NOT_ADDED)
+  passport_note                    String         @default("")
+  license_note                     String         @default("")
+  criminal_record_note             String         @default("")
+  passport_rejection_reason        String         @default("")
+  license_rejection_reason         String         @default("")
+  criminal_record_rejection_reason String         @default("")
+
+  tutor   Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId Int   @unique
 }
 
 model Media {
@@ -320,10 +341,10 @@ model Resources {
 }
 
 model Subscriptions {
-  id            Int     @id @default(autoincrement())
-  email         String  @unique
-  subscribed    Boolean @default(true)
-  source        String  @default("free-resources")
+  id         Int     @id @default(autoincrement())
+  email      String  @unique
+  subscribed Boolean @default(true)
+  source     String  @default("free-resources")
 }
 
 enum FileType {

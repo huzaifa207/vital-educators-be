@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
@@ -86,6 +87,25 @@ export class TutorsController {
   deActivateTutor(@Req() request: Request) {
     const { id } = request.currentUser as Prisma.UserCreateManyInput;
     return this.tutorsService.deActivateTutor(+id);
+  }
+
+  @UseGuards(TutorGuard)
+  @Get('students')
+  async getTutorStudents(@Req() request: Request) {
+    try {
+      const { id } = request.currentUser as Prisma.UserCreateManyInput;
+      const students = await this.tutorsService.getTutorStudents(+id);
+      return {
+        success: true,
+        count: students.length,
+        students: students,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch tutor students');
+    }
   }
 
   // @UseGuards(TuctorGuard)

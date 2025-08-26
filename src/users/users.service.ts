@@ -396,19 +396,6 @@ export class UsersService {
     await this.mailService.sendMail(new EmailUtility({ email, name, action, token }));
   }
 
-  async findByEmail(email: string) {
-    return await this.prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        first_name: true,
-        last_name: true,
-        email: true,
-        role: true,
-      },
-    });
-  }
-
   // ------------ PERSONAL DEV SERVICES ------------
 
   getCount(role?: 'ALL' | 'ADMIN' | 'TUTOR' | 'STUDENT') {
@@ -433,9 +420,8 @@ export class UsersService {
     },
   ) {
     try {
-      // console.log('first 22');
       const includes: Prisma.UserInclude =
-        queryOptions.role === 'TUTOR' ? { subscription: true } : undefined;
+        queryOptions.role === 'TUTOR' ? { subscription: true, tutor: true } : undefined;
       return (
         this.prisma.user.findMany({
           skip: queryOptions.offset,

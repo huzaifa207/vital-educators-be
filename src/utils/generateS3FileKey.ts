@@ -1,4 +1,4 @@
-import { TFileType } from 'src/media/file.controller';
+import { TFileType } from 'src/file/file.controller';
 
 export type TRole = 'STUDENT' | 'TUTOR' | 'ADMIN';
 interface IFileKey {

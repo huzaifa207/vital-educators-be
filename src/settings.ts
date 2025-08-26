@@ -4,12 +4,9 @@ export const ENV = {
   SENTRY_DSN: process.env.SENTRY_DSN,
   JWT_SECRET: process.env.JWT_SECRET,
   EMAIL_FROM: process.env.EMAIL_FROM,
-  SMTP_HOST: process.env.SMTP_HOST,
-  EMAIL_PORT: parseInt(process.env.EMAIL_PORT),
-  EMAIL_USER: process.env.EMAIL_USER,
-  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   FRONTEND_URL: process.env.FRONTEND_URL || `https://vital-educators.vercel.app`,
-  API_URL: process.env.API_URL || 'https://api.vitaleducators.com'
+  API_URL: process.env.API_URL || 'https://api.vitaleducators.com',
+  BREVO_API_KEY: process.env.BREVO_API_KEY,
 };
 
 const cred = {
@@ -27,5 +24,5 @@ export const S3Cred = {
     region: process.env.AWS_REGION,
   },
   bucket: process.env.AWS_S3_BUCKET_NAME,
-  expires: 1000000,
+  expires: 300,
 };

@@ -260,21 +260,6 @@ export class UsersController {
     return success;
   }
 
-  @Get('by-email/:email')
-  async getUserByEmail(@Param('email') email: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      role: user.role,
-    };
-  }
-
   // ----------PORSONAL DEV ROUTES-----------
 
   @Delete('/all')

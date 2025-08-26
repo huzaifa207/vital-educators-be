@@ -141,9 +141,9 @@ export class TaskSchadularsService {
           text: `Tutor ${tutorName} request feedback from you`,
           subject: 'Feedback request from tutor',
           emailContent: reviewRequest({
-            tutorId: String(tutorId),
+            tutorId: Base64().encode(tutorId),
             tutorName: tutorName,
-            studentId: String(studentId),
+            studentId: Base64().encode(studentId),
             studentName: studentName,
           }),
         });

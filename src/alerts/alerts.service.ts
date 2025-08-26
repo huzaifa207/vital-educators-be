@@ -4,6 +4,7 @@ import { Alert, Prisma } from '@prisma/client';
 import { MailService } from 'src/mail-service/mail.service';
 import { emailAlert } from 'src/mail-service/templates/email-alert';
 import { ENV } from 'src/settings';
+import Base64 from 'src/utils/base64';
 
 interface PaginationOptions {
   offset: number;
@@ -54,10 +55,10 @@ export class AlertsService {
   async dispatchUserProfileUpdated(userId: number, description: string) {
     try {
       const userType = description.toLowerCase().includes('tutor') ? 'tutor' : 'student';
-
+      const hashedId = Base64().encode(userId);
       await this.create({
         description,
-        actionURL: `${ENV['FRONTEND_URL']}/admin/${userType}-detail/${userId}#profile`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/${userType}-detail/${hashedId}#profile`,
       });
     } catch (er) {
       console.warn(er);
@@ -65,40 +66,44 @@ export class AlertsService {
   }
 
   async dispatchRefereeAdded(userId: number) {
+    const hashedId = Base64().encode(userId);
     try {
       await this.create({
         description: 'Tutor added a new referee',
-        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${userId}#referees`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${hashedId}#referees`,
       });
     } catch (er) {
       console.warn(er);
     }
   }
   async dispatchDocUpdated(userId: number) {
+    const hashedId = Base64().encode(userId);
     try {
       await this.create({
         description: 'Tutor updated their official docs',
-        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${userId}#documents`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${hashedId}#documents`,
       });
     } catch (er) {
       console.warn(er);
     }
   }
   async dispatchRefereeLeftReview(userId: number) {
+    const hashedId = Base64().encode(userId);
     try {
       await this.create({
         description: 'Referee left a review',
-        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${userId}#referees`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/tutor-detail/${hashedId}#referees`,
       });
     } catch (er) {
       console.warn(er);
     }
   }
   async dispatchStudentRegistered(userId: number) {
+    const hashedId = Base64().encode(userId);
     try {
       await this.create({
         description: 'New student has been registered',
-        actionURL: `${ENV['FRONTEND_URL']}/admin/student-detail/${userId}`,
+        actionURL: `${ENV['FRONTEND_URL']}/admin/student-detail/${hashedId}`,
       });
     } catch (er) {
       console.warn(er);

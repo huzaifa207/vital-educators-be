@@ -1,18 +1,9 @@
 import { ApprovalStatus } from '@prisma/client';
-import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { IsOptional, IsEnum, IsNumber, IsString } from 'class-validator';
 
-export class CreateDocumentDto {
-  @IsOptional()
-  @IsString()
-  passport_url?: string;
-
-  @IsOptional()
-  @IsString()
-  license_url?: string;
-
-  @IsOptional()
-  @IsString()
-  criminal_record_url?: string;
+export class UpdateDocumentStatusDto {
+  @IsNumber()
+  tutorId: number;
 
   @IsOptional()
   @IsEnum(ApprovalStatus)
@@ -28,13 +19,13 @@ export class CreateDocumentDto {
 
   @IsOptional()
   @IsString()
-  passport_note?: string;
+  passport_rejection_reason?: string;
 
   @IsOptional()
   @IsString()
-  license_note?: string;
+  license_rejection_reason?: string;
 
   @IsOptional()
   @IsString()
-  criminal_record_note?: string;
+  criminal_record_rejection_reason?: string;
 }
