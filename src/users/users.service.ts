@@ -224,7 +224,7 @@ export class UsersService {
     }
   }
 
-  async update(id: number, updateUserDto: Prisma.UserUpdateInput, alertMessage: string = '') {
+  async update(id: number, updateUserDto: Prisma.UserUpdateInput, alertMessage = '') {
     try {
       const r = await this.prisma.user.update({
         where: { id },
@@ -394,6 +394,39 @@ export class UsersService {
 
   async sendEmail(email: string, name: string, action: EmailType, token: string | number) {
     await this.mailService.sendMail(new EmailUtility({ email, name, action, token }));
+  }
+
+  async requestUpdationApproval(
+    userId: number,
+    passport_url: string,
+    license_url: string,
+    criminal_record_url: string,
+    first_name?: string,
+    last_name?: string,
+  ) {
+    try {
+      const tutor = await this.tutorsService.findOneTutor(userId);
+      if (!tutor) throw new NotFoundException('Tutor profile not found');
+
+      if (first_name || last_name) {
+        await this.prisma.user.update({
+          where: { id: userId },
+          data: {
+            ...(first_name && { requestedFirstName: first_name }),
+            ...(last_name && { requestedLastName: last_name }),
+          },
+        });
+      }
+
+      await this.documentsService.update(tutor.id, {
+        passport_url,
+        criminal_record_url,
+        license_url,
+      });
+      return;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   // ------------ PERSONAL DEV SERVICES ------------

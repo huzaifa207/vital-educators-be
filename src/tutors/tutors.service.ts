@@ -438,6 +438,10 @@ export class TutorsService {
     }
   }
 
+  async getUserIdByTutorId(tutorId: number) {
+    return await this.prisma.tutor.findUnique({ select: { userId: true }, where: { id: tutorId } });
+  }
+
   async getPendingStudents(userId: number) {
     try {
       const tutorIdRes = await this.prisma.user.findFirst({

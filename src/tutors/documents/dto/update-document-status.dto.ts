@@ -7,25 +7,17 @@ export class UpdateDocumentStatusDto {
 
   @IsOptional()
   @IsEnum(ApprovalStatus)
-  passport_status?: ApprovalStatus;
-
-  @IsOptional()
-  @IsEnum(ApprovalStatus)
-  license_status?: ApprovalStatus;
-
-  @IsOptional()
-  @IsEnum(ApprovalStatus)
-  criminal_record_status?: ApprovalStatus;
+  status?: ApprovalStatus;
 
   @IsOptional()
   @IsString()
-  passport_rejection_reason?: string;
+  rejection_reason?: string;
 
   @IsOptional()
   @IsString()
-  license_rejection_reason?: string;
+  requested_first_name?: string;
 
   @IsOptional()
   @IsString()
-  criminal_record_rejection_reason?: string;
+  requested_last_name?: string;
 }

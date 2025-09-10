@@ -60,8 +60,7 @@ export class AdminController {
   @UseGuards(AdminGuard)
   @Patch('document/update-status')
   async updateDocumentStatus(@Body() updateStatusDto: UpdateDocumentStatusDto) {
-    const { tutorId, ...statusUpdates } = updateStatusDto;
-    return this.documentsService.updateDocumentStatus(tutorId, statusUpdates);
+    return await this.adminService.updateDocumentStatus(updateStatusDto);
   }
 
   @UseGuards(AdminGuard)

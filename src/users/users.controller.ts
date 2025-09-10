@@ -25,6 +25,7 @@ import { AllUsersDTO, ReturnUserDto } from './dto/return-user.dto';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/guards/authenticated.guard';
 import { DELETED_EMAIL_SUFFIX } from 'src/admin/admin.controller';
+import { RequestUpdateApprovalDto } from './dto/request-update-approval.dto';
 
 @Controller('user')
 export class UsersController {
@@ -190,6 +191,20 @@ export class UsersController {
       await this.tokenService.deleteAllTokens(id);
     }
     return success;
+  }
+
+  @Patch('request-update-approval')
+  async requestUpdateApproval(@Body() body: RequestUpdateApprovalDto, @Req() request: Request) {
+    const userId = (request.currentUser as Prisma.UserCreateManyInput).id;
+
+    await this.usersService.requestUpdationApproval(
+      userId,
+      body.passport_url,
+      body.license_url,
+      body.criminal_record_url,
+      body.first_name,
+      body.last_name,
+    );
   }
 
   @Get('/confirm-email/:token')

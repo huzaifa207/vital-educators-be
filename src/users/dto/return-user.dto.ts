@@ -137,6 +137,12 @@ export class ReturnUserDto {
   @Expose()
   subscribed: boolean;
 
+  @Expose()
+  requestedFirstName: string;
+
+  @Expose()
+  requestedLastName: string;
+
   @Type(() => ReturnSubsciptionDto)
   @Expose()
   subscription: ReturnSubsciptionDto;
@@ -144,6 +150,7 @@ export class ReturnUserDto {
   @Type(() => ReturnTutorDto)
   @Expose()
   tutor: ReturnTutorDto;
+
 }
 
 export class AllUsersDTO {

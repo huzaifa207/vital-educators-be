@@ -16,25 +16,9 @@ export class CreateDocumentDto {
 
   @IsOptional()
   @IsEnum(ApprovalStatus)
-  passport_status?: ApprovalStatus;
-
-  @IsOptional()
-  @IsEnum(ApprovalStatus)
-  license_status?: ApprovalStatus;
-
-  @IsOptional()
-  @IsEnum(ApprovalStatus)
-  criminal_record_status?: ApprovalStatus;
+  status?: ApprovalStatus;
 
   @IsOptional()
   @IsString()
-  passport_note?: string;
-
-  @IsOptional()
-  @IsString()
-  license_note?: string;
-
-  @IsOptional()
-  @IsString()
-  criminal_record_note?: string;
+  rejection_reason?: string;
 }

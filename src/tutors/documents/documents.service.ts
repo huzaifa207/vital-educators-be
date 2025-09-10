@@ -69,23 +69,15 @@ export class DocumentsService {
   async update(tutorId: number, updateDocumentDto: UpdateDocumentDto) {
     try {
       const updateData: any = { ...updateDocumentDto };
+      updateData.status = ApprovalStatus.PENDING;
 
-      if (updateDocumentDto.passport_url) {
-        updateData.passport_status = ApprovalStatus.PENDING;
-        updateData.passport_rejection_reason = '';
-      }
-      if (updateDocumentDto.license_url) {
-        updateData.license_status = ApprovalStatus.PENDING;
-        updateData.license_rejection_reason = '';
-      }
-      if (updateDocumentDto.criminal_record_url) {
-        updateData.criminal_record_status = ApprovalStatus.PENDING;
-        updateData.criminal_record_rejection_reason = '';
-      }
-
-      const updatedDocument = await this.prisma.documents.update({
+      const updatedDocument = await this.prisma.documents.upsert({
         where: { tutorId },
-        data: updateData,
+        update: updateData,
+        create: {
+          tutorId,
+          ...updateData,
+        },
       });
 
       const tutor = await this.prisma.tutor.findUnique({
@@ -94,7 +86,7 @@ export class DocumentsService {
       });
 
       if (tutor) {
-        this.alertService.dispatchDocUpdated(tutor.userId);
+        await this.alertService.dispatchDocUpdated(tutor.userId);
       }
 
       return updatedDocument;
@@ -113,23 +105,23 @@ export class DocumentsService {
         where: { tutorId },
       });
 
-      if (!currentDocument) {
-        throw new NotFoundException("Document doesn't exist");
-      }
-
       const updateData = { ...statusUpdates };
 
-      if (statusUpdates.passport_status === ApprovalStatus.APPROVED) {
-        updateData.approved_passport_url = currentDocument.passport_url;
-        updateData.passport_rejection_reason = '';
-      }
-      if (statusUpdates.license_status === ApprovalStatus.APPROVED) {
-        updateData.approved_license_url = currentDocument.license_url;
-        updateData.license_rejection_reason = '';
-      }
-      if (statusUpdates.criminal_record_status === ApprovalStatus.APPROVED) {
-        updateData.approved_criminal_record_url = currentDocument.criminal_record_url;
-        updateData.criminal_record_rejection_reason = '';
+      if (statusUpdates.status === ApprovalStatus.APPROVED) {
+        if (currentDocument.passport_url) {
+          updateData.approved_passport_url = currentDocument.passport_url;
+          updateData.passport_url = '';
+        }
+
+        if (currentDocument.license_url) {
+          updateData.approved_license_url = currentDocument.license_url;
+          updateData.license_url = '';
+        }
+
+        if (currentDocument.criminal_record_url) {
+          updateData.approved_criminal_record_url = currentDocument.criminal_record_url;
+          updateData.criminal_record_url = '';
+        }
       }
 
       const updatedDocument = await this.prisma.documents.update({
