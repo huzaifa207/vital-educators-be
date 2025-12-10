@@ -1,5 +1,11 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ApprovalStatus, Prisma, User } from '@prisma/client';
+import { AlertsService } from 'src/alerts/alerts.service';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { StripeService } from 'src/stripe/stripe.service';
 import { DeleteKeys, PickKeys } from 'src/utils/helpers';
@@ -24,6 +30,7 @@ export class TutorsService {
     private prisma: PrismaService,
     // private userService: UsersService,
     private stripeService: StripeService,
+    private alertService: AlertsService,
   ) {}
 
   async pendingTutors(
@@ -61,6 +68,81 @@ export class TutorsService {
       });
     } catch (error) {
       throw new NotFoundException('Tutor not found');
+    }
+  }
+
+  async updateDocumentStatus(tutorId: number, statusUpdates: any) {
+    try {
+      const currentDocument = await this.prisma.documents.findUnique({
+        where: { tutorId },
+      });
+
+      const updateData = { ...statusUpdates };
+
+      if (statusUpdates.status === ApprovalStatus.APPROVED) {
+        if (currentDocument.passport_url) {
+          updateData.approved_passport_url = currentDocument.passport_url;
+          updateData.passport_url = '';
+        }
+
+        if (currentDocument.license_url) {
+          updateData.approved_license_url = currentDocument.license_url;
+          updateData.license_url = '';
+        }
+
+        if (currentDocument.criminal_record_url) {
+          updateData.approved_criminal_record_url = currentDocument.criminal_record_url;
+          updateData.criminal_record_url = '';
+        }
+      }
+
+      const updatedDocument = await this.prisma.documents.update({
+        where: { tutorId },
+        data: updateData,
+      });
+      await this.updateDocumentApproval(tutorId);
+      const tutor = await this.prisma.tutor.findUnique({
+        where: { id: tutorId },
+        select: { userId: true },
+      });
+
+      if (tutor) {
+        await this.alertService.dispatchDocUpdated(tutor.userId);
+      }
+
+      return updatedDocument;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        throw new BadRequestException('Please send valid status data');
+      }
+
+      throw new BadRequestException('Failed to update document status');
+    }
+  }
+
+  async updateDocumentApproval(tutorId: number) {
+    const tutor = await this.prisma.tutor.findUnique({
+      where: {
+        id: tutorId,
+      },
+    });
+    if (!tutor) {
+      throw new NotFoundException('Tutor not found');
+    }
+    const documents = await this.prisma.documents.findUnique({
+      where: {
+        tutorId: tutorId,
+      },
+    });
+    if (!documents) {
+      throw new NotFoundException('Documents not found');
+    }
+    if (
+      documents.approved_license_url.length > 0 &&
+      documents.approved_passport_url.length > 0 &&
+      documents.approved_criminal_record_url.length > 0
+    ) {
+      await this.updateTutor(tutor.userId, { is_government_document_approved: 'PENDING' });
     }
   }
 
