@@ -13,6 +13,7 @@ import { TutoringDetailsController } from './tutoring-details/tutoring-details.c
 import { TutoringDetailsModule } from './tutoring-details/tutoring-details.module';
 import { TutorsController } from './tutors.controller';
 import { TutorsService } from './tutors.service';
+import { AlertsModule } from 'src/alerts/alerts.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TutorsService } from './tutors.service';
     SubjectOffersModule,
     DocumentsModule,
     StripeModule,
+    AlertsModule,
   ],
   controllers: [
     TutorsController,

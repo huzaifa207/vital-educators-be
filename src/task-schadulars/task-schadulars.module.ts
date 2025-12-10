@@ -5,7 +5,6 @@ import { MailModule } from 'src/mail-service/mail.module';
 import { MailService } from 'src/mail-service/mail.service';
 import { StripeModule } from 'src/stripe/stripe.module';
 import { TutorsModule } from 'src/tutors/tutors.module';
-import { TutorsService } from 'src/tutors/tutors.service';
 import { TaskSchadularsService } from './task-schadulars.service';
 
 @Module({
@@ -17,7 +16,7 @@ import { TaskSchadularsService } from './task-schadulars.service';
     MailModule,
   ],
   controllers: [],
-  providers: [TaskSchadularsService, TutorsService],
+  providers: [TaskSchadularsService],
   exports: [TaskSchadularsService],
 })
 export class TaskSchadularsModule {}
