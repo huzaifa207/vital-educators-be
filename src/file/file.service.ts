@@ -76,12 +76,12 @@ export class FileService {
 
   async getFileUrl(key: string, expires: number = 5 * 60) {
     try {
-      const url = await s3.getSignedUrlPromise('getObject', {
+      return await s3.getSignedUrlPromise('getObject', {
         Bucket: S3Cred.bucket,
         Key: key,
         Expires: expires,
+        ResponseContentDisposition: 'attachment', // this forces download
       });
-      return url;
     } catch (error) {
       console.log(error);
       throw new BadRequestException('Failed to generate signed URL');

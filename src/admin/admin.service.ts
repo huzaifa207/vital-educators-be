@@ -41,7 +41,7 @@ export class AdminService {
 
     if (!userId) return;
 
-    const updatedDocumentStatus = await this.documentsService.updateDocumentStatus(data.tutorId, {
+    const updatedDocumentStatus = await this.tutorService.updateDocumentStatus(data.tutorId, {
       status: data.status,
       rejection_reason: data.rejection_reason,
     });
