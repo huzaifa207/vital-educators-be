@@ -35,6 +35,7 @@ async function bootstrap() {
       'https://localhost:3000',
       'https://vital-educators.vercel.app',
       'https://www.vitaleducators.com',
+      'https://vital-educators-fe-snwm.vercel.app'
     ],
   });
 
