@@ -25,7 +25,6 @@ documentation
 /.nyc_output
 
 # environment
-.env
 
 # local certs
 .certs/
@@ -47,3 +46,4 @@ documentation
 !.vscode/extensions.json
 
 .node_modules/
+config.bat
