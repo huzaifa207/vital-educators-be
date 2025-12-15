@@ -74,14 +74,21 @@ export class FileService {
     }
   }
 
-  async getFileUrl(key: string, expires: number = 5 * 60) {
+  async getFileUrl(key: string, preview: boolean = false ) {
+    console.log(preview)
+    let expires = 5 * 60
     try {
-      return await s3.getSignedUrlPromise('getObject', {
+      const cleanKey = key.split('?')[0];
+      const params: any = {
         Bucket: S3Cred.bucket,
-        Key: key,
+        Key: cleanKey,
         Expires: expires,
-        ResponseContentDisposition: 'attachment', // this forces download
-      });
+      }
+      if(!preview){
+        params.ResponseContentDisposition = 'attachment' // this forces download
+        console.log(params)
+      }
+      return await s3.getSignedUrlPromise('getObject', params);
     } catch (error) {
       console.log(error);
       throw new BadRequestException('Failed to generate signed URL');

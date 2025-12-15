@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, Query, Req, Res } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseBoolPipe, Post, Query, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma-module/prisma.service';
 import { FileService } from './file.service';
@@ -31,8 +31,8 @@ export class FileUploadController {
   }
 
   @Get('/url')
-  async get(@Query('key') key: string) {
-    return await this.fileService.getFileUrl(key);
+  async get(@Query('key') key: string, @Query('preview', ParseBoolPipe) preview: boolean) {
+    return await this.fileService.getFileUrl(key, preview);
   }
 
   @Delete(':key')
