@@ -75,7 +75,6 @@ export class FileService {
   }
 
   async getFileUrl(key: string, preview: boolean = false ) {
-    console.log(preview)
     let expires = 5 * 60
     try {
       const cleanKey = key.split('?')[0];
@@ -86,7 +85,6 @@ export class FileService {
       }
       if(!preview){
         params.ResponseContentDisposition = 'attachment' // this forces download
-        console.log(params)
       }
       return await s3.getSignedUrlPromise('getObject', params);
     } catch (error) {
